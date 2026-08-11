@@ -1,11 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 
-type CreateAccommodationInput = {
+type AccommodationInput = {
   title: string;
   shortDescription: string;
   description: string;
@@ -30,9 +29,7 @@ function createSlug(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export async function createAccommodation(
-  values: CreateAccommodationInput,
-) {
+export async function createAccommodation(values: AccommodationInput) {
   const supabase = await createClient();
 
   const slug = createSlug(values.title);
@@ -42,15 +39,12 @@ export async function createAccommodation(
     .insert({
       title: values.title,
       slug,
-      short_description:
-        values.shortDescription || null,
-      description:
-        values.description || null,
+      short_description: values.shortDescription || null,
+      description: values.description || null,
       price: values.price,
       capacity: values.capacity,
       bed_count: values.bedCount,
-      bathroom_count:
-        values.bathroomCount,
+      bathroom_count: values.bathroomCount,
       amenities: values.amenities,
       is_active: values.isActive,
     })
@@ -58,21 +52,15 @@ export async function createAccommodation(
     .single();
 
   if (error || !data) {
-    console.error(
-      "Konaklama eklenemedi:",
-      error,
-    );
+    console.error("Konaklama eklenemedi:", error);
 
     return {
       success: false as const,
-      message:
-        "Konaklama kaydedilirken bir hata oluştu.",
+      message: error?.message ?? "Konaklama kaydedilemedi.",
     };
   }
 
-  revalidatePath(
-    "/admin/accommodations",
-  );
+  revalidatePath("/admin/accommodations");
 
   return {
     success: true as const,
@@ -81,14 +69,14 @@ export async function createAccommodation(
 }
 
 export async function updateAccommodation(
-  id: string,
-  values: CreateAccommodationInput,
+  id: number,
+  values: AccommodationInput,
 ) {
   const supabase = await createClient();
 
   const slug = createSlug(values.title);
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("accommodations")
     .update({
       title: values.title,
@@ -103,18 +91,29 @@ export async function updateAccommodation(
       is_active: values.isActive,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", id);
+    .eq("id", id)
+    .select("id");
+
+  console.log("UPDATE ID:", id);
+  console.log("UPDATE DATA:", data);
+  console.log("UPDATE ERROR:", error);
 
   if (error) {
-    console.error("Konaklama güncellenemedi:", error);
-
     return {
       success: false,
-      message: "Konaklama güncellenirken bir hata oluştu.",
+      message: error.message,
+    };
+  }
+
+  if (!data?.length) {
+    return {
+      success: false,
+      message: "Kayıt güncellenemedi. UPDATE yetkisini kontrol edin.",
     };
   }
 
   revalidatePath("/admin/accommodations");
+
   revalidatePath(`/admin/accommodations/${id}`);
 
   return {
