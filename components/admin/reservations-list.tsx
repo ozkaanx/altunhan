@@ -7,7 +7,9 @@ import {
   Search,
   XCircle,
 } from "lucide-react";
+
 import { useRouter } from "next/navigation";
+
 import {
   useMemo,
   useState,
@@ -120,22 +122,29 @@ function StatusIcon({
     status === "cancelled"
   ) {
     return (
-      <XCircle size={14} />
+      <XCircle
+        size={14}
+      />
     );
   }
 
   return (
-    <Clock3 size={14} />
+    <Clock3
+      size={14}
+    />
   );
 }
 
 export function ReservationsList({
   reservations,
 }: ReservationsListProps) {
-  const router = useRouter();
+  const router =
+    useRouter();
 
-  const [search, setSearch] =
-    useState("");
+  const [
+    search,
+    setSearch,
+  ] = useState("");
 
   const [
     activeFilter,
@@ -147,9 +156,10 @@ export function ReservationsList({
   const [
     selectedReservation,
     setSelectedReservation,
-  ] = useState<Reservation | null>(
-    null,
-  );
+  ] =
+    useState<Reservation | null>(
+      null,
+    );
 
   const filteredReservations =
     useMemo(() => {
@@ -161,7 +171,9 @@ export function ReservationsList({
           );
 
       return reservations.filter(
-        (reservation) => {
+        (
+          reservation,
+        ) => {
           const matchesSearch =
             !searchValue ||
             reservation.guest_name
@@ -209,50 +221,66 @@ export function ReservationsList({
 
   const pendingCount =
     reservations.filter(
-      (reservation) =>
+      (
+        reservation,
+      ) =>
         reservation.status ===
         "pending_approval",
     ).length;
 
-  const handleApprove = async (
-    reservation: Reservation,
-  ) => {
-    const result =
-      await approveReservation(
-        reservation.id,
+  const handleApprove =
+    async (
+      reservation: Reservation,
+    ) => {
+      const result =
+        await approveReservation(
+          reservation.id,
+        );
+
+      if (
+        !result.success
+      ) {
+        return result;
+      }
+
+      setSelectedReservation(
+        null,
       );
 
-    if (!result.success) {
-      alert(result.message);
-      return;
-    }
+      router.refresh();
 
-    setSelectedReservation(
-      null,
-    );
+      return {
+        success: true,
+      };
+    };
 
-    router.refresh();
-  };
+  const handleReject =
+    async (
+      reservation: Reservation,
+      reason: string,
+    ) => {
+      const result =
+        await rejectReservation(
+          reservation.id,
+          reason,
+        );
 
-  const handleReject = async (
-    reservation: Reservation,
-  ) => {
-    const result =
-      await rejectReservation(
-        reservation.id,
+      if (
+        !result.success
+      ) {
+        return result;
+      }
+
+      setSelectedReservation(
+        null,
       );
 
-    if (!result.success) {
-      alert(result.message);
-      return;
-    }
+      router.refresh();
 
-    setSelectedReservation(
-      null,
-    );
-
-    router.refresh();
-  };
+      return {
+        success: true,
+      };
+    };
 
   return (
     <>
@@ -274,9 +302,12 @@ export function ReservationsList({
             </p>
           </div>
 
-          {pendingCount > 0 && (
+          {pendingCount >
+            0 && (
             <div className="flex w-fit items-center gap-2 bg-[#EAE6F4] px-3 py-2 text-xs font-medium text-[#655D8A]">
-              <Clock3 size={15} />
+              <Clock3
+                size={15}
+              />
 
               {pendingCount} ödeme
               kontrol bekliyor
@@ -292,10 +323,16 @@ export function ReservationsList({
             />
 
             <input
-              value={search}
-              onChange={(event) =>
+              value={
+                search
+              }
+              onChange={(
+                event,
+              ) =>
                 setSearch(
-                  event.target.value,
+                  event
+                    .target
+                    .value,
                 )
               }
               placeholder="Misafir, telefon veya rezervasyon kodu ara..."
@@ -305,9 +342,13 @@ export function ReservationsList({
 
           <div className="flex gap-2 overflow-x-auto pb-1">
             {filters.map(
-              (filter) => (
+              (
+                filter,
+              ) => (
                 <button
-                  key={filter}
+                  key={
+                    filter
+                  }
                   type="button"
                   onClick={() =>
                     setActiveFilter(
@@ -321,7 +362,8 @@ export function ReservationsList({
                       : "border-[#DDD9D1] bg-white text-[#6D726B]"
                   }`}
                 >
-                  {filter === "all"
+                  {filter ===
+                  "all"
                     ? "Tümü"
                     : statusLabels[
                         filter
@@ -342,16 +384,19 @@ export function ReservationsList({
 
             <p className="mt-1 text-xs text-[#969990]">
               Henüz rezervasyon
-              bulunmuyor veya filtre
-              kriterine uygun kayıt
-              yok.
+              bulunmuyor veya
+              filtre kriterine
+              uygun kayıt yok.
             </p>
           </div>
         )}
 
+        {/* MOBILE */}
         <div className="mt-5 space-y-3 md:hidden">
           {filteredReservations.map(
-            (reservation) => (
+            (
+              reservation,
+            ) => (
               <article
                 key={
                   reservation.id
@@ -491,7 +536,12 @@ export function ReservationsList({
                     }
                     className="flex h-10 items-center gap-2 bg-[#263A2D] px-4 text-xs font-medium text-white"
                   >
-                    <Eye size={15} />
+                    <Eye
+                      size={
+                        15
+                      }
+                    />
+
                     Görüntüle
                   </button>
                 </div>
@@ -500,6 +550,7 @@ export function ReservationsList({
           )}
         </div>
 
+        {/* DESKTOP */}
         {filteredReservations.length >
           0 && (
           <div className="mt-6 hidden overflow-x-auto border border-[#E3E0D8] bg-white md:block">
@@ -578,7 +629,9 @@ export function ReservationsList({
                         {formatDate(
                           reservation.check_in,
                         )}
+
                         {" → "}
+
                         {formatDate(
                           reservation.check_out,
                         )}
@@ -622,6 +675,7 @@ export function ReservationsList({
                               14
                             }
                           />
+
                           Görüntüle
                         </button>
                       </td>
@@ -661,13 +715,18 @@ function TableHead({
   children,
   align = "left",
 }: {
-  children: React.ReactNode;
-  align?: "left" | "right";
+  children:
+    React.ReactNode;
+
+  align?:
+    | "left"
+    | "right";
 }) {
   return (
     <th
       className={`px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#969990] ${
-        align === "right"
+        align ===
+        "right"
           ? "text-right"
           : "text-left"
       }`}
