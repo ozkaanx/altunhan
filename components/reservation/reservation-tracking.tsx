@@ -39,7 +39,6 @@ import type {
 
 type TimelineStep = {
   title: string;
-
   description: string;
 
   state:
@@ -86,11 +85,14 @@ function formatDate(
   return new Intl.DateTimeFormat(
     "tr-TR",
     {
-      day: "numeric",
+      day:
+        "numeric",
 
-      month: "long",
+      month:
+        "long",
 
-      year: "numeric",
+      year:
+        "numeric",
     },
   ).format(
     new Date(
@@ -100,7 +102,8 @@ function formatDate(
 }
 
 function getTimeline(
-  reservation: ReservationTrackingResult,
+  reservation:
+    ReservationTrackingResult,
 ): TimelineStep[] {
   switch (
     reservation.status
@@ -265,10 +268,21 @@ function getTimeline(
 
         {
           title:
+            "Rezervasyon Onaylandı",
+
+          description:
+            "Rezervasyonunuz daha önce onaylandı.",
+
+          state:
+            "completed",
+        },
+
+        {
+          title:
             "Rezervasyon İptal Edildi",
 
           description:
-            "Bu rezervasyon artık aktif değil.",
+            "Rezervasyonunuz iptal edildi ve artık aktif değil.",
 
           state:
             "failed",
@@ -325,7 +339,8 @@ function getTimeline(
 }
 
 function getStatusBox(
-  status: PublicReservationStatus,
+  status:
+    PublicReservationStatus,
 ) {
   switch (status) {
     case "confirmed":
@@ -370,7 +385,7 @@ function getStatusBox(
           "Rezervasyon İptal Edildi",
 
         description:
-          "Bu rezervasyon artık aktif değil.",
+          "Rezervasyonunuz iptal edildi. Aşağıda iptal açıklamasını görebilirsiniz.",
       };
 
     case "pending_approval":
@@ -457,11 +472,14 @@ export function ReservationTracking() {
 
   const handleSubmit =
     async (
-      event: React.FormEvent<HTMLFormElement>,
+      event:
+        React.FormEvent<HTMLFormElement>,
     ) => {
       event.preventDefault();
 
-      setError(null);
+      setError(
+        null,
+      );
 
       setReservation(
         null,
@@ -471,7 +489,9 @@ export function ReservationTracking() {
         false,
       );
 
-      setReceipt(null);
+      setReceipt(
+        null,
+      );
 
       setIsLoading(
         true,
@@ -520,9 +540,13 @@ export function ReservationTracking() {
         null,
       );
 
-      setError(null);
+      setError(
+        null,
+      );
 
-      setReceipt(null);
+      setReceipt(
+        null,
+      );
 
       setUploadSuccess(
         false,
@@ -548,7 +572,9 @@ export function ReservationTracking() {
         return;
       }
 
-      setError(null);
+      setError(
+        null,
+      );
 
       const maxSize =
         10 *
@@ -591,7 +617,8 @@ export function ReservationTracking() {
 
       let uploadedPath:
         | string
-        | null = null;
+        | null =
+        null;
 
       try {
         const extension =
@@ -665,7 +692,9 @@ export function ReservationTracking() {
           true,
         );
 
-        setReceipt(null);
+        setReceipt(
+          null,
+        );
 
         const refreshed =
           await findReservation(
@@ -700,7 +729,9 @@ export function ReservationTracking() {
       }
     };
 
-  if (reservation) {
+  if (
+    reservation
+  ) {
     const timeline =
       getTimeline(
         reservation,
@@ -724,7 +755,9 @@ export function ReservationTracking() {
           className="mb-5 inline-flex items-center gap-2 text-xs font-medium text-[#777C75]"
         >
           <ArrowLeft
-            size={14}
+            size={
+              14
+            }
           />
 
           Başka Rezervasyon
@@ -794,12 +827,28 @@ export function ReservationTracking() {
               reservation.rejectionReason && (
                 <div className="mt-4 border border-[#E4C6BF] bg-[#FFF8F6] p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#98584E]">
-                    Açıklama
+                    Red Açıklaması
                   </p>
 
                   <p className="mt-2 text-sm leading-6 text-[#6D625F]">
                     {
                       reservation.rejectionReason
+                    }
+                  </p>
+                </div>
+              )}
+
+            {reservation.status ===
+              "cancelled" &&
+              reservation.cancellationReason && (
+                <div className="mt-4 border border-[#D9D7D1] bg-[#F6F5F2] p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#656A64]">
+                    İptal Açıklaması
+                  </p>
+
+                  <p className="mt-2 text-sm leading-6 text-[#626760]">
+                    {
+                      reservation.cancellationReason
                     }
                   </p>
                 </div>
@@ -888,9 +937,11 @@ export function ReservationTracking() {
                   </h2>
 
                   <p className="mt-2 text-xs leading-5 text-[#7D817B]">
-                    Aşağıdaki hesaba
-                    ödeme yaptıktan
-                    sonra dekontunuzu
+                    Aşağıdaki
+                    hesaba ödeme
+                    yaptıktan
+                    sonra
+                    dekontunuzu
                     yükleyin.
                   </p>
 
@@ -982,9 +1033,7 @@ export function ReservationTracking() {
                         event,
                       ) =>
                         setReceipt(
-                          event
-                            .target
-                            .files?.[0] ??
+                          event.target.files?.[0] ??
                             null,
                         )
                       }
@@ -1127,9 +1176,7 @@ export function ReservationTracking() {
           telefon numaranız
           ile rezervasyon
           durumunuzu
-          görüntüleyebilir,
-          eksik ödemenizi
-          tamamlayabilirsiniz.
+          görüntüleyebilirsiniz.
         </p>
 
         <form

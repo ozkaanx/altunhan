@@ -8,7 +8,9 @@ import {
   XCircle,
 } from "lucide-react";
 
-import { useRouter } from "next/navigation";
+import {
+  useRouter,
+} from "next/navigation";
 
 import {
   useMemo,
@@ -17,6 +19,7 @@ import {
 
 import {
   approveReservation,
+  cancelReservation,
   rejectReservation,
 } from "@/app/admin/reservations/action";
 
@@ -30,7 +33,8 @@ import type {
 } from "@/types/reservation";
 
 type ReservationsListProps = {
-  reservations: Reservation[];
+  reservations:
+    Reservation[];
 };
 
 const statusLabels: Record<
@@ -57,10 +61,15 @@ const filters: Array<
   ReservationStatus | "all"
 > = [
   "all",
+
   "pending_approval",
+
   "pending_payment",
+
   "confirmed",
+
   "rejected",
+
   "cancelled",
 ];
 
@@ -91,9 +100,14 @@ function formatDate(
   return new Intl.DateTimeFormat(
     "tr-TR",
     {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
+      day:
+        "numeric",
+
+      month:
+        "short",
+
+      year:
+        "numeric",
     },
   ).format(
     new Date(
@@ -105,10 +119,12 @@ function formatDate(
 function StatusIcon({
   status,
 }: {
-  status: ReservationStatus;
+  status:
+    ReservationStatus;
 }) {
   if (
-    status === "confirmed"
+    status ===
+    "confirmed"
   ) {
     return (
       <CheckCircle2
@@ -118,8 +134,10 @@ function StatusIcon({
   }
 
   if (
-    status === "rejected" ||
-    status === "cancelled"
+    status ===
+      "rejected" ||
+    status ===
+      "cancelled"
   ) {
     return (
       <XCircle
@@ -176,6 +194,7 @@ export function ReservationsList({
         ) => {
           const matchesSearch =
             !searchValue ||
+
             reservation.guest_name
               .toLocaleLowerCase(
                 "tr",
@@ -183,6 +202,7 @@ export function ReservationsList({
               .includes(
                 searchValue,
               ) ||
+
             reservation.reservation_code
               .toLocaleLowerCase(
                 "tr",
@@ -190,9 +210,11 @@ export function ReservationsList({
               .includes(
                 searchValue,
               ) ||
+
             reservation.guest_phone.includes(
               searchValue,
             ) ||
+
             reservation.accommodations?.title
               ?.toLocaleLowerCase(
                 "tr",
@@ -230,7 +252,8 @@ export function ReservationsList({
 
   const handleApprove =
     async (
-      reservation: Reservation,
+      reservation:
+        Reservation,
     ) => {
       const result =
         await approveReservation(
@@ -256,11 +279,45 @@ export function ReservationsList({
 
   const handleReject =
     async (
-      reservation: Reservation,
-      reason: string,
+      reservation:
+        Reservation,
+
+      reason:
+        string,
     ) => {
       const result =
         await rejectReservation(
+          reservation.id,
+          reason,
+        );
+
+      if (
+        !result.success
+      ) {
+        return result;
+      }
+
+      setSelectedReservation(
+        null,
+      );
+
+      router.refresh();
+
+      return {
+        success: true,
+      };
+    };
+
+  const handleCancel =
+    async (
+      reservation:
+        Reservation,
+
+      reason:
+        string,
+    ) => {
+      const result =
+        await cancelReservation(
           reservation.id,
           reason,
         );
@@ -288,7 +345,8 @@ export function ReservationsList({
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs text-[#8B8E87]">
-              Rezervasyon Yönetimi
+              Rezervasyon
+              Yönetimi
             </p>
 
             <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#263A2D]">
@@ -296,8 +354,10 @@ export function ReservationsList({
             </h1>
 
             <p className="mt-2 text-sm text-[#71756E]">
-              Gelen rezervasyonları
-              ve ödeme durumlarını
+              Gelen
+              rezervasyonları
+              ve ödeme
+              durumlarını
               yönetin.
             </p>
           </div>
@@ -306,7 +366,9 @@ export function ReservationsList({
             0 && (
             <div className="flex w-fit items-center gap-2 bg-[#EAE6F4] px-3 py-2 text-xs font-medium text-[#655D8A]">
               <Clock3
-                size={15}
+                size={
+                  15
+                }
               />
 
               {pendingCount} ödeme
@@ -318,7 +380,9 @@ export function ReservationsList({
         <div className="mt-6 space-y-4">
           <div className="relative">
             <Search
-              size={16}
+              size={
+                16
+              }
               className="absolute left-3 top-1/2 -translate-y-1/2 text-[#92968E]"
             />
 
@@ -330,9 +394,7 @@ export function ReservationsList({
                 event,
               ) =>
                 setSearch(
-                  event
-                    .target
-                    .value,
+                  event.target.value,
                 )
               }
               placeholder="Misafir, telefon veya rezervasyon kodu ara..."
@@ -383,15 +445,12 @@ export function ReservationsList({
             </p>
 
             <p className="mt-1 text-xs text-[#969990]">
-              Henüz rezervasyon
-              bulunmuyor veya
-              filtre kriterine
-              uygun kayıt yok.
+              Filtreye uygun
+              rezervasyon yok.
             </p>
           </div>
         )}
 
-        {/* MOBILE */}
         <div className="mt-5 space-y-3 md:hidden">
           {filteredReservations.map(
             (
@@ -518,13 +577,6 @@ export function ReservationsList({
                       )}{" "}
                       TL
                     </p>
-
-                    {reservation.receipt_storage_path && (
-                      <p className="mt-1 text-[10px] font-medium text-[#60795F]">
-                        ✓ Dekont
-                        yüklendi
-                      </p>
-                    )}
                   </div>
 
                   <button
@@ -550,7 +602,6 @@ export function ReservationsList({
           )}
         </div>
 
-        {/* DESKTOP */}
         {filteredReservations.length >
           0 && (
           <div className="mt-6 hidden overflow-x-auto border border-[#E3E0D8] bg-white md:block">
@@ -692,19 +743,27 @@ export function ReservationsList({
         reservation={
           selectedReservation
         }
+
         open={Boolean(
           selectedReservation,
         )}
+
         onClose={() =>
           setSelectedReservation(
             null,
           )
         }
+
         onApprove={
           handleApprove
         }
+
         onReject={
           handleReject
+        }
+
+        onCancel={
+          handleCancel
         }
       />
     </>

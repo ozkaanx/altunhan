@@ -27,6 +27,8 @@ export type ReservationTrackingResult = {
   hasReceipt: boolean;
 
   rejectionReason: string | null;
+
+  cancellationReason: string | null;
 };
 
 export type ReservationTrackingResponse =
