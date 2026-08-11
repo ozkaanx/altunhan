@@ -6,17 +6,18 @@ import {
   Check,
   CheckCircle2,
   Clock3,
+  Copy,
   Home,
+  ImagePlus,
   Loader2,
   Phone,
   ReceiptText,
   Search,
   ShieldCheck,
+  Upload,
   Users,
   XCircle,
 } from "lucide-react";
-
-import Link from "next/link";
 
 import {
   useState,
@@ -24,7 +25,12 @@ import {
 
 import {
   findReservation,
+  submitTrackedReceipt,
 } from "@/app/rezervasyon/takip/action";
+
+import {
+  createClient,
+} from "@/lib/supabase/client";
 
 import type {
   PublicReservationStatus,
@@ -33,6 +39,7 @@ import type {
 
 type TimelineStep = {
   title: string;
+
   description: string;
 
   state:
@@ -40,6 +47,17 @@ type TimelineStep = {
     | "active"
     | "waiting"
     | "failed";
+};
+
+const bankInformation = {
+  accountHolder:
+    "ALTUNHAN FARM",
+
+  bankName:
+    "Banka Adı",
+
+  iban:
+    "TR00 0000 0000 0000 0000 0000 00",
 };
 
 const statusLabels: Record<
@@ -69,7 +87,9 @@ function formatDate(
     "tr-TR",
     {
       day: "numeric",
+
       month: "long",
+
       year: "numeric",
     },
   ).format(
@@ -82,201 +102,226 @@ function formatDate(
 function getTimeline(
   reservation: ReservationTrackingResult,
 ): TimelineStep[] {
-  if (
-    reservation.status ===
-    "rejected"
+  switch (
+    reservation.status
   ) {
-    return [
-      {
-        title:
-          "Rezervasyon Talebi",
-        description:
-          "Rezervasyon talebiniz alındı.",
-        state:
-          "completed",
-      },
+    case "confirmed":
+      return [
+        {
+          title:
+            "Rezervasyon Talebi",
 
-      {
-        title:
-          "Dekont",
-        description:
-          reservation.hasReceipt
-            ? "Ödeme dekontunuz sisteme yüklendi."
-            : "Ödeme dekontu yüklenmedi.",
-        state:
-          reservation.hasReceipt
-            ? "completed"
-            : "waiting",
-      },
+          description:
+            "Rezervasyon talebiniz alındı.",
 
-      {
-        title:
-          "Ödeme Kontrolü",
-        description:
-          "Rezervasyonunuz yapılan inceleme sonucunda onaylanamadı.",
-        state:
-          "failed",
-      },
+          state:
+            "completed",
+        },
 
-      {
-        title:
-          "Rezervasyon Onayı",
-        description:
-          "Rezervasyon kesinleşmedi.",
-        state:
-          "failed",
-      },
-    ];
+        {
+          title:
+            "Dekont Yüklendi",
+
+          description:
+            "Ödeme belgeniz tarafımıza ulaştı.",
+
+          state:
+            "completed",
+        },
+
+        {
+          title:
+            "Ödeme Onaylandı",
+
+          description:
+            "Ödemeniz kontrol edilerek onaylandı.",
+
+          state:
+            "completed",
+        },
+
+        {
+          title:
+            "Rezervasyon Kesinleşti",
+
+          description:
+            "Rezervasyonunuz başarıyla onaylandı.",
+
+          state:
+            "completed",
+        },
+      ];
+
+    case "pending_approval":
+      return [
+        {
+          title:
+            "Rezervasyon Talebi",
+
+          description:
+            "Rezervasyon talebiniz alındı.",
+
+          state:
+            "completed",
+        },
+
+        {
+          title:
+            "Dekont Yüklendi",
+
+          description:
+            "Ödeme belgeniz tarafımıza ulaştı.",
+
+          state:
+            "completed",
+        },
+
+        {
+          title:
+            "Ödeme Kontrol Ediliyor",
+
+          description:
+            "Dekontunuz Altunhan Farm tarafından kontrol ediliyor.",
+
+          state:
+            "active",
+        },
+
+        {
+          title:
+            "Rezervasyon Onayı",
+
+          description:
+            "Kontrol tamamlandıktan sonra rezervasyonunuz kesinleşecek.",
+
+          state:
+            "waiting",
+        },
+      ];
+
+    case "rejected":
+      return [
+        {
+          title:
+            "Rezervasyon Talebi",
+
+          description:
+            "Rezervasyon talebiniz alındı.",
+
+          state:
+            "completed",
+        },
+
+        {
+          title:
+            "Dekont",
+
+          description:
+            reservation.hasReceipt
+              ? "Ödeme dekontunuz sisteme yüklendi."
+              : "Ödeme dekontu yüklenmedi.",
+
+          state:
+            reservation.hasReceipt
+              ? "completed"
+              : "waiting",
+        },
+
+        {
+          title:
+            "Ödeme Kontrolü",
+
+          description:
+            "Rezervasyonunuz yapılan inceleme sonucunda onaylanamadı.",
+
+          state:
+            "failed",
+        },
+
+        {
+          title:
+            "Rezervasyon Onayı",
+
+          description:
+            "Rezervasyon kesinleşmedi.",
+
+          state:
+            "failed",
+        },
+      ];
+
+    case "cancelled":
+      return [
+        {
+          title:
+            "Rezervasyon Talebi",
+
+          description:
+            "Rezervasyon talebiniz oluşturuldu.",
+
+          state:
+            "completed",
+        },
+
+        {
+          title:
+            "Rezervasyon İptal Edildi",
+
+          description:
+            "Bu rezervasyon artık aktif değil.",
+
+          state:
+            "failed",
+        },
+      ];
+
+    default:
+      return [
+        {
+          title:
+            "Rezervasyon Talebi",
+
+          description:
+            "Rezervasyon talebiniz alındı.",
+
+          state:
+            "completed",
+        },
+
+        {
+          title:
+            "Ödeme Bekleniyor",
+
+          description:
+            "Ödemenizi yaptıktan sonra dekontunuzu yükleyin.",
+
+          state:
+            "active",
+        },
+
+        {
+          title:
+            "Ödeme Kontrolü",
+
+          description:
+            "Dekontunuz gönderildikten sonra ödeme kontrol edilecek.",
+
+          state:
+            "waiting",
+        },
+
+        {
+          title:
+            "Rezervasyon Onayı",
+
+          description:
+            "Ödeme onayından sonra rezervasyonunuz kesinleşecek.",
+
+          state:
+            "waiting",
+        },
+      ];
   }
-
-  if (
-    reservation.status ===
-    "cancelled"
-  ) {
-    return [
-      {
-        title:
-          "Rezervasyon Talebi",
-        description:
-          "Rezervasyon talebiniz oluşturuldu.",
-        state:
-          "completed",
-      },
-
-      {
-        title:
-          "Rezervasyon İptal Edildi",
-        description:
-          "Bu rezervasyon artık aktif değil.",
-        state:
-          "failed",
-      },
-    ];
-  }
-
-  if (
-    reservation.status ===
-    "confirmed"
-  ) {
-    return [
-      {
-        title:
-          "Rezervasyon Talebi",
-        description:
-          "Rezervasyon talebiniz alındı.",
-        state:
-          "completed",
-      },
-
-      {
-        title:
-          "Dekont Yüklendi",
-        description:
-          "Ödeme belgeniz tarafımıza ulaştı.",
-        state:
-          "completed",
-      },
-
-      {
-        title:
-          "Ödeme Onaylandı",
-        description:
-          "Ödemeniz kontrol edilerek onaylandı.",
-        state:
-          "completed",
-      },
-
-      {
-        title:
-          "Rezervasyon Kesinleşti",
-        description:
-          "Rezervasyonunuz başarıyla onaylandı.",
-        state:
-          "completed",
-      },
-    ];
-  }
-
-  if (
-    reservation.status ===
-    "pending_approval"
-  ) {
-    return [
-      {
-        title:
-          "Rezervasyon Talebi",
-        description:
-          "Rezervasyon talebiniz alındı.",
-        state:
-          "completed",
-      },
-
-      {
-        title:
-          "Dekont Yüklendi",
-        description:
-          "Ödeme belgeniz tarafımıza ulaştı.",
-        state:
-          "completed",
-      },
-
-      {
-        title:
-          "Ödeme Kontrol Ediliyor",
-        description:
-          "Dekontunuz Altunhan Farm tarafından kontrol ediliyor.",
-        state:
-          "active",
-      },
-
-      {
-        title:
-          "Rezervasyon Onayı",
-        description:
-          "Kontrol tamamlandıktan sonra rezervasyonunuz kesinleşecek.",
-        state:
-          "waiting",
-      },
-    ];
-  }
-
-  return [
-    {
-      title:
-        "Rezervasyon Talebi",
-      description:
-        "Rezervasyon talebiniz alındı.",
-      state:
-        "completed",
-    },
-
-    {
-      title:
-        "Ödeme Bekleniyor",
-      description:
-        "Rezervasyonunuz için ödeme dekontunuzu yüklemeniz gerekiyor.",
-      state:
-        "active",
-    },
-
-    {
-      title:
-        "Ödeme Kontrolü",
-      description:
-        "Dekont yükledikten sonra ödeme kontrol edilecek.",
-      state:
-        "waiting",
-    },
-
-    {
-      title:
-        "Rezervasyon Onayı",
-      description:
-        "Ödeme onayından sonra rezervasyonunuz kesinleşecek.",
-      state:
-        "waiting",
-    },
-  ];
 }
 
 function getStatusBox(
@@ -355,7 +400,7 @@ function getStatusBox(
           "Ödeme Bekleniyor",
 
         description:
-          "Rezervasyonunuz oluşturuldu. Dekont yüklemeniz gerekiyor.",
+          "Rezervasyonunuz oluşturuldu. Ödemenizi yaptıktan sonra dekontunuzu aşağıdan yükleyebilirsiniz.",
       };
   }
 }
@@ -392,6 +437,24 @@ export function ReservationTracking() {
       null,
     );
 
+  const [
+    receipt,
+    setReceipt,
+  ] =
+    useState<File | null>(
+      null,
+    );
+
+  const [
+    isUploading,
+    setIsUploading,
+  ] = useState(false);
+
+  const [
+    uploadSuccess,
+    setUploadSuccess,
+  ] = useState(false);
+
   const handleSubmit =
     async (
       event: React.FormEvent<HTMLFormElement>,
@@ -399,11 +462,20 @@ export function ReservationTracking() {
       event.preventDefault();
 
       setError(null);
+
       setReservation(
         null,
       );
 
-      setIsLoading(true);
+      setUploadSuccess(
+        false,
+      );
+
+      setReceipt(null);
+
+      setIsLoading(
+        true,
+      );
 
       try {
         const result =
@@ -425,7 +497,9 @@ export function ReservationTracking() {
         setReservation(
           result.reservation,
         );
-      } catch (error) {
+      } catch (
+        error
+      ) {
         console.error(
           error,
         );
@@ -447,6 +521,183 @@ export function ReservationTracking() {
       );
 
       setError(null);
+
+      setReceipt(null);
+
+      setUploadSuccess(
+        false,
+      );
+    };
+
+  const copyIban =
+    async () => {
+      await navigator.clipboard.writeText(
+        bankInformation.iban.replace(
+          /\s/g,
+          "",
+        ),
+      );
+    };
+
+  const handleReceiptUpload =
+    async () => {
+      if (
+        !reservation ||
+        !receipt
+      ) {
+        return;
+      }
+
+      setError(null);
+
+      const maxSize =
+        10 *
+        1024 *
+        1024;
+
+      if (
+        receipt.size >
+        maxSize
+      ) {
+        setError(
+          "Dekont en fazla 10 MB olabilir.",
+        );
+
+        return;
+      }
+
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "application/pdf",
+      ];
+
+      if (
+        !allowedTypes.includes(
+          receipt.type,
+        )
+      ) {
+        setError(
+          "Sadece JPG, PNG, WEBP veya PDF yükleyebilirsiniz.",
+        );
+
+        return;
+      }
+
+      setIsUploading(
+        true,
+      );
+
+      let uploadedPath:
+        | string
+        | null = null;
+
+      try {
+        const extension =
+          receipt.name
+            .split(".")
+            .pop()
+            ?.toLowerCase() ||
+          "jpg";
+
+        uploadedPath =
+          `${reservation.reservationCode}/${crypto.randomUUID()}.${extension}`;
+
+        const supabase =
+          createClient();
+
+        const {
+          error:
+            uploadError,
+        } =
+          await supabase.storage
+            .from(
+              "reservation-receipts",
+            )
+            .upload(
+              uploadedPath,
+              receipt,
+              {
+                cacheControl:
+                  "3600",
+
+                upsert:
+                  false,
+
+                contentType:
+                  receipt.type,
+              },
+            );
+
+        if (
+          uploadError
+        ) {
+          throw new Error(
+            `Dekont yüklenemedi: ${uploadError.message}`,
+          );
+        }
+
+        const result =
+          await submitTrackedReceipt(
+            reservation.reservationCode,
+            phone,
+            uploadedPath,
+          );
+
+        if (
+          !result.success
+        ) {
+          await supabase.storage
+            .from(
+              "reservation-receipts",
+            )
+            .remove([
+              uploadedPath,
+            ]);
+
+          throw new Error(
+            result.message,
+          );
+        }
+
+        setUploadSuccess(
+          true,
+        );
+
+        setReceipt(null);
+
+        const refreshed =
+          await findReservation(
+            reservation.reservationCode,
+            phone,
+          );
+
+        if (
+          refreshed.success
+        ) {
+          setReservation(
+            refreshed.reservation,
+          );
+        }
+      } catch (
+        error
+      ) {
+        console.error(
+          error,
+        );
+
+        setError(
+          error instanceof
+            Error
+            ? error.message
+            : "Dekont yüklenemedi.",
+        );
+      } finally {
+        setIsUploading(
+          false,
+        );
+      }
     };
 
   if (reservation) {
@@ -517,7 +768,9 @@ export function ReservationTracking() {
               className={`flex gap-3 border p-4 ${statusBox.className}`}
             >
               <StatusIcon
-                size={22}
+                size={
+                  22
+                }
                 className="mt-0.5 shrink-0"
               />
 
@@ -554,7 +807,9 @@ export function ReservationTracking() {
 
             <div className="mt-7 grid gap-3 sm:grid-cols-2">
               <Detail
-                icon={Home}
+                icon={
+                  Home
+                }
                 label="Konaklama"
                 value={
                   reservation.accommodationTitle
@@ -621,10 +876,193 @@ export function ReservationTracking() {
               </div>
             </div>
 
+            {reservation.status ===
+              "pending_payment" && (
+                <section className="mt-6 border border-[#E4DDD0] bg-[#FBF8F2] p-4 sm:p-5">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A8754F]">
+                    Ödemeyi Tamamla
+                  </p>
+
+                  <h2 className="mt-2 text-lg font-semibold text-[#263A2D]">
+                    Havale / EFT
+                  </h2>
+
+                  <p className="mt-2 text-xs leading-5 text-[#7D817B]">
+                    Aşağıdaki hesaba
+                    ödeme yaptıktan
+                    sonra dekontunuzu
+                    yükleyin.
+                  </p>
+
+                  <div className="mt-5 space-y-4 border-y border-[#E8E1D6] py-4">
+                    <BankRow
+                      label="Hesap Sahibi"
+                      value={
+                        bankInformation.accountHolder
+                      }
+                    />
+
+                    <BankRow
+                      label="Banka"
+                      value={
+                        bankInformation.bankName
+                      }
+                    />
+
+                    <div>
+                      <p className="text-[10px] text-[#969990]">
+                        IBAN
+                      </p>
+
+                      <div className="mt-1 flex items-center justify-between gap-3">
+                        <p className="break-all text-sm font-semibold tracking-wide text-[#263A2D]">
+                          {
+                            bankInformation.iban
+                          }
+                        </p>
+
+                        <button
+                          type="button"
+                          onClick={
+                            copyIban
+                          }
+                          className="flex h-9 shrink-0 items-center gap-2 border border-[#D7D3CA] bg-white px-3 text-[10px] font-semibold text-[#263A2D]"
+                        >
+                          <Copy
+                            size={
+                              13
+                            }
+                          />
+
+                          Kopyala
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="mt-4 text-[11px] leading-5 text-[#777B74]">
+                    Havale
+                    açıklamasına{" "}
+                    <strong className="text-[#263A2D]">
+                      {
+                        reservation.reservationCode
+                      }
+                    </strong>{" "}
+                    yazın.
+                  </p>
+
+                  <label className="mt-5 flex min-h-32 cursor-pointer flex-col items-center justify-center border border-dashed border-[#CBC7BE] bg-white p-4 text-center">
+                    <ImagePlus
+                      size={
+                        26
+                      }
+                      className="text-[#A8754F]"
+                    />
+
+                    <p className="mt-3 text-xs font-semibold text-[#263A2D]">
+                      {receipt
+                        ? receipt.name
+                        : "Dekont Seç"}
+                    </p>
+
+                    <p className="mt-1 text-[10px] leading-5 text-[#969990]">
+                      JPG, PNG,
+                      WEBP veya PDF
+                      · Maksimum 10 MB
+                    </p>
+
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,application/pdf"
+                      className="hidden"
+                      disabled={
+                        isUploading
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        setReceipt(
+                          event
+                            .target
+                            .files?.[0] ??
+                            null,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    disabled={
+                      !receipt ||
+                      isUploading
+                    }
+                    onClick={
+                      handleReceiptUpload
+                    }
+                    className="mt-3 flex h-12 w-full items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isUploading ? (
+                      <Loader2
+                        size={
+                          16
+                        }
+                        className="animate-spin"
+                      />
+                    ) : (
+                      <Upload
+                        size={
+                          16
+                        }
+                      />
+                    )}
+
+                    {isUploading
+                      ? "Dekont Gönderiliyor..."
+                      : "Dekontu Gönder"}
+                  </button>
+                </section>
+              )}
+
+            {uploadSuccess && (
+              <div className="mt-5 flex items-start gap-3 border border-[#CBDDC8] bg-[#EAF2E8] p-4 text-[#456044]">
+                <CheckCircle2
+                  size={
+                    19
+                  }
+                  className="mt-0.5 shrink-0"
+                />
+
+                <div>
+                  <p className="text-sm font-semibold">
+                    Dekontunuz
+                    gönderildi
+                  </p>
+
+                  <p className="mt-1 text-xs leading-5">
+                    Rezervasyonunuz
+                    artık ödeme
+                    kontrolü
+                    bekliyor.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <div className="mt-5 border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs leading-5 text-[#98584E]">
+                {
+                  error
+                }
+              </div>
+            )}
+
             <div className="mt-8">
               <div className="flex items-center gap-2">
                 <ShieldCheck
-                  size={17}
+                  size={
+                    17
+                  }
                   className="text-[#A8754F]"
                 />
 
@@ -657,30 +1095,6 @@ export function ReservationTracking() {
                 )}
               </div>
             </div>
-
-            {reservation.status ===
-              "pending_payment" && (
-              <Link
-                href="/rezervasyon"
-                className="mt-7 flex h-12 w-full items-center justify-center bg-[#263A2D] text-xs font-semibold text-white"
-              >
-                Ödeme / Dekont
-                İşlemine Dön
-              </Link>
-            )}
-
-            {(reservation.status ===
-              "rejected" ||
-              reservation.status ===
-                "cancelled") && (
-              <Link
-                href="/#contact"
-                className="mt-7 flex h-12 w-full items-center justify-center border border-[#263A2D] text-xs font-semibold text-[#263A2D]"
-              >
-                Altunhan Farm
-                ile İletişime Geç
-              </Link>
-            )}
           </div>
         </div>
       </div>
@@ -692,7 +1106,9 @@ export function ReservationTracking() {
       <div className="border border-[#E3E0D8] bg-white p-5 sm:p-8">
         <div className="flex h-12 w-12 items-center justify-center bg-[#F0EFEA] text-[#A8754F]">
           <Search
-            size={21}
+            size={
+              21
+            }
           />
         </div>
 
@@ -708,11 +1124,12 @@ export function ReservationTracking() {
         <p className="mt-3 text-sm leading-6 text-[#747972]">
           Rezervasyon
           numaranız ve
-          rezervasyon sırasında
-          kullandığınız telefon
-          numarası ile güncel
+          telefon numaranız
+          ile rezervasyon
           durumunuzu
-          görüntüleyebilirsiniz.
+          görüntüleyebilir,
+          eksik ödemenizi
+          tamamlayabilirsiniz.
         </p>
 
         <form
@@ -722,21 +1139,19 @@ export function ReservationTracking() {
           className="mt-7 space-y-5"
         >
           <div>
-            <label
-              htmlFor="reservation-code"
-              className="text-xs font-medium text-[#40463F]"
-            >
+            <label className="text-xs font-medium text-[#40463F]">
               Rezervasyon No
             </label>
 
             <div className="relative mt-2">
               <ReceiptText
-                size={16}
+                size={
+                  16
+                }
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B9E98]"
               />
 
               <input
-                id="reservation-code"
                 required
                 value={
                   reservationCode
@@ -755,25 +1170,25 @@ export function ReservationTracking() {
           </div>
 
           <div>
-            <label
-              htmlFor="reservation-phone"
-              className="text-xs font-medium text-[#40463F]"
-            >
+            <label className="text-xs font-medium text-[#40463F]">
               Telefon
               Numarası
             </label>
 
             <div className="relative mt-2">
               <Phone
-                size={16}
+                size={
+                  16
+                }
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B9E98]"
               />
 
               <input
-                id="reservation-phone"
                 type="tel"
                 required
-                value={phone}
+                value={
+                  phone
+                }
                 onChange={(
                   event,
                 ) =>
@@ -789,7 +1204,9 @@ export function ReservationTracking() {
 
           {error && (
             <div className="border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs leading-5 text-[#98584E]">
-              {error}
+              {
+                error
+              }
             </div>
           )}
 
@@ -802,12 +1219,16 @@ export function ReservationTracking() {
           >
             {isLoading ? (
               <Loader2
-                size={16}
+                size={
+                  16
+                }
                 className="animate-spin"
               />
             ) : (
               <Search
-                size={15}
+                size={
+                  15
+                }
               />
             )}
 
@@ -816,14 +1237,6 @@ export function ReservationTracking() {
               : "Rezervasyonumu Bul"}
           </button>
         </form>
-
-        <p className="mt-5 text-center text-[10px] leading-5 text-[#989C96]">
-          Rezervasyon
-          numaranızı ödeme
-          ekranında size
-          gösterilen numaradan
-          bulabilirsiniz.
-        </p>
       </div>
     </div>
   );
@@ -833,8 +1246,11 @@ function TimelineItem({
   step,
   last,
 }: {
-  step: TimelineStep;
-  last: boolean;
+  step:
+    TimelineStep;
+
+  last:
+    boolean;
 }) {
   const completed =
     step.state ===
@@ -864,15 +1280,21 @@ function TimelineItem({
         >
           {completed ? (
             <Check
-              size={14}
+              size={
+                14
+              }
             />
           ) : failed ? (
             <XCircle
-              size={14}
+              size={
+                14
+              }
             />
           ) : (
             <Clock3
-              size={14}
+              size={
+                14
+              }
             />
           )}
         </div>
@@ -896,7 +1318,9 @@ function TimelineItem({
               : "text-[#263A2D]"
           }`}
         >
-          {step.title}
+          {
+            step.title
+          }
         </p>
 
         <p className="mt-1 text-xs leading-5 text-[#858A83]">
@@ -917,15 +1341,19 @@ function Detail({
   icon:
     React.ElementType;
 
-  label: string;
+  label:
+    string;
 
-  value: string;
+  value:
+    string;
 }) {
   return (
     <div className="flex items-center gap-3 border border-[#E8E4DC] bg-[#FAF9F6] p-4">
       <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-white text-[#A8754F]">
         <Icon
-          size={16}
+          size={
+            16
+          }
         />
       </div>
 
@@ -938,6 +1366,29 @@ function Detail({
           {value}
         </p>
       </div>
+    </div>
+  );
+}
+
+function BankRow({
+  label,
+  value,
+}: {
+  label:
+    string;
+
+  value:
+    string;
+}) {
+  return (
+    <div>
+      <p className="text-[10px] text-[#969990]">
+        {label}
+      </p>
+
+      <p className="mt-1 text-sm font-medium text-[#263A2D]">
+        {value}
+      </p>
     </div>
   );
 }
