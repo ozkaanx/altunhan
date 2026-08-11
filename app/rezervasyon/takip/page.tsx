@@ -2,8 +2,29 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 import { ReservationTracking } from "@/components/reservation/reservation-tracking";
+import { createClient } from "@/lib/supabase/server";
 
-export default function ReservationTrackingPage() {
+import type { SiteSettings } from "@/types/site-settings";
+
+export default async function ReservationTrackingPage() {
+  const supabase = await createClient();
+
+  const {
+    data: settings,
+    error,
+  } = await supabase
+    .from("site_settings")
+    .select("*")
+    .eq("id", 1)
+    .single();
+
+  if (error) {
+    console.error(
+      "Site ayarları alınamadı:",
+      error,
+    );
+  }
+
   return (
     <main className="min-h-screen bg-[#F4F2ED]">
       <header className="border-b border-[#E2DED6] bg-white">
@@ -19,7 +40,11 @@ export default function ReservationTrackingPage() {
       </header>
 
       <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-        <ReservationTracking />
+        <ReservationTracking
+          settings={
+            settings as SiteSettings | null
+          }
+        />
       </section>
     </main>
   );

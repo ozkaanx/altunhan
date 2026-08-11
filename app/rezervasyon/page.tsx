@@ -6,11 +6,22 @@ import { createClient } from "@/lib/supabase/server";
 
 import type { PublicAccommodation } from "@/types/public-reservation";
 
+import {
+  MessageCircle,
+} from "lucide-react";
+
+import type {
+  SiteSettings,
+} from "@/types/site-settings";
+
 export default async function ReservationPage() {
   const supabase = await createClient();
 
-  const { data: accommodations, error } =
-    await supabase
+  const [
+    accommodationsResult,
+    settingsResult,
+  ] = await Promise.all([
+    supabase
       .from("accommodations")
       .select(`
         id,
@@ -22,12 +33,36 @@ export default async function ReservationPage() {
       .eq("is_active", true)
       .order("created_at", {
         ascending: true,
-      });
+      }),
 
-  if (error) {
+    supabase
+      .from("site_settings")
+      .select("*")
+      .eq("id", 1)
+      .single(),
+  ]);
+
+  const {
+    data: accommodations,
+    error: accommodationsError,
+  } = accommodationsResult;
+
+  const {
+    data: settings,
+    error: settingsError,
+  } = settingsResult;
+
+  if (accommodationsError) {
     console.error(
       "Konaklamalar alınamadı:",
-      error,
+      accommodationsError,
+    );
+  }
+
+  if (settingsError) {
+    console.error(
+      "Site ayarları alınamadı:",
+      settingsError,
     );
   }
 
@@ -66,6 +101,9 @@ export default async function ReservationPage() {
           <ReservationForm
             accommodations={
               accommodations as PublicAccommodation[]
+            }
+            settings={
+              settings as SiteSettings | null
             }
           />
         ) : (
