@@ -62,9 +62,7 @@ export default function AdminPage() {
     <section>
       {/* Page Heading */}
       <div className="mb-8">
-        <p className="text-xs text-[#8B8E87]">
-          11 Ağustos 2026
-        </p>
+        <p className="text-xs text-[#8B8E87]">11 Ağustos 2026</p>
 
         <h2 className="mt-1 text-2xl font-semibold tracking-tight text-[#263A2D]">
           Dashboard
@@ -76,23 +74,21 @@ export default function AdminPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {stats.map((stat) => {
           const Icon = stat.icon;
 
           return (
             <article
               key={stat.title}
-              className="border border-[#E3E0D8] bg-white p-5"
+              className="border border-[#E3E0D8] bg-white p-4 sm:p-5"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-xs text-[#83877F]">
-                    {stat.title}
-                  </p>
+                  <p className="text-xs text-[#83877F]">{stat.title}</p>
 
-                  <p className="mt-3 text-3xl font-semibold tracking-tight text-[#263A2D]">
-                    {stat.value}
+                  <p className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-[#263A2D]">
+                    {stat.value} 
                   </p>
 
                   <p className="mt-2 text-[11px] text-[#A0A39C]">
@@ -101,10 +97,7 @@ export default function AdminPage() {
                 </div>
 
                 <div className="flex h-10 w-10 items-center justify-center bg-[#EEF0EA] text-[#526048]">
-                  <Icon
-                    size={19}
-                    strokeWidth={1.6}
-                  />
+                  <Icon size={19} strokeWidth={1.6} />
                 </div>
               </div>
             </article>
@@ -212,13 +205,9 @@ export default function AdminPage() {
         <section className="border border-[#E3E0D8] bg-[#263A2D] p-6 text-white">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-white/60">
-                Doluluk Oranı
-              </p>
+              <p className="text-xs text-white/60">Doluluk Oranı</p>
 
-              <p className="mt-4 text-5xl font-semibold tracking-tight">
-                %74
-              </p>
+              <p className="mt-4 text-5xl font-semibold tracking-tight">%74</p>
             </div>
 
             <TrendingUp
@@ -248,9 +237,7 @@ export default function AdminPage() {
               Ağustos
             </p>
 
-            <p className="mt-2 text-sm text-white/80">
-              Yoğun dönem
-            </p>
+            <p className="mt-2 text-sm text-white/80">Yoğun dönem</p>
           </div>
         </section>
       </div>
