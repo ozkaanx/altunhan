@@ -29,6 +29,8 @@ type ReservationTrackingRpcRow = {
   has_receipt: boolean;
 
   rejection_reason: string | null;
+
+  cancellation_reason: string | null;
 };
 
 export async function findReservation(
@@ -142,6 +144,9 @@ export async function findReservation(
 
       rejectionReason:
         reservation.rejection_reason,
+
+      cancellationReason:
+        reservation.cancellation_reason,
     },
   };
 }
