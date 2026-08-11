@@ -4,21 +4,58 @@ import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
 
+async function requireAdmin() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    return {
+      success: false as const,
+      supabase,
+      message:
+        "Bu işlem için yönetici girişi yapmanız gerekiyor.",
+    };
+  }
+
+  return {
+    success: true as const,
+    supabase,
+  };
+}
+
 export async function approveReservation(
   id: number,
 ) {
-  const supabase =
-    await createClient();
+  const auth = await requireAdmin();
 
-  const { error } =
+  if (!auth.success) {
+    return {
+      success: false,
+      message: auth.message,
+    };
+  }
+
+  const { supabase } = auth;
+
+  const { data, error } =
     await supabase
       .from("reservations")
       .update({
         status: "confirmed",
+        rejection_reason: null,
         updated_at:
           new Date().toISOString(),
       })
-      .eq("id", id);
+      .eq("id", id)
+      .eq(
+        "status",
+        "pending_approval",
+      )
+      .select("id");
 
   if (error) {
     console.error(
@@ -32,8 +69,20 @@ export async function approveReservation(
     };
   }
 
+  if (!data?.length) {
+    return {
+      success: false,
+      message:
+        "Rezervasyon bulunamadı veya artık onay beklemiyor.",
+    };
+  }
+
   revalidatePath(
     "/admin/reservations",
+  );
+
+  revalidatePath(
+    "/rezervasyon/takip",
   );
 
   return {
@@ -43,19 +92,58 @@ export async function approveReservation(
 
 export async function rejectReservation(
   id: number,
+  reason: string,
 ) {
-  const supabase =
-    await createClient();
+  const cleanReason =
+    reason.trim();
 
-  const { error } =
+  if (
+    cleanReason.length < 5
+  ) {
+    return {
+      success: false,
+      message:
+        "Lütfen en az 5 karakterlik bir red sebebi yazın.",
+    };
+  }
+
+  if (
+    cleanReason.length > 500
+  ) {
+    return {
+      success: false,
+      message:
+        "Red sebebi en fazla 500 karakter olabilir.",
+    };
+  }
+
+  const auth = await requireAdmin();
+
+  if (!auth.success) {
+    return {
+      success: false,
+      message: auth.message,
+    };
+  }
+
+  const { supabase } = auth;
+
+  const { data, error } =
     await supabase
       .from("reservations")
       .update({
         status: "rejected",
+        rejection_reason:
+          cleanReason,
         updated_at:
           new Date().toISOString(),
       })
-      .eq("id", id);
+      .eq("id", id)
+      .eq(
+        "status",
+        "pending_approval",
+      )
+      .select("id");
 
   if (error) {
     console.error(
@@ -69,8 +157,20 @@ export async function rejectReservation(
     };
   }
 
+  if (!data?.length) {
+    return {
+      success: false,
+      message:
+        "Rezervasyon bulunamadı veya artık onay beklemiyor.",
+    };
+  }
+
   revalidatePath(
     "/admin/reservations",
+  );
+
+  revalidatePath(
+    "/rezervasyon/takip",
   );
 
   return {
@@ -81,8 +181,17 @@ export async function rejectReservation(
 export async function getReceiptSignedUrl(
   storagePath: string,
 ) {
-  const supabase =
-    await createClient();
+  const auth = await requireAdmin();
+
+  if (!auth.success) {
+    return {
+      success: false,
+      message: auth.message,
+      url: null,
+    };
+  }
+
+  const { supabase } = auth;
 
   const { data, error } =
     await supabase.storage
@@ -105,6 +214,7 @@ export async function getReceiptSignedUrl(
       message:
         error?.message ??
         "Dekont açılamadı.",
+      url: null,
     };
   }
 
