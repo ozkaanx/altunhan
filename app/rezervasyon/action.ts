@@ -1,6 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import {
+  createClient,
+} from "@/lib/supabase/server";
 
 import type {
   ReservationCreateInput,
@@ -9,11 +11,101 @@ import type {
 
 type ReservationRpcResult = {
   reservation_id: number;
+
   reservation_code: string;
+
   accommodation_title: string;
+
   night_count: number;
+
   total_price: number;
 };
+
+export type AccommodationBusyRange = {
+  checkIn: string;
+
+  checkOut: string;
+};
+
+type AccommodationBusyRangeRpc = {
+  check_in: string;
+
+  check_out: string;
+};
+
+export async function getAccommodationBusyRanges(
+  accommodationId: number,
+): Promise<{
+  success: boolean;
+
+  ranges: AccommodationBusyRange[];
+
+  message?: string;
+}> {
+  if (
+    !accommodationId
+  ) {
+    return {
+      success: false,
+
+      ranges: [],
+
+      message:
+        "Konaklama seçilemedi.",
+    };
+  }
+
+  const supabase =
+    await createClient();
+
+  const {
+    data,
+    error,
+  } = await supabase.rpc(
+    "get_accommodation_busy_ranges",
+    {
+      p_accommodation_id:
+        accommodationId,
+    },
+  );
+
+  if (error) {
+    console.error(
+      "Dolu tarihler alınamadı:",
+      error,
+    );
+
+    return {
+      success: false,
+
+      ranges: [],
+
+      message:
+        "Müsaitlik bilgisi alınamadı.",
+    };
+  }
+
+  const ranges =
+    (
+      data as AccommodationBusyRangeRpc[]
+    )?.map(
+      (
+        item,
+      ) => ({
+        checkIn:
+          item.check_in,
+
+        checkOut:
+          item.check_out,
+      }),
+    ) ?? [];
+
+  return {
+    success: true,
+
+    ranges,
+  };
+}
 
 export async function createPublicReservation(
   values: ReservationCreateInput,
@@ -30,37 +122,41 @@ export async function createPublicReservation(
   ) {
     return {
       success: false,
+
       message:
         "Lütfen zorunlu alanları doldurun.",
     };
   }
 
-  const { data, error } =
-    await supabase.rpc(
-      "create_public_reservation",
-      {
-        p_accommodation_id:
-          values.accommodationId,
+  const {
+    data,
+    error,
+  } = await supabase.rpc(
+    "create_public_reservation",
+    {
+      p_accommodation_id:
+        values.accommodationId,
 
-        p_check_in:
-          values.checkIn,
+      p_check_in:
+        values.checkIn,
 
-        p_check_out:
-          values.checkOut,
+      p_check_out:
+        values.checkOut,
 
-        p_guest_count:
-          values.guestCount,
+      p_guest_count:
+        values.guestCount,
 
-        p_guest_name:
-          values.guestName,
+      p_guest_name:
+        values.guestName,
 
-        p_guest_phone:
-          values.guestPhone,
+      p_guest_phone:
+        values.guestPhone,
 
-        p_guest_email:
-          values.guestEmail || null,
-      },
-    );
+      p_guest_email:
+        values.guestEmail ||
+        null,
+    },
+  );
 
   if (error) {
     console.error(
@@ -70,6 +166,7 @@ export async function createPublicReservation(
 
     return {
       success: false,
+
       message:
         error.message ??
         "Rezervasyon oluşturulamadı.",
@@ -81,9 +178,12 @@ export async function createPublicReservation(
       data as ReservationRpcResult[]
     )?.[0];
 
-  if (!reservation) {
+  if (
+    !reservation
+  ) {
     return {
       success: false,
+
       message:
         "Rezervasyon oluşturulamadı.",
     };
@@ -93,9 +193,10 @@ export async function createPublicReservation(
     success: true,
 
     reservation: {
-      id: Number(
-        reservation.reservation_id,
-      ),
+      id:
+        Number(
+          reservation.reservation_id,
+        ),
 
       reservationCode:
         reservation.reservation_code,
@@ -130,20 +231,22 @@ export async function saveReceiptPath(
   const supabase =
     await createClient();
 
-  const { data, error } =
-    await supabase.rpc(
-      "submit_reservation_receipt",
-      {
-        p_reservation_id:
-          reservationId,
+  const {
+    data,
+    error,
+  } = await supabase.rpc(
+    "submit_reservation_receipt",
+    {
+      p_reservation_id:
+        reservationId,
 
-        p_reservation_code:
-          reservationCode,
+      p_reservation_code:
+        reservationCode,
 
-        p_storage_path:
-          storagePath,
-      },
-    );
+      p_storage_path:
+        storagePath,
+    },
+  );
 
   if (error) {
     console.error(
@@ -153,6 +256,7 @@ export async function saveReceiptPath(
 
     return {
       success: false,
+
       message:
         error.message,
     };
@@ -161,6 +265,7 @@ export async function saveReceiptPath(
   if (!data) {
     return {
       success: false,
+
       message:
         "Dekont kaydedilemedi.",
     };

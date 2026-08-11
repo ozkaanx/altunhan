@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  AlertTriangle,
   CalendarDays,
   CheckCircle2,
   Copy,
@@ -11,14 +12,21 @@ import {
   Upload,
   Users,
 } from "lucide-react";
+
 import {
+  useEffect,
   useMemo,
   useState,
 } from "react";
 
 import {
   createPublicReservation,
+  getAccommodationBusyRanges,
   saveReceiptPath,
+} from "@/app/rezervasyon/action";
+
+import type {
+  AccommodationBusyRange,
 } from "@/app/rezervasyon/action";
 
 import {
@@ -30,25 +38,31 @@ import type {
 } from "@/types/public-reservation";
 
 type ReservationFormProps = {
-  accommodations: PublicAccommodation[];
+  accommodations:
+    PublicAccommodation[];
 };
 
 type CreatedReservation = {
   id: number;
-  reservationCode: string;
-  accommodationTitle: string;
 
-  checkIn: string;
-  checkOut: string;
+  reservationCode:
+    string;
 
-  nightCount: number;
-  totalPrice: number;
+  accommodationTitle:
+    string;
+
+  checkIn:
+    string;
+
+  checkOut:
+    string;
+
+  nightCount:
+    number;
+
+  totalPrice:
+    number;
 };
-
-/*
-  BURAYI GERÇEK ŞİRKET
-  BİLGİLERİNLE DEĞİŞTİRECEĞİZ.
-*/
 
 const bankInformation = {
   accountHolder:
@@ -61,13 +75,98 @@ const bankInformation = {
     "TR00 0000 0000 0000 0000 0000 00",
 };
 
+function getTurkeyToday() {
+  return new Intl.DateTimeFormat(
+    "en-CA",
+    {
+      timeZone:
+        "Europe/Istanbul",
+
+      year:
+        "numeric",
+
+      month:
+        "2-digit",
+
+      day:
+        "2-digit",
+    },
+  ).format(
+    new Date(),
+  );
+}
+
+function formatDate(
+  value: string,
+) {
+  return new Intl.DateTimeFormat(
+    "tr-TR",
+    {
+      day:
+        "numeric",
+
+      month:
+        "short",
+
+      year:
+        "numeric",
+    },
+  ).format(
+    new Date(
+      `${value}T00:00:00`,
+    ),
+  );
+}
+
+function isDateInsideBusyRange(
+  date: string,
+  range: AccommodationBusyRange,
+) {
+  return (
+    date >=
+      range.checkIn &&
+    date <
+      range.checkOut
+  );
+}
+
+function reservationOverlapsRange(
+  checkIn: string,
+  checkOut: string,
+  range: AccommodationBusyRange,
+) {
+  /*
+    Aynı DB constraint mantığı:
+
+    new.checkIn < existing.checkOut
+    new.checkOut > existing.checkIn
+
+    [) mantığı kullanıyoruz.
+
+    Örnek:
+    Mevcut: 10 -> 13
+    Yeni:    13 -> 15
+
+    Çakışma değildir.
+  */
+
+  return (
+    checkIn <
+      range.checkOut &&
+    checkOut >
+      range.checkIn
+  );
+}
+
 export function ReservationForm({
   accommodations,
 }: ReservationFormProps) {
   const [
     accommodationId,
     setAccommodationId,
-  ] = useState<number | null>(
+  ] = useState<
+    number | null
+  >(
     accommodations[0]?.id ??
       null,
   );
@@ -110,9 +209,10 @@ export function ReservationForm({
   const [
     error,
     setError,
-  ] = useState<
-    string | null
-  >(null);
+  ] =
+    useState<string | null>(
+      null,
+    );
 
   const [
     createdReservation,
@@ -133,20 +233,41 @@ export function ReservationForm({
   const [
     isUploadingReceipt,
     setIsUploadingReceipt,
-  ] =
-    useState(false);
+  ] = useState(false);
 
   const [
     receiptSuccess,
     setReceiptSuccess,
   ] = useState(false);
 
+  const [
+    busyRanges,
+    setBusyRanges,
+  ] = useState<
+    AccommodationBusyRange[]
+  >([]);
+
+  const [
+    isLoadingAvailability,
+    setIsLoadingAvailability,
+  ] = useState(false);
+
+  const [
+    availabilityError,
+    setAvailabilityError,
+  ] =
+    useState<string | null>(
+      null,
+    );
+
   const selectedAccommodation =
     useMemo(
       () =>
         accommodations.find(
-          (item) =>
-            item.id ===
+          (
+            accommodation,
+          ) =>
+            accommodation.id ===
             accommodationId,
         ),
       [
@@ -154,6 +275,194 @@ export function ReservationForm({
         accommodationId,
       ],
     );
+
+  const today =
+    getTurkeyToday();
+
+  useEffect(() => {
+    let cancelled =
+      false;
+
+    const loadAvailability =
+      async () => {
+        if (
+          !accommodationId
+        ) {
+          setBusyRanges(
+            [],
+          );
+
+          return;
+        }
+
+        setIsLoadingAvailability(
+          true,
+        );
+
+        setAvailabilityError(
+          null,
+        );
+
+        try {
+          const result =
+            await getAccommodationBusyRanges(
+              accommodationId,
+            );
+
+          if (
+            cancelled
+          ) {
+            return;
+          }
+
+          if (
+            !result.success
+          ) {
+            setBusyRanges(
+              [],
+            );
+
+            setAvailabilityError(
+              result.message ??
+                "Müsaitlik bilgisi alınamadı.",
+            );
+
+            return;
+          }
+
+          setBusyRanges(
+            result.ranges,
+          );
+        } catch (
+          error
+        ) {
+          console.error(
+            error,
+          );
+
+          if (
+            !cancelled
+          ) {
+            setBusyRanges(
+              [],
+            );
+
+            setAvailabilityError(
+              "Müsaitlik bilgisi alınamadı.",
+            );
+          }
+        } finally {
+          if (
+            !cancelled
+          ) {
+            setIsLoadingAvailability(
+              false,
+            );
+          }
+        }
+      };
+
+    void loadAvailability();
+
+    return () => {
+      cancelled =
+        true;
+    };
+  }, [
+    accommodationId,
+  ]);
+
+  const checkInBusyRange =
+    useMemo(() => {
+      if (
+        !checkIn
+      ) {
+        return null;
+      }
+
+      return (
+        busyRanges.find(
+          (
+            range,
+          ) =>
+            isDateInsideBusyRange(
+              checkIn,
+              range,
+            ),
+        ) ??
+        null
+      );
+    }, [
+      busyRanges,
+      checkIn,
+    ]);
+
+  const conflictingRange =
+    useMemo(() => {
+      if (
+        !checkIn ||
+        !checkOut
+      ) {
+        return null;
+      }
+
+      return (
+        busyRanges.find(
+          (
+            range,
+          ) =>
+            reservationOverlapsRange(
+              checkIn,
+              checkOut,
+              range,
+            ),
+        ) ??
+        null
+      );
+    }, [
+      busyRanges,
+      checkIn,
+      checkOut,
+    ]);
+
+  const dateError =
+    useMemo(() => {
+      if (
+        checkIn &&
+        checkInBusyRange
+      ) {
+        return `Seçtiğiniz giriş tarihi dolu. Bu rezervasyon ${formatDate(
+          checkInBusyRange.checkIn,
+        )} - ${formatDate(
+          checkInBusyRange.checkOut,
+        )} tarihleri arasını kapsıyor.`;
+      }
+
+      if (
+        checkIn &&
+        checkOut &&
+        checkOut <= checkIn
+      ) {
+        return "Çıkış tarihi giriş tarihinden sonra olmalıdır.";
+      }
+
+      if (
+        conflictingRange
+      ) {
+        return `Seçtiğiniz tarih aralığı dolu bir rezervasyonla çakışıyor: ${formatDate(
+          conflictingRange.checkIn,
+        )} - ${formatDate(
+          conflictingRange.checkOut,
+        )}.`;
+      }
+
+      return null;
+    }, [
+      checkIn,
+      checkOut,
+      checkInBusyRange,
+      conflictingRange,
+    ]);
 
   const estimatedNightCount =
     useMemo(() => {
@@ -176,12 +485,16 @@ export function ReservationForm({
 
       const value =
         Math.round(
-          (end.getTime() -
-            start.getTime()) /
-            (1000 *
+          (
+            end.getTime() -
+            start.getTime()
+          ) /
+            (
+              1000 *
               60 *
               60 *
-              24),
+              24
+            ),
         );
 
       return Math.max(
@@ -201,14 +514,45 @@ export function ReservationForm({
         estimatedNightCount
       : 0;
 
-  const today =
-    new Date()
-      .toISOString()
-      .split("T")[0];
+  const handleAccommodationChange =
+    (
+      accommodation:
+        PublicAccommodation,
+    ) => {
+      setAccommodationId(
+        accommodation.id,
+      );
+
+      /*
+        Önceki odanın tarihleri
+        yeni oda için geçerli
+        olmayabilir.
+      */
+
+      setCheckIn("");
+
+      setCheckOut("");
+
+      setError(null);
+
+      setAvailabilityError(
+        null,
+      );
+
+      setBusyRanges([]);
+
+      setGuestCount(
+        Math.min(
+          guestCount,
+          accommodation.capacity,
+        ),
+      );
+    };
 
   const handleSubmit =
     async (
-      event: React.FormEvent<HTMLFormElement>,
+      event:
+        React.FormEvent<HTMLFormElement>,
     ) => {
       event.preventDefault();
 
@@ -224,23 +568,54 @@ export function ReservationForm({
         return;
       }
 
+      if (
+        !checkIn ||
+        !checkOut
+      ) {
+        setError(
+          "Lütfen giriş ve çıkış tarihlerini seçin.",
+        );
+
+        return;
+      }
+
+      if (
+        dateError
+      ) {
+        setError(
+          dateError,
+        );
+
+        return;
+      }
+
       setIsSubmitting(
         true,
       );
 
       try {
+        /*
+          Frontend kontrolünden
+          geçmiş olsa bile server
+          RPC ve DB constraint
+          yeniden kontrol edecek.
+        */
+
         const result =
           await createPublicReservation(
             {
               accommodationId,
 
               checkIn,
+
               checkOut,
 
               guestCount,
 
               guestName,
+
               guestPhone,
+
               guestEmail,
             },
           );
@@ -261,10 +636,13 @@ export function ReservationForm({
 
         window.scrollTo({
           top: 0,
+
           behavior:
             "smooth",
         });
-      } catch (error) {
+      } catch (
+        error
+      ) {
         console.error(
           error,
         );
@@ -311,6 +689,25 @@ export function ReservationForm({
           return;
         }
 
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "application/pdf",
+        ];
+
+        if (
+          !allowedTypes.includes(
+            receipt.type,
+          )
+        ) {
+          setError(
+            "Sadece JPG, PNG, WEBP veya PDF yükleyebilirsiniz.",
+          );
+
+          return;
+        }
+
         const extension =
           receipt.name
             .split(".")
@@ -341,6 +738,9 @@ export function ReservationForm({
 
                 upsert:
                   false,
+
+                contentType:
+                  receipt.type,
               },
             );
 
@@ -362,12 +762,6 @@ export function ReservationForm({
         if (
           !result.success
         ) {
-          /*
-            DB güncellemesi
-            başarısızsa orphan
-            dosya bırakmayalım.
-          */
-
           await supabase.storage
             .from(
               "reservation-receipts",
@@ -385,8 +779,12 @@ export function ReservationForm({
           true,
         );
 
-        setReceipt(null);
-      } catch (error) {
+        setReceipt(
+          null,
+        );
+      } catch (
+        error
+      ) {
         console.error(
           error,
         );
@@ -422,7 +820,9 @@ export function ReservationForm({
         <div className="border border-[#E1DED6] bg-white p-5 sm:p-8">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E8EFE6] text-[#496449]">
             <CheckCircle2
-              size={24}
+              size={
+                24
+              }
             />
           </div>
 
@@ -552,7 +952,9 @@ export function ReservationForm({
             {receiptSuccess ? (
               <div className="mt-4 flex items-center gap-3 bg-[#E8EFE6] p-4 text-sm font-medium text-[#496449]">
                 <CheckCircle2
-                  size={18}
+                  size={
+                    18
+                  }
                 />
 
                 Dekontunuz
@@ -566,7 +968,9 @@ export function ReservationForm({
               <>
                 <label className="mt-4 flex min-h-32 cursor-pointer flex-col items-center justify-center border border-dashed border-[#CBC7BE] bg-[#FAF9F6] p-4 text-center">
                   <ImagePlus
-                    size={27}
+                    size={
+                      27
+                    }
                     className="text-[#A8754F]"
                   />
 
@@ -590,9 +994,7 @@ export function ReservationForm({
                       event,
                     ) =>
                       setReceipt(
-                        event
-                          .target
-                          .files?.[0] ??
+                        event.target.files?.[0] ??
                           null,
                       )
                     }
@@ -635,7 +1037,9 @@ export function ReservationForm({
 
           {error && (
             <div className="mt-4 border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs text-[#98584E]">
-              {error}
+              {
+                error
+              }
             </div>
           )}
         </div>
@@ -673,18 +1077,11 @@ export function ReservationForm({
                       key={
                         accommodation.id
                       }
-                      onClick={() => {
-                        setAccommodationId(
-                          accommodation.id,
-                        );
-
-                        setGuestCount(
-                          Math.min(
-                            guestCount,
-                            accommodation.capacity,
-                          ),
-                        );
-                      }}
+                      onClick={() =>
+                        handleAccommodationChange(
+                          accommodation,
+                        )
+                      }
                       className={`border p-4 text-left transition ${
                         selected
                           ? "border-[#263A2D] bg-[#F0F2EC]"
@@ -742,6 +1139,122 @@ export function ReservationForm({
               title="Tarih ve Misafir"
             />
 
+            {isLoadingAvailability && (
+              <div className="mt-5 flex items-center gap-2 border border-[#E4E1D9] bg-[#F7F6F2] px-3 py-3 text-xs text-[#737871]">
+                <Loader2
+                  size={
+                    14
+                  }
+                  className="animate-spin"
+                />
+
+                Müsaitlik
+                kontrol ediliyor...
+              </div>
+            )}
+
+            {!isLoadingAvailability &&
+              busyRanges.length >
+                0 && (
+                <div className="mt-5 border border-[#E7D8C0] bg-[#FAF5EA] p-4">
+                  <div className="flex items-start gap-3">
+                    <CalendarDays
+                      size={
+                        17
+                      }
+                      className="mt-0.5 shrink-0 text-[#9A7041]"
+                    />
+
+                    <div>
+                      <p className="text-xs font-semibold text-[#765B35]">
+                        Dolu Tarihler
+                      </p>
+
+                      <p className="mt-1 text-[10px] leading-5 text-[#8B795E]">
+                        Aşağıdaki
+                        aralıklar
+                        rezervasyona
+                        kapalıdır.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {busyRanges
+                      .slice(
+                        0,
+                        8,
+                      )
+                      .map(
+                        (
+                          range,
+                        ) => (
+                          <span
+                            key={`${range.checkIn}-${range.checkOut}`}
+                            className="bg-white px-2.5 py-1.5 text-[10px] font-medium text-[#765B35]"
+                          >
+                            {formatDate(
+                              range.checkIn,
+                            )}{" "}
+                            →{" "}
+                            {formatDate(
+                              range.checkOut,
+                            )}
+                          </span>
+                        ),
+                      )}
+                  </div>
+
+                  {busyRanges.length >
+                    8 && (
+                    <p className="mt-3 text-[10px] text-[#8B795E]">
+                      +
+                      {busyRanges.length -
+                        8}{" "}
+                      dolu tarih
+                      aralığı daha
+                      bulunuyor.
+                    </p>
+                  )}
+                </div>
+              )}
+
+            {!isLoadingAvailability &&
+              busyRanges.length ===
+                0 &&
+              !availabilityError && (
+                <div className="mt-5 flex items-center gap-2 border border-[#D8E3D5] bg-[#F1F6EF] px-3 py-3 text-xs text-[#526A51]">
+                  <CheckCircle2
+                    size={
+                      15
+                    }
+                  />
+
+                  Bu konaklama için
+                  yaklaşan dolu
+                  tarih bulunmuyor.
+                </div>
+              )}
+
+            {availabilityError && (
+              <div className="mt-5 flex items-start gap-2 border border-[#E7D8C0] bg-[#FAF5EA] p-3 text-xs leading-5 text-[#88662F]">
+                <AlertTriangle
+                  size={
+                    15
+                  }
+                  className="mt-0.5 shrink-0"
+                />
+
+                {
+                  availabilityError
+                }{" "}
+                Rezervasyon
+                gönderilirken
+                müsaitlik tekrar
+                kontrol edilecek.
+              </div>
+            )}
+
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <div>
                 <FieldLabel>
@@ -750,31 +1263,41 @@ export function ReservationForm({
 
                 <div className="relative mt-2">
                   <CalendarDays
-                    size={16}
+                    size={
+                      16
+                    }
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B9E98]"
                   />
 
                   <input
                     type="date"
-                    min={today}
+                    min={
+                      today
+                    }
                     required
+                    disabled={
+                      isLoadingAvailability
+                    }
                     value={
                       checkIn
                     }
                     onChange={(
                       event,
                     ) => {
+                      const value =
+                        event.target.value;
+
                       setCheckIn(
-                        event
-                          .target
-                          .value,
+                        value,
+                      );
+
+                      setError(
+                        null,
                       );
 
                       if (
                         checkOut &&
-                        event
-                          .target
-                          .value >=
+                        value >=
                           checkOut
                       ) {
                         setCheckOut(
@@ -782,7 +1305,7 @@ export function ReservationForm({
                         );
                       }
                     }}
-                    className={`${inputClass} pl-10`}
+                    className={`${inputClass} pl-10 disabled:cursor-not-allowed disabled:opacity-60`}
                   />
                 </div>
               </div>
@@ -794,7 +1317,9 @@ export function ReservationForm({
 
                 <div className="relative mt-2">
                   <CalendarDays
-                    size={16}
+                    size={
+                      16
+                    }
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B9E98]"
                   />
 
@@ -805,29 +1330,83 @@ export function ReservationForm({
                       today
                     }
                     required
+                    disabled={
+                      isLoadingAvailability ||
+                      !checkIn
+                    }
                     value={
                       checkOut
                     }
                     onChange={(
                       event,
-                    ) =>
+                    ) => {
                       setCheckOut(
-                        event
-                          .target
-                          .value,
-                      )
-                    }
-                    className={`${inputClass} pl-10`}
+                        event.target.value,
+                      );
+
+                      setError(
+                        null,
+                      );
+                    }}
+                    className={`${inputClass} pl-10 disabled:cursor-not-allowed disabled:opacity-60`}
                   />
                 </div>
               </div>
             </div>
 
+            {dateError && (
+              <div className="mt-4 flex items-start gap-3 border border-[#E5C7C0] bg-[#F8EEEA] p-4">
+                <AlertTriangle
+                  size={
+                    17
+                  }
+                  className="mt-0.5 shrink-0 text-[#98584E]"
+                />
+
+                <div>
+                  <p className="text-xs font-semibold text-[#98584E]">
+                    Bu tarihler
+                    müsait değil
+                  </p>
+
+                  <p className="mt-1 text-[11px] leading-5 text-[#8A635D]">
+                    {
+                      dateError
+                    }
+                  </p>
+
+                  <p className="mt-2 text-[10px] text-[#9A746E]">
+                    Lütfen farklı
+                    giriş veya çıkış
+                    tarihi seçin.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {checkIn &&
+              checkOut &&
+              !dateError && (
+                <div className="mt-4 flex items-center gap-2 bg-[#EAF2E8] px-3 py-3 text-xs font-medium text-[#496449]">
+                  <CheckCircle2
+                    size={
+                      15
+                    }
+                  />
+
+                  Seçtiğiniz tarih
+                  aralığı şu anda
+                  müsait görünüyor.
+                </div>
+              )}
+
             <div className="mt-5 flex items-center justify-between border-t border-[#EEEAE3] pt-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center bg-[#F1EFE9] text-[#A8754F]">
                   <Users
-                    size={17}
+                    size={
+                      17
+                    }
                   />
                 </div>
 
@@ -868,7 +1447,9 @@ export function ReservationForm({
                 </button>
 
                 <span className="flex h-10 w-10 items-center justify-center border-x border-[#DDD9D1] text-sm font-semibold text-[#263A2D]">
-                  {guestCount}
+                  {
+                    guestCount
+                  }
                 </span>
 
                 <button
@@ -878,6 +1459,7 @@ export function ReservationForm({
                       Math.min(
                         selectedAccommodation?.capacity ??
                           1,
+
                         guestCount +
                           1,
                       ),
@@ -916,13 +1498,13 @@ export function ReservationForm({
                     event,
                   ) =>
                     setGuestName(
-                      event
-                        .target
-                        .value,
+                      event.target.value,
                     )
                   }
                   placeholder="Adınız ve soyadınız"
-                  className={inputClass}
+                  className={
+                    inputClass
+                  }
                 />
               </div>
 
@@ -942,13 +1524,13 @@ export function ReservationForm({
                       event,
                     ) =>
                       setGuestPhone(
-                        event
-                          .target
-                          .value,
+                        event.target.value,
                       )
                     }
                     placeholder="+90 5__ ___ __ __"
-                    className={inputClass}
+                    className={
+                      inputClass
+                    }
                   />
                 </div>
 
@@ -966,13 +1548,13 @@ export function ReservationForm({
                       event,
                     ) =>
                       setGuestEmail(
-                        event
-                          .target
-                          .value,
+                        event.target.value,
                       )
                     }
                     placeholder="ornek@mail.com"
-                    className={inputClass}
+                    className={
+                      inputClass
+                    }
                   />
                 </div>
               </div>
@@ -994,14 +1576,22 @@ export function ReservationForm({
             <SummaryRow
               label="Giriş"
               value={
-                checkIn || "—"
+                checkIn
+                  ? formatDate(
+                      checkIn,
+                    )
+                  : "—"
               }
             />
 
             <SummaryRow
               label="Çıkış"
               value={
-                checkOut || "—"
+                checkOut
+                  ? formatDate(
+                      checkOut,
+                    )
+                  : "—"
               }
             />
 
@@ -1038,30 +1628,54 @@ export function ReservationForm({
             </p>
           </div>
 
-          {error && (
+          {dateError && (
             <div className="mt-4 border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-[11px] leading-5 text-[#98584E]">
-              {error}
+              {
+                dateError
+              }
             </div>
           )}
+
+          {error &&
+            error !==
+              dateError && (
+              <div className="mt-4 border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-[11px] leading-5 text-[#98584E]">
+                {
+                  error
+                }
+              </div>
+            )}
 
           <button
             type="submit"
             disabled={
               isSubmitting ||
-              !accommodationId
+              isLoadingAvailability ||
+              !accommodationId ||
+              !checkIn ||
+              !checkOut ||
+              Boolean(
+                dateError,
+              )
             }
             className="mt-5 flex h-12 w-full items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting && (
               <Loader2
-                size={16}
+                size={
+                  16
+                }
                 className="animate-spin"
               />
             )}
 
             {isSubmitting
-              ? "Müsaitlik Kontrol Ediliyor..."
-              : "Rezervasyon Talebi Oluştur"}
+              ? "Rezervasyon Oluşturuluyor..."
+              : isLoadingAvailability
+                ? "Müsaitlik Kontrol Ediliyor..."
+                : dateError
+                  ? "Farklı Tarih Seçin"
+                  : "Rezervasyon Talebi Oluştur"}
           </button>
         </aside>
       </div>
@@ -1080,7 +1694,9 @@ function FieldLabel({
 }) {
   return (
     <label className="text-xs font-medium text-[#40463F]">
-      {children}
+      {
+        children
+      }
     </label>
   );
 }
@@ -1089,17 +1705,24 @@ function SectionTitle({
   number,
   title,
 }: {
-  number: string;
-  title: string;
+  number:
+    string;
+
+  title:
+    string;
 }) {
   return (
     <div className="flex items-center gap-3">
       <span className="text-[10px] font-semibold tracking-[0.15em] text-[#A8754F]">
-        {number}
+        {
+          number
+        }
       </span>
 
       <h2 className="text-sm font-semibold text-[#263A2D]">
-        {title}
+        {
+          title
+        }
       </h2>
     </div>
   );
@@ -1109,17 +1732,24 @@ function SummaryRow({
   label,
   value,
 }: {
-  label: string;
-  value: string;
+  label:
+    string;
+
+  value:
+    string;
 }) {
   return (
     <div className="flex items-center justify-between gap-4">
       <span className="text-[11px] text-[#969990]">
-        {label}
+        {
+          label
+        }
       </span>
 
-      <span className="text-xs font-medium text-[#263A2D]">
-        {value}
+      <span className="text-right text-xs font-medium text-[#263A2D]">
+        {
+          value
+        }
       </span>
     </div>
   );
@@ -1129,17 +1759,24 @@ function DetailCard({
   label,
   value,
 }: {
-  label: string;
-  value: string;
+  label:
+    string;
+
+  value:
+    string;
 }) {
   return (
     <div className="border border-[#E8E4DC] bg-[#FAF9F6] p-4">
       <p className="text-[10px] text-[#969990]">
-        {label}
+        {
+          label
+        }
       </p>
 
       <p className="mt-1 text-sm font-semibold text-[#263A2D]">
-        {value}
+        {
+          value
+        }
       </p>
     </div>
   );
@@ -1149,17 +1786,24 @@ function BankRow({
   label,
   value,
 }: {
-  label: string;
-  value: string;
+  label:
+    string;
+
+  value:
+    string;
 }) {
   return (
     <div>
       <p className="text-[10px] text-[#969990]">
-        {label}
+        {
+          label
+        }
       </p>
 
       <p className="mt-1 text-sm font-medium text-[#263A2D]">
-        {value}
+        {
+          value
+        }
       </p>
     </div>
   );
