@@ -2,15 +2,16 @@
 
 import { useRouter } from "next/navigation";
 
-import {
-  AccommodationForm,
-  type AccommodationFormValues,
-} from "@/components/admin/accommodation-form";
-
 import { updateAccommodation } from "@/app/admin/accommodations/action";
+import { AccommodationForm } from "@/components/admin/accommodation-form";
+import { updateAccommodationImages } from "@/lib/supabase/upload-accommodation-images";
+
+import type {
+  AccommodationFormValues,
+} from "@/types/accommodation";
 
 type EditAccommodationFormProps = {
-  id: string;
+  id: number;
   initialValues: AccommodationFormValues;
 };
 
@@ -23,24 +24,64 @@ export function EditAccommodationForm({
   const handleUpdate = async (
     values: AccommodationFormValues,
   ) => {
-    const result = await updateAccommodation(
-      id,
-      values,
-    );
+    const result =
+      await updateAccommodation(
+        id,
+        {
+          title:
+            values.title,
+          shortDescription:
+            values.shortDescription,
+          description:
+            values.description,
+          price:
+            values.price,
+          capacity:
+            values.capacity,
+          bedCount:
+            values.bedCount,
+          bathroomCount:
+            values.bathroomCount,
+          amenities:
+            values.amenities,
+          isActive:
+            values.isActive,
+        },
+      );
 
     if (!result.success) {
-      throw new Error(result.message);
+      throw new Error(
+        result.message,
+      );
     }
 
-    router.push("/admin/accommodations");
+    await updateAccommodationImages(
+      {
+        accommodationId:
+          id,
+        images:
+          values.images,
+        deletedImages:
+          values.deletedImages,
+      },
+    );
+
+    router.push(
+      "/admin/accommodations",
+    );
+
     router.refresh();
   };
 
   return (
     <AccommodationForm
-      initialValues={initialValues}
+      initialValues={
+        initialValues
+      }
       submitLabel="Değişiklikleri Kaydet"
-      onSubmit={handleUpdate}
+      onSubmit={
+        handleUpdate
+      }
     />
   );
 }

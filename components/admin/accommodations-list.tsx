@@ -85,8 +85,6 @@ export function AccommodationsList({
           />
         </div>
       </div>
-
-      {/* Empty */}
       {filteredItems.length === 0 && (
         <div className="relative aspect-[16/8] overflow-hidden bg-[#E9E6DE]">
           {getCoverImage(item) ? (
