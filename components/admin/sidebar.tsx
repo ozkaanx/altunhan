@@ -3,51 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  CalendarDays,
   ChevronRight,
   ExternalLink,
-  House,
   LogOut,
-  MessageSquareQuote,
-  Settings,
-  SlidersHorizontal,
-  UserRoundCog,
 } from "lucide-react";
 
+import { adminNavigation } from "@/types/admin-navigation";
 import { createClient } from "@/lib/supabase/client";
-
-const navigation = [
-  {
-    label: "Dashboard",
-    href: "/admin",
-    icon: House,
-  },
-  {
-    label: "Rezervasyonlar",
-    href: "/admin/reservations",
-    icon: CalendarDays,
-  },
-  {
-    label: "Konaklamalar",
-    href: "/admin/accommodations",
-    icon: SlidersHorizontal,
-  },
-  {
-    label: "Yorumlar",
-    href: "/admin/reviews",
-    icon: MessageSquareQuote,
-  },
-  {
-    label: "Ana Sayfa",
-    href: "/admin/homepage",
-    icon: UserRoundCog,
-  },
-  {
-    label: "Ayarlar",
-    href: "/admin/settings",
-    icon: Settings,
-  },
-];
 
 export function AdminSidebar() {
   const pathname = usePathname();
@@ -81,7 +43,7 @@ export function AdminSidebar() {
           Yönetim
         </p>
 
-        {navigation.map((item) => {
+        {adminNavigation.map((item) => {
           const Icon = item.icon;
 
           const isActive =
@@ -102,7 +64,6 @@ export function AdminSidebar() {
                 py-2.5
                 text-sm
                 transition-colors
-                duration-200
                 ${
                   isActive
                     ? "bg-[#263A2D] text-white"
@@ -117,10 +78,7 @@ export function AdminSidebar() {
               </span>
 
               {isActive && (
-                <ChevronRight
-                  size={14}
-                  strokeWidth={1.7}
-                />
+                <ChevronRight size={14} />
               )}
             </Link>
           );
@@ -132,21 +90,9 @@ export function AdminSidebar() {
         <Link
           href="/"
           target="_blank"
-          className="
-            flex
-            items-center
-            gap-3
-            px-3
-            py-2.5
-            text-sm
-            text-[#5F655E]
-            transition-colors
-            duration-200
-            hover:bg-[#ECE9E1]
-            hover:text-[#263A2D]
-          "
+          className="flex items-center gap-3 px-3 py-2.5 text-sm text-[#5F655E] transition-colors hover:bg-[#ECE9E1] hover:text-[#263A2D]"
         >
-          <ExternalLink size={17} strokeWidth={1.7} />
+          <ExternalLink size={17} />
 
           Siteyi Gör
         </Link>
@@ -154,21 +100,9 @@ export function AdminSidebar() {
         <button
           type="button"
           onClick={handleLogout}
-          className="
-            flex
-            w-full
-            items-center
-            gap-3
-            px-3
-            py-2.5
-            text-sm
-            text-[#8A5A4A]
-            transition-colors
-            duration-200
-            hover:bg-[#F0E4DF]
-          "
+          className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-[#8A5A4A] transition-colors hover:bg-[#F0E4DF]"
         >
-          <LogOut size={17} strokeWidth={1.7} />
+          <LogOut size={17} />
 
           Çıkış Yap
         </button>
