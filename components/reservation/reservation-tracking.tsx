@@ -17,20 +17,19 @@ import {
   Upload,
   Users,
   XCircle,
+  MessageCircle,
 } from "lucide-react";
 
-import {
-  useState,
-} from "react";
+import type { SiteSettings } from "@/types/site-settings";
+
+import { useState } from "react";
 
 import {
   findReservation,
   submitTrackedReceipt,
 } from "@/app/rezervasyon/takip/action";
 
-import {
-  createClient,
-} from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 
 import type {
   PublicReservationStatus,
@@ -41,348 +40,238 @@ type TimelineStep = {
   title: string;
   description: string;
 
-  state:
-    | "completed"
-    | "active"
-    | "waiting"
-    | "failed";
+  state: "completed" | "active" | "waiting" | "failed";
 };
 
-const bankInformation = {
-  accountHolder:
-    "ALTUNHAN FARM",
+const statusLabels: Record<PublicReservationStatus, string> = {
+  pending_payment: "Ödeme Bekleniyor",
 
-  bankName:
-    "Banka Adı",
+  pending_approval: "Onay Bekliyor",
 
-  iban:
-    "TR00 0000 0000 0000 0000 0000 00",
+  confirmed: "Onaylandı",
+
+  rejected: "Reddedildi",
+
+  cancelled: "İptal Edildi",
 };
 
-const statusLabels: Record<
-  PublicReservationStatus,
-  string
-> = {
-  pending_payment:
-    "Ödeme Bekleniyor",
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("tr-TR", {
+    day: "numeric",
 
-  pending_approval:
-    "Onay Bekliyor",
+    month: "long",
 
-  confirmed:
-    "Onaylandı",
-
-  rejected:
-    "Reddedildi",
-
-  cancelled:
-    "İptal Edildi",
-};
-
-function formatDate(
-  value: string,
-) {
-  return new Intl.DateTimeFormat(
-    "tr-TR",
-    {
-      day:
-        "numeric",
-
-      month:
-        "long",
-
-      year:
-        "numeric",
-    },
-  ).format(
-    new Date(
-      `${value}T00:00:00`,
-    ),
-  );
+    year: "numeric",
+  }).format(new Date(`${value}T00:00:00`));
 }
 
-function getTimeline(
-  reservation:
-    ReservationTrackingResult,
-): TimelineStep[] {
-  switch (
-    reservation.status
-  ) {
+function getTimeline(reservation: ReservationTrackingResult): TimelineStep[] {
+  switch (reservation.status) {
     case "confirmed":
       return [
         {
-          title:
-            "Rezervasyon Talebi",
+          title: "Rezervasyon Talebi",
 
-          description:
-            "Rezervasyon talebiniz alındı.",
+          description: "Rezervasyon talebiniz alındı.",
 
-          state:
-            "completed",
+          state: "completed",
         },
 
         {
-          title:
-            "Dekont Yüklendi",
+          title: "Dekont Yüklendi",
 
-          description:
-            "Ödeme belgeniz tarafımıza ulaştı.",
+          description: "Ödeme belgeniz tarafımıza ulaştı.",
 
-          state:
-            "completed",
+          state: "completed",
         },
 
         {
-          title:
-            "Ödeme Onaylandı",
+          title: "Ödeme Onaylandı",
 
-          description:
-            "Ödemeniz kontrol edilerek onaylandı.",
+          description: "Ödemeniz kontrol edilerek onaylandı.",
 
-          state:
-            "completed",
+          state: "completed",
         },
 
         {
-          title:
-            "Rezervasyon Kesinleşti",
+          title: "Rezervasyon Kesinleşti",
 
-          description:
-            "Rezervasyonunuz başarıyla onaylandı.",
+          description: "Rezervasyonunuz başarıyla onaylandı.",
 
-          state:
-            "completed",
+          state: "completed",
         },
       ];
 
     case "pending_approval":
       return [
         {
-          title:
-            "Rezervasyon Talebi",
+          title: "Rezervasyon Talebi",
 
-          description:
-            "Rezervasyon talebiniz alındı.",
+          description: "Rezervasyon talebiniz alındı.",
 
-          state:
-            "completed",
+          state: "completed",
         },
 
         {
-          title:
-            "Dekont Yüklendi",
+          title: "Dekont Yüklendi",
 
-          description:
-            "Ödeme belgeniz tarafımıza ulaştı.",
+          description: "Ödeme belgeniz tarafımıza ulaştı.",
 
-          state:
-            "completed",
+          state: "completed",
         },
 
         {
-          title:
-            "Ödeme Kontrol Ediliyor",
+          title: "Ödeme Kontrol Ediliyor",
 
-          description:
-            "Dekontunuz Altunhan Farm tarafından kontrol ediliyor.",
+          description: "Dekontunuz Altunhan Farm tarafından kontrol ediliyor.",
 
-          state:
-            "active",
+          state: "active",
         },
 
         {
-          title:
-            "Rezervasyon Onayı",
+          title: "Rezervasyon Onayı",
 
           description:
             "Kontrol tamamlandıktan sonra rezervasyonunuz kesinleşecek.",
 
-          state:
-            "waiting",
+          state: "waiting",
         },
       ];
 
     case "rejected":
       return [
         {
-          title:
-            "Rezervasyon Talebi",
+          title: "Rezervasyon Talebi",
 
-          description:
-            "Rezervasyon talebiniz alındı.",
+          description: "Rezervasyon talebiniz alındı.",
 
-          state:
-            "completed",
+          state: "completed",
         },
 
         {
-          title:
-            "Dekont",
+          title: "Dekont",
 
-          description:
-            reservation.hasReceipt
-              ? "Ödeme dekontunuz sisteme yüklendi."
-              : "Ödeme dekontu yüklenmedi.",
+          description: reservation.hasReceipt
+            ? "Ödeme dekontunuz sisteme yüklendi."
+            : "Ödeme dekontu yüklenmedi.",
 
-          state:
-            reservation.hasReceipt
-              ? "completed"
-              : "waiting",
+          state: reservation.hasReceipt ? "completed" : "waiting",
         },
 
         {
-          title:
-            "Ödeme Kontrolü",
+          title: "Ödeme Kontrolü",
 
           description:
             "Rezervasyonunuz yapılan inceleme sonucunda onaylanamadı.",
 
-          state:
-            "failed",
+          state: "failed",
         },
 
         {
-          title:
-            "Rezervasyon Onayı",
+          title: "Rezervasyon Onayı",
 
-          description:
-            "Rezervasyon kesinleşmedi.",
+          description: "Rezervasyon kesinleşmedi.",
 
-          state:
-            "failed",
+          state: "failed",
         },
       ];
 
     case "cancelled":
       return [
         {
-          title:
-            "Rezervasyon Talebi",
+          title: "Rezervasyon Talebi",
 
-          description:
-            "Rezervasyon talebiniz oluşturuldu.",
+          description: "Rezervasyon talebiniz oluşturuldu.",
 
-          state:
-            "completed",
+          state: "completed",
         },
 
         {
-          title:
-            "Rezervasyon Onaylandı",
+          title: "Rezervasyon Onaylandı",
 
-          description:
-            "Rezervasyonunuz daha önce onaylandı.",
+          description: "Rezervasyonunuz daha önce onaylandı.",
 
-          state:
-            "completed",
+          state: "completed",
         },
 
         {
-          title:
-            "Rezervasyon İptal Edildi",
+          title: "Rezervasyon İptal Edildi",
 
-          description:
-            "Rezervasyonunuz iptal edildi ve artık aktif değil.",
+          description: "Rezervasyonunuz iptal edildi ve artık aktif değil.",
 
-          state:
-            "failed",
+          state: "failed",
         },
       ];
 
     default:
       return [
         {
-          title:
-            "Rezervasyon Talebi",
+          title: "Rezervasyon Talebi",
 
-          description:
-            "Rezervasyon talebiniz alındı.",
+          description: "Rezervasyon talebiniz alındı.",
 
-          state:
-            "completed",
+          state: "completed",
         },
 
         {
-          title:
-            "Ödeme Bekleniyor",
+          title: "Ödeme Bekleniyor",
 
-          description:
-            "Ödemenizi yaptıktan sonra dekontunuzu yükleyin.",
+          description: "Ödemenizi yaptıktan sonra dekontunuzu yükleyin.",
 
-          state:
-            "active",
+          state: "active",
         },
 
         {
-          title:
-            "Ödeme Kontrolü",
+          title: "Ödeme Kontrolü",
 
           description:
             "Dekontunuz gönderildikten sonra ödeme kontrol edilecek.",
 
-          state:
-            "waiting",
+          state: "waiting",
         },
 
         {
-          title:
-            "Rezervasyon Onayı",
+          title: "Rezervasyon Onayı",
 
-          description:
-            "Ödeme onayından sonra rezervasyonunuz kesinleşecek.",
+          description: "Ödeme onayından sonra rezervasyonunuz kesinleşecek.",
 
-          state:
-            "waiting",
+          state: "waiting",
         },
       ];
   }
 }
 
-function getStatusBox(
-  status:
-    PublicReservationStatus,
-) {
+function getStatusBox(status: PublicReservationStatus) {
   switch (status) {
     case "confirmed":
       return {
-        icon:
-          CheckCircle2,
+        icon: CheckCircle2,
 
-        className:
-          "border-[#CBDDC8] bg-[#EAF2E8] text-[#456044]",
+        className: "border-[#CBDDC8] bg-[#EAF2E8] text-[#456044]",
 
-        title:
-          "Rezervasyonunuz Onaylandı",
+        title: "Rezervasyonunuz Onaylandı",
 
-        description:
-          "Rezervasyonunuz kesinleşti. Altunhan Farm sizi bekliyor.",
+        description: "Rezervasyonunuz kesinleşti. Altunhan Farm sizi bekliyor.",
       };
 
     case "rejected":
       return {
-        icon:
-          XCircle,
+        icon: XCircle,
 
-        className:
-          "border-[#E4C6BF] bg-[#F7EBE8] text-[#98584E]",
+        className: "border-[#E4C6BF] bg-[#F7EBE8] text-[#98584E]",
 
-        title:
-          "Rezervasyon Onaylanamadı",
+        title: "Rezervasyon Onaylanamadı",
 
-        description:
-          "Rezervasyonunuz yapılan kontrol sonucunda onaylanamadı.",
+        description: "Rezervasyonunuz yapılan kontrol sonucunda onaylanamadı.",
       };
 
     case "cancelled":
       return {
-        icon:
-          XCircle,
+        icon: XCircle,
 
-        className:
-          "border-[#DEDCD6] bg-[#EEEEEB] text-[#666B65]",
+        className: "border-[#DEDCD6] bg-[#EEEEEB] text-[#666B65]",
 
-        title:
-          "Rezervasyon İptal Edildi",
+        title: "Rezervasyon İptal Edildi",
 
         description:
           "Rezervasyonunuz iptal edildi. Aşağıda iptal açıklamasını görebilirsiniz.",
@@ -390,14 +279,11 @@ function getStatusBox(
 
     case "pending_approval":
       return {
-        icon:
-          Clock3,
+        icon: Clock3,
 
-        className:
-          "border-[#DDD4E8] bg-[#F0EDF6] text-[#655D8A]",
+        className: "border-[#DDD4E8] bg-[#F0EDF6] text-[#655D8A]",
 
-        title:
-          "Ödeme Kontrol Ediliyor",
+        title: "Ödeme Kontrol Ediliyor",
 
         description:
           "Dekontunuz bize ulaştı. Rezervasyonunuz yönetici onayı bekliyor.",
@@ -405,14 +291,11 @@ function getStatusBox(
 
     default:
       return {
-        icon:
-          ReceiptText,
+        icon: ReceiptText,
 
-        className:
-          "border-[#E5D8BE] bg-[#F7F0E3] text-[#88662F]",
+        className: "border-[#E5D8BE] bg-[#F7F0E3] text-[#88662F]",
 
-        title:
-          "Ödeme Bekleniyor",
+        title: "Ödeme Bekleniyor",
 
         description:
           "Rezervasyonunuz oluşturuldu. Ödemenizi yaptıktan sonra dekontunuzu aşağıdan yükleyebilirsiniz.",
@@ -420,410 +303,221 @@ function getStatusBox(
   }
 }
 
-export function ReservationTracking() {
-  const [
-    reservationCode,
-    setReservationCode,
-  ] = useState("");
+type ReservationTrackingProps = {
+  settings: SiteSettings | null;
+};
 
-  const [
-    phone,
-    setPhone,
-  ] = useState("");
+export function ReservationTracking({ settings }: ReservationTrackingProps) {
+  const [reservationCode, setReservationCode] = useState("");
 
-  const [
-    reservation,
-    setReservation,
-  ] =
-    useState<ReservationTrackingResult | null>(
-      null,
-    );
+  const [phone, setPhone] = useState("");
 
-  const [
-    isLoading,
-    setIsLoading,
-  ] = useState(false);
+  const [reservation, setReservation] =
+    useState<ReservationTrackingResult | null>(null);
 
-  const [
-    error,
-    setError,
-  ] =
-    useState<string | null>(
-      null,
-    );
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [
-    receipt,
-    setReceipt,
-  ] =
-    useState<File | null>(
-      null,
-    );
+  const [error, setError] = useState<string | null>(null);
 
-  const [
-    isUploading,
-    setIsUploading,
-  ] = useState(false);
+  const [receipt, setReceipt] = useState<File | null>(null);
 
-  const [
-    uploadSuccess,
-    setUploadSuccess,
-  ] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleSubmit =
-    async (
-      event:
-        React.FormEvent<HTMLFormElement>,
-    ) => {
-      event.preventDefault();
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
-      setError(
-        null,
-      );
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-      setReservation(
-        null,
-      );
+    setError(null);
 
-      setUploadSuccess(
-        false,
-      );
+    setReservation(null);
 
-      setReceipt(
-        null,
-      );
+    setUploadSuccess(false);
 
-      setIsLoading(
-        true,
-      );
+    setReceipt(null);
 
-      try {
-        const result =
-          await findReservation(
-            reservationCode,
-            phone,
-          );
+    setIsLoading(true);
 
-        if (
-          !result.success
-        ) {
-          setError(
-            result.message,
-          );
+    try {
+      const result = await findReservation(reservationCode, phone);
 
-          return;
-        }
-
-        setReservation(
-          result.reservation,
-        );
-      } catch (
-        error
-      ) {
-        console.error(
-          error,
-        );
-
-        setError(
-          "Rezervasyon sorgulanırken beklenmeyen bir hata oluştu.",
-        );
-      } finally {
-        setIsLoading(
-          false,
-        );
-      }
-    };
-
-  const resetSearch =
-    () => {
-      setReservation(
-        null,
-      );
-
-      setError(
-        null,
-      );
-
-      setReceipt(
-        null,
-      );
-
-      setUploadSuccess(
-        false,
-      );
-    };
-
-  const copyIban =
-    async () => {
-      await navigator.clipboard.writeText(
-        bankInformation.iban.replace(
-          /\s/g,
-          "",
-        ),
-      );
-    };
-
-  const handleReceiptUpload =
-    async () => {
-      if (
-        !reservation ||
-        !receipt
-      ) {
-        return;
-      }
-
-      setError(
-        null,
-      );
-
-      const maxSize =
-        10 *
-        1024 *
-        1024;
-
-      if (
-        receipt.size >
-        maxSize
-      ) {
-        setError(
-          "Dekont en fazla 10 MB olabilir.",
-        );
+      if (!result.success) {
+        setError(result.message);
 
         return;
       }
 
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/webp",
-        "application/pdf",
-      ];
+      setReservation(result.reservation);
+    } catch (error) {
+      console.error(error);
 
-      if (
-        !allowedTypes.includes(
-          receipt.type,
-        )
-      ) {
-        setError(
-          "Sadece JPG, PNG, WEBP veya PDF yükleyebilirsiniz.",
-        );
+      setError("Rezervasyon sorgulanırken beklenmeyen bir hata oluştu.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        return;
+  const resetSearch = () => {
+    setReservation(null);
+
+    setError(null);
+
+    setReceipt(null);
+
+    setUploadSuccess(false);
+  };
+
+  const copyIban = async () => {
+    if (!settings?.iban) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(settings.iban.replace(/\s/g, ""));
+  };
+
+  const handleReceiptUpload = async () => {
+    if (!reservation || !receipt) {
+      return;
+    }
+
+    setError(null);
+
+    const maxSize = 10 * 1024 * 1024;
+
+    if (receipt.size > maxSize) {
+      setError("Dekont en fazla 10 MB olabilir.");
+
+      return;
+    }
+
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "application/pdf",
+    ];
+
+    if (!allowedTypes.includes(receipt.type)) {
+      setError("Sadece JPG, PNG, WEBP veya PDF yükleyebilirsiniz.");
+
+      return;
+    }
+
+    setIsUploading(true);
+
+    let uploadedPath: string | null = null;
+
+    try {
+      const extension = receipt.name.split(".").pop()?.toLowerCase() || "jpg";
+
+      uploadedPath = `${reservation.reservationCode}/${crypto.randomUUID()}.${extension}`;
+
+      const supabase = createClient();
+
+      const { error: uploadError } = await supabase.storage
+        .from("reservation-receipts")
+        .upload(uploadedPath, receipt, {
+          cacheControl: "3600",
+
+          upsert: false,
+
+          contentType: receipt.type,
+        });
+
+      if (uploadError) {
+        throw new Error(`Dekont yüklenemedi: ${uploadError.message}`);
       }
 
-      setIsUploading(
-        true,
+      const result = await submitTrackedReceipt(
+        reservation.reservationCode,
+        phone,
+        uploadedPath,
       );
 
-      let uploadedPath:
-        | string
-        | null =
-        null;
+      if (!result.success) {
+        await supabase.storage
+          .from("reservation-receipts")
+          .remove([uploadedPath]);
 
-      try {
-        const extension =
-          receipt.name
-            .split(".")
-            .pop()
-            ?.toLowerCase() ||
-          "jpg";
-
-        uploadedPath =
-          `${reservation.reservationCode}/${crypto.randomUUID()}.${extension}`;
-
-        const supabase =
-          createClient();
-
-        const {
-          error:
-            uploadError,
-        } =
-          await supabase.storage
-            .from(
-              "reservation-receipts",
-            )
-            .upload(
-              uploadedPath,
-              receipt,
-              {
-                cacheControl:
-                  "3600",
-
-                upsert:
-                  false,
-
-                contentType:
-                  receipt.type,
-              },
-            );
-
-        if (
-          uploadError
-        ) {
-          throw new Error(
-            `Dekont yüklenemedi: ${uploadError.message}`,
-          );
-        }
-
-        const result =
-          await submitTrackedReceipt(
-            reservation.reservationCode,
-            phone,
-            uploadedPath,
-          );
-
-        if (
-          !result.success
-        ) {
-          await supabase.storage
-            .from(
-              "reservation-receipts",
-            )
-            .remove([
-              uploadedPath,
-            ]);
-
-          throw new Error(
-            result.message,
-          );
-        }
-
-        setUploadSuccess(
-          true,
-        );
-
-        setReceipt(
-          null,
-        );
-
-        const refreshed =
-          await findReservation(
-            reservation.reservationCode,
-            phone,
-          );
-
-        if (
-          refreshed.success
-        ) {
-          setReservation(
-            refreshed.reservation,
-          );
-        }
-      } catch (
-        error
-      ) {
-        console.error(
-          error,
-        );
-
-        setError(
-          error instanceof
-            Error
-            ? error.message
-            : "Dekont yüklenemedi.",
-        );
-      } finally {
-        setIsUploading(
-          false,
-        );
+        throw new Error(result.message);
       }
-    };
 
-  if (
-    reservation
-  ) {
-    const timeline =
-      getTimeline(
-        reservation,
+      setUploadSuccess(true);
+
+      setReceipt(null);
+
+      const refreshed = await findReservation(
+        reservation.reservationCode,
+        phone,
       );
 
-    const statusBox =
-      getStatusBox(
-        reservation.status,
-      );
+      if (refreshed.success) {
+        setReservation(refreshed.reservation);
+      }
+    } catch (error) {
+      console.error(error);
 
-    const StatusIcon =
-      statusBox.icon;
+      setError(error instanceof Error ? error.message : "Dekont yüklenemedi.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  if (reservation) {
+    const timeline = getTimeline(reservation);
+
+    const statusBox = getStatusBox(reservation.status);
+
+    const StatusIcon = statusBox.icon;
 
     return (
       <div className="mx-auto max-w-[760px]">
         <button
           type="button"
-          onClick={
-            resetSearch
-          }
+          onClick={resetSearch}
           className="mb-5 inline-flex items-center gap-2 text-xs font-medium text-[#777C75]"
         >
-          <ArrowLeft
-            size={
-              14
-            }
-          />
-
-          Başka Rezervasyon
-          Sorgula
+          <ArrowLeft size={14} />
+          Başka Rezervasyon Sorgula
         </button>
 
         <div className="border border-[#E3E0D8] bg-white">
           <div className="border-b border-[#EEEAE3] p-5 sm:p-7">
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#A8754F]">
-              Rezervasyon
-              Durumu
+              Rezervasyon Durumu
             </p>
 
             <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h1 className="font-serif text-3xl text-[#263A2D]">
-                  {
-                    reservation.guestName
-                  }
+                  {reservation.guestName}
                 </h1>
 
                 <p className="mt-2 text-xs font-semibold tracking-[0.08em] text-[#7D817B]">
-                  {
-                    reservation.reservationCode
-                  }
+                  {reservation.reservationCode}
                 </p>
               </div>
 
               <span className="w-fit bg-[#F0EFEA] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#60665F]">
-                {
-                  statusLabels[
-                    reservation.status
-                  ]
-                }
+                {statusLabels[reservation.status]}
               </span>
             </div>
           </div>
 
           <div className="p-5 sm:p-7">
-            <div
-              className={`flex gap-3 border p-4 ${statusBox.className}`}
-            >
-              <StatusIcon
-                size={
-                  22
-                }
-                className="mt-0.5 shrink-0"
-              />
+            <div className={`flex gap-3 border p-4 ${statusBox.className}`}>
+              <StatusIcon size={22} className="mt-0.5 shrink-0" />
 
               <div>
-                <p className="text-sm font-semibold">
-                  {
-                    statusBox.title
-                  }
-                </p>
+                <p className="text-sm font-semibold">{statusBox.title}</p>
 
                 <p className="mt-1 text-xs leading-5 opacity-80">
-                  {
-                    statusBox.description
-                  }
+                  {statusBox.description}
                 </p>
               </div>
             </div>
 
-            {reservation.status ===
-              "rejected" &&
+            {reservation.status === "rejected" &&
               reservation.rejectionReason && (
                 <div className="mt-4 border border-[#E4C6BF] bg-[#FFF8F6] p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#98584E]">
@@ -831,15 +525,12 @@ export function ReservationTracking() {
                   </p>
 
                   <p className="mt-2 text-sm leading-6 text-[#6D625F]">
-                    {
-                      reservation.rejectionReason
-                    }
+                    {reservation.rejectionReason}
                   </p>
                 </div>
               )}
 
-            {reservation.status ===
-              "cancelled" &&
+            {reservation.status === "cancelled" &&
               reservation.cancellationReason && (
                 <div className="mt-4 border border-[#D9D7D1] bg-[#F6F5F2] p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#656A64]">
@@ -847,252 +538,158 @@ export function ReservationTracking() {
                   </p>
 
                   <p className="mt-2 text-sm leading-6 text-[#626760]">
-                    {
-                      reservation.cancellationReason
-                    }
+                    {reservation.cancellationReason}
                   </p>
                 </div>
               )}
 
             <div className="mt-7 grid gap-3 sm:grid-cols-2">
               <Detail
-                icon={
-                  Home
-                }
+                icon={Home}
                 label="Konaklama"
-                value={
-                  reservation.accommodationTitle
-                }
+                value={reservation.accommodationTitle}
               />
 
               <Detail
-                icon={
-                  Users
-                }
+                icon={Users}
                 label="Misafir"
                 value={`${reservation.guestCount} kişi`}
               />
 
               <Detail
-                icon={
-                  CalendarDays
-                }
+                icon={CalendarDays}
                 label="Giriş"
-                value={formatDate(
-                  reservation.checkIn,
-                )}
+                value={formatDate(reservation.checkIn)}
               />
 
               <Detail
-                icon={
-                  CalendarDays
-                }
+                icon={CalendarDays}
                 label="Çıkış"
-                value={formatDate(
-                  reservation.checkOut,
-                )}
+                value={formatDate(reservation.checkOut)}
               />
             </div>
 
             <div className="mt-3 border border-[#E8E4DC] bg-[#FAF9F6] p-4">
               <div className="flex items-end justify-between gap-4">
                 <div>
-                  <p className="text-[10px] text-[#969990]">
-                    Konaklama
-                    Süresi
-                  </p>
+                  <p className="text-[10px] text-[#969990]">Konaklama Süresi</p>
 
                   <p className="mt-1 text-sm font-medium text-[#263A2D]">
-                    {
-                      reservation.nightCount
-                    }{" "}
-                    gece
+                    {reservation.nightCount} gece
                   </p>
                 </div>
 
                 <div className="text-right">
-                  <p className="text-[10px] text-[#969990]">
-                    Toplam
-                  </p>
+                  <p className="text-[10px] text-[#969990]">Toplam</p>
 
                   <p className="mt-1 text-xl font-semibold text-[#263A2D]">
-                    {reservation.totalPrice.toLocaleString(
-                      "tr-TR",
-                    )}{" "}
-                    TL
+                    {reservation.totalPrice.toLocaleString("tr-TR")} TL
                   </p>
                 </div>
               </div>
             </div>
 
-            {reservation.status ===
-              "pending_payment" && (
-                <section className="mt-6 border border-[#E4DDD0] bg-[#FBF8F2] p-4 sm:p-5">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A8754F]">
-                    Ödemeyi Tamamla
-                  </p>
+            {reservation.status === "pending_payment" && (
+              <section className="mt-6 border border-[#E4DDD0] bg-[#FBF8F2] p-4 sm:p-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A8754F]">
+                  Ödemeyi Tamamla
+                </p>
 
-                  <h2 className="mt-2 text-lg font-semibold text-[#263A2D]">
-                    Havale / EFT
-                  </h2>
+                <h2 className="mt-2 text-lg font-semibold text-[#263A2D]">
+                  Havale / EFT
+                </h2>
 
-                  <p className="mt-2 text-xs leading-5 text-[#7D817B]">
-                    Aşağıdaki
-                    hesaba ödeme
-                    yaptıktan
-                    sonra
-                    dekontunuzu
-                    yükleyin.
-                  </p>
+                <p className="mt-2 text-xs leading-5 text-[#7D817B]">
+                  Aşağıdaki hesaba ödeme yaptıktan sonra dekontunuzu yükleyin.
+                </p>
 
-                  <div className="mt-5 space-y-4 border-y border-[#E8E1D6] py-4">
-                    <BankRow
-                      label="Hesap Sahibi"
-                      value={
-                        bankInformation.accountHolder
-                      }
-                    />
+                <div className="mt-5 space-y-4 border-y border-[#E8E1D6] py-4">
+                  <BankRow
+                    label="Hesap Sahibi"
+                    value={settings?.bank_account_holder || "Altunhan Farm"}
+                  />
 
-                    <BankRow
-                      label="Banka"
-                      value={
-                        bankInformation.bankName
-                      }
-                    />
+                  <BankRow
+                    label="Banka"
+                    value={settings?.bank_name || "Ziraat Bankası"}
+                  />
 
-                    <div>
-                      <p className="text-[10px] text-[#969990]">
-                        IBAN
+                  <div>
+                    <p className="text-[10px] text-[#969990]">IBAN</p>
+
+                    <div className="mt-1 flex items-center justify-between gap-3">
+                      <p className="break-all text-sm font-semibold tracking-wide text-[#263A2D]">
+                        {settings?.iban || "TR00 0000 0000 0000 0000 0000 00"}
                       </p>
 
-                      <div className="mt-1 flex items-center justify-between gap-3">
-                        <p className="break-all text-sm font-semibold tracking-wide text-[#263A2D]">
-                          {
-                            bankInformation.iban
-                          }
-                        </p>
-
-                        <button
-                          type="button"
-                          onClick={
-                            copyIban
-                          }
-                          className="flex h-9 shrink-0 items-center gap-2 border border-[#D7D3CA] bg-white px-3 text-[10px] font-semibold text-[#263A2D]"
-                        >
-                          <Copy
-                            size={
-                              13
-                            }
-                          />
-
-                          Kopyala
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={copyIban}
+                        className="flex h-9 shrink-0 items-center gap-2 border border-[#D7D3CA] bg-white px-3 text-[10px] font-semibold text-[#263A2D]"
+                      >
+                        <Copy size={13} />
+                        Kopyala
+                      </button>
                     </div>
                   </div>
+                </div>
 
-                  <p className="mt-4 text-[11px] leading-5 text-[#777B74]">
-                    Havale
-                    açıklamasına{" "}
-                    <strong className="text-[#263A2D]">
-                      {
-                        reservation.reservationCode
-                      }
-                    </strong>{" "}
-                    yazın.
+                <p className="mt-4 text-[11px] leading-5 text-[#777B74]">
+                  Havale açıklamasına{" "}
+                  <strong className="text-[#263A2D]">
+                    {reservation.reservationCode}
+                  </strong>{" "}
+                  yazın.
+                </p>
+
+                <label className="mt-5 flex min-h-32 cursor-pointer flex-col items-center justify-center border border-dashed border-[#CBC7BE] bg-white p-4 text-center">
+                  <ImagePlus size={26} className="text-[#A8754F]" />
+
+                  <p className="mt-3 text-xs font-semibold text-[#263A2D]">
+                    {receipt ? receipt.name : "Dekont Seç"}
                   </p>
 
-                  <label className="mt-5 flex min-h-32 cursor-pointer flex-col items-center justify-center border border-dashed border-[#CBC7BE] bg-white p-4 text-center">
-                    <ImagePlus
-                      size={
-                        26
-                      }
-                      className="text-[#A8754F]"
-                    />
+                  <p className="mt-1 text-[10px] leading-5 text-[#969990]">
+                    JPG, PNG, WEBP veya PDF · Maksimum 10 MB
+                  </p>
 
-                    <p className="mt-3 text-xs font-semibold text-[#263A2D]">
-                      {receipt
-                        ? receipt.name
-                        : "Dekont Seç"}
-                    </p>
-
-                    <p className="mt-1 text-[10px] leading-5 text-[#969990]">
-                      JPG, PNG,
-                      WEBP veya PDF
-                      · Maksimum 10 MB
-                    </p>
-
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp,application/pdf"
-                      className="hidden"
-                      disabled={
-                        isUploading
-                      }
-                      onChange={(
-                        event,
-                      ) =>
-                        setReceipt(
-                          event.target.files?.[0] ??
-                            null,
-                        )
-                      }
-                    />
-                  </label>
-
-                  <button
-                    type="button"
-                    disabled={
-                      !receipt ||
-                      isUploading
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,application/pdf"
+                    className="hidden"
+                    disabled={isUploading}
+                    onChange={(event) =>
+                      setReceipt(event.target.files?.[0] ?? null)
                     }
-                    onClick={
-                      handleReceiptUpload
-                    }
-                    className="mt-3 flex h-12 w-full items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {isUploading ? (
-                      <Loader2
-                        size={
-                          16
-                        }
-                        className="animate-spin"
-                      />
-                    ) : (
-                      <Upload
-                        size={
-                          16
-                        }
-                      />
-                    )}
+                  />
+                </label>
 
-                    {isUploading
-                      ? "Dekont Gönderiliyor..."
-                      : "Dekontu Gönder"}
-                  </button>
-                </section>
-              )}
+                <button
+                  type="button"
+                  disabled={!receipt || isUploading}
+                  onClick={handleReceiptUpload}
+                  className="mt-3 flex h-12 w-full items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isUploading ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <Upload size={16} />
+                  )}
+
+                  {isUploading ? "Dekont Gönderiliyor..." : "Dekontu Gönder"}
+                </button>
+              </section>
+            )}
 
             {uploadSuccess && (
               <div className="mt-5 flex items-start gap-3 border border-[#CBDDC8] bg-[#EAF2E8] p-4 text-[#456044]">
-                <CheckCircle2
-                  size={
-                    19
-                  }
-                  className="mt-0.5 shrink-0"
-                />
+                <CheckCircle2 size={19} className="mt-0.5 shrink-0" />
 
                 <div>
-                  <p className="text-sm font-semibold">
-                    Dekontunuz
-                    gönderildi
-                  </p>
+                  <p className="text-sm font-semibold">Dekontunuz gönderildi</p>
 
                   <p className="mt-1 text-xs leading-5">
-                    Rezervasyonunuz
-                    artık ödeme
-                    kontrolü
-                    bekliyor.
+                    Rezervasyonunuz artık ödeme kontrolü bekliyor.
                   </p>
                 </div>
               </div>
@@ -1100,48 +697,27 @@ export function ReservationTracking() {
 
             {error && (
               <div className="mt-5 border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs leading-5 text-[#98584E]">
-                {
-                  error
-                }
+                {error}
               </div>
             )}
 
             <div className="mt-8">
               <div className="flex items-center gap-2">
-                <ShieldCheck
-                  size={
-                    17
-                  }
-                  className="text-[#A8754F]"
-                />
+                <ShieldCheck size={17} className="text-[#A8754F]" />
 
                 <h2 className="text-sm font-semibold text-[#263A2D]">
-                  Rezervasyon
-                  Süreci
+                  Rezervasyon Süreci
                 </h2>
               </div>
 
               <div className="mt-5">
-                {timeline.map(
-                  (
-                    step,
-                    index,
-                  ) => (
-                    <TimelineItem
-                      key={
-                        step.title
-                      }
-                      step={
-                        step
-                      }
-                      last={
-                        index ===
-                        timeline.length -
-                          1
-                      }
-                    />
-                  ),
-                )}
+                {timeline.map((step, index) => (
+                  <TimelineItem
+                    key={step.title}
+                    step={step}
+                    last={index === timeline.length - 1}
+                  />
+                ))}
               </div>
             </div>
           </div>
@@ -1154,11 +730,7 @@ export function ReservationTracking() {
     <div className="mx-auto max-w-[560px]">
       <div className="border border-[#E3E0D8] bg-white p-5 sm:p-8">
         <div className="flex h-12 w-12 items-center justify-center bg-[#F0EFEA] text-[#A8754F]">
-          <Search
-            size={
-              21
-            }
-          />
+          <Search size={21} />
         </div>
 
         <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#A8754F]">
@@ -1166,25 +738,15 @@ export function ReservationTracking() {
         </p>
 
         <h1 className="mt-2 font-serif text-3xl text-[#263A2D] sm:text-4xl">
-          Rezervasyonunu
-          Takip Et
+          Rezervasyonunu Takip Et
         </h1>
 
         <p className="mt-3 text-sm leading-6 text-[#747972]">
-          Rezervasyon
-          numaranız ve
-          telefon numaranız
-          ile rezervasyon
-          durumunuzu
+          Rezervasyon numaranız ve telefon numaranız ile rezervasyon durumunuzu
           görüntüleyebilirsiniz.
         </p>
 
-        <form
-          onSubmit={
-            handleSubmit
-          }
-          className="mt-7 space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="mt-7 space-y-5">
           <div>
             <label className="text-xs font-medium text-[#40463F]">
               Rezervasyon No
@@ -1192,23 +754,15 @@ export function ReservationTracking() {
 
             <div className="relative mt-2">
               <ReceiptText
-                size={
-                  16
-                }
+                size={16}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B9E98]"
               />
 
               <input
                 required
-                value={
-                  reservationCode
-                }
-                onChange={(
-                  event,
-                ) =>
-                  setReservationCode(
-                    event.target.value.toUpperCase(),
-                  )
+                value={reservationCode}
+                onChange={(event) =>
+                  setReservationCode(event.target.value.toUpperCase())
                 }
                 placeholder="AF-20260811-X7K2"
                 className="h-12 w-full border border-[#DDD9D1] bg-[#FAF9F6] pl-10 pr-3 text-sm font-medium uppercase tracking-wide text-[#263A2D] outline-none placeholder:font-normal placeholder:tracking-normal placeholder:text-[#A3A69F] focus:border-[#263A2D]"
@@ -1218,31 +772,20 @@ export function ReservationTracking() {
 
           <div>
             <label className="text-xs font-medium text-[#40463F]">
-              Telefon
-              Numarası
+              Telefon Numarası
             </label>
 
             <div className="relative mt-2">
               <Phone
-                size={
-                  16
-                }
+                size={16}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B9E98]"
               />
 
               <input
                 type="tel"
                 required
-                value={
-                  phone
-                }
-                onChange={(
-                  event,
-                ) =>
-                  setPhone(
-                    event.target.value,
-                  )
-                }
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
                 placeholder="05__ ___ __ __"
                 className="h-12 w-full border border-[#DDD9D1] bg-[#FAF9F6] pl-10 pr-3 text-sm text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D]"
               />
@@ -1251,37 +794,22 @@ export function ReservationTracking() {
 
           {error && (
             <div className="border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs leading-5 text-[#98584E]">
-              {
-                error
-              }
+              {error}
             </div>
           )}
 
           <button
             type="submit"
-            disabled={
-              isLoading
-            }
+            disabled={isLoading}
             className="flex h-12 w-full items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold uppercase tracking-[0.1em] text-white disabled:opacity-60"
           >
             {isLoading ? (
-              <Loader2
-                size={
-                  16
-                }
-                className="animate-spin"
-              />
+              <Loader2 size={16} className="animate-spin" />
             ) : (
-              <Search
-                size={
-                  15
-                }
-              />
+              <Search size={15} />
             )}
 
-            {isLoading
-              ? "Sorgulanıyor..."
-              : "Rezervasyonumu Bul"}
+            {isLoading ? "Sorgulanıyor..." : "Rezervasyonumu Bul"}
           </button>
         </form>
       </div>
@@ -1293,23 +821,15 @@ function TimelineItem({
   step,
   last,
 }: {
-  step:
-    TimelineStep;
+  step: TimelineStep;
 
-  last:
-    boolean;
+  last: boolean;
 }) {
-  const completed =
-    step.state ===
-    "completed";
+  const completed = step.state === "completed";
 
-  const active =
-    step.state ===
-    "active";
+  const active = step.state === "active";
 
-  const failed =
-    step.state ===
-    "failed";
+  const failed = step.state === "failed";
 
   return (
     <div className="flex gap-4">
@@ -1326,32 +846,18 @@ function TimelineItem({
           }`}
         >
           {completed ? (
-            <Check
-              size={
-                14
-              }
-            />
+            <Check size={14} />
           ) : failed ? (
-            <XCircle
-              size={
-                14
-              }
-            />
+            <XCircle size={14} />
           ) : (
-            <Clock3
-              size={
-                14
-              }
-            />
+            <Clock3 size={14} />
           )}
         </div>
 
         {!last && (
           <div
             className={`min-h-12 w-px flex-1 ${
-              completed
-                ? "bg-[#263A2D]"
-                : "bg-[#E2DED6]"
+              completed ? "bg-[#263A2D]" : "bg-[#E2DED6]"
             }`}
           />
         )}
@@ -1360,20 +866,14 @@ function TimelineItem({
       <div className="pb-6">
         <p
           className={`text-sm font-semibold ${
-            failed
-              ? "text-[#98584E]"
-              : "text-[#263A2D]"
+            failed ? "text-[#98584E]" : "text-[#263A2D]"
           }`}
         >
-          {
-            step.title
-          }
+          {step.title}
         </p>
 
         <p className="mt-1 text-xs leading-5 text-[#858A83]">
-          {
-            step.description
-          }
+          {step.description}
         </p>
       </div>
     </div>
@@ -1385,29 +885,20 @@ function Detail({
   label,
   value,
 }: {
-  icon:
-    React.ElementType;
+  icon: React.ElementType;
 
-  label:
-    string;
+  label: string;
 
-  value:
-    string;
+  value: string;
 }) {
   return (
     <div className="flex items-center gap-3 border border-[#E8E4DC] bg-[#FAF9F6] p-4">
       <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-white text-[#A8754F]">
-        <Icon
-          size={
-            16
-          }
-        />
+        <Icon size={16} />
       </div>
 
       <div className="min-w-0">
-        <p className="text-[10px] text-[#969990]">
-          {label}
-        </p>
+        <p className="text-[10px] text-[#969990]">{label}</p>
 
         <p className="mt-1 truncate text-xs font-medium text-[#263A2D]">
           {value}
@@ -1421,21 +912,15 @@ function BankRow({
   label,
   value,
 }: {
-  label:
-    string;
+  label: string;
 
-  value:
-    string;
+  value: string;
 }) {
   return (
     <div>
-      <p className="text-[10px] text-[#969990]">
-        {label}
-      </p>
+      <p className="text-[10px] text-[#969990]">{label}</p>
 
-      <p className="mt-1 text-sm font-medium text-[#263A2D]">
-        {value}
-      </p>
+      <p className="mt-1 text-sm font-medium text-[#263A2D]">{value}</p>
     </div>
   );
 }
