@@ -4,6 +4,7 @@ export type PublicAccommodation = {
   short_description: string | null;
   price: number;
   capacity: number;
+  slug: string;
 };
 
 export type ReservationCreateInput = {
