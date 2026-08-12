@@ -10,6 +10,8 @@ import {
   Users,
 } from "lucide-react";
 
+import type { Review } from "@/types/review";
+
 import { createClient } from "@/lib/supabase/server";
 
 type DashboardReservation = {
@@ -228,6 +230,17 @@ export default async function AdminPage() {
       .select("total_price")
       .eq("status", "confirmed")
       .gte("check_in", monthStart),
+
+    supabase
+      .from("reviews")
+      .select("*")
+      .eq("is_active", true)
+      .order("sort_order", {
+        ascending: true,
+      })
+      .order("created_at", {
+        ascending: false,
+      }),
   ]);
 
   const recentResult = await supabase
@@ -426,7 +439,7 @@ export default async function AdminPage() {
                     </p>
 
                     <p className="mt-1 truncate text-[10px] text-white/50">
-                      {reservation.accommodations?.[0]?.title?? "Konaklama"} ·{" "}
+                      {reservation.accommodations?.[0]?.title ?? "Konaklama"} ·{" "}
                       {reservation.guest_count} kişi
                     </p>
                   </div>

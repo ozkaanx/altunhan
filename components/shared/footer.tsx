@@ -10,25 +10,20 @@ import {
   FiMessageCircle,
 } from "react-icons/fi";
 
-import type {
-  HomeAccommodation,
-} from "@/app/page";
-
-import type {
-  SiteSettings,
-} from "@/types/site-settings";
+import type { HomeAccommodation } from "@/app/page";
+import type { SiteSettings } from "@/types/site-settings";
+import type { HomepageContent } from "@/types/homepage-content";
 
 type FooterProps = {
-  settings:
-    SiteSettings | null;
-
-  accommodations:
-    HomeAccommodation[];
+  settings: SiteSettings | null;
+  accommodations: HomeAccommodation[];
+  content: HomepageContent | null;
 };
 
 export default function Footer({
   settings,
   accommodations,
+  content,
 }: FooterProps) {
   const phone =
     settings?.phone?.trim() ||
@@ -75,21 +70,18 @@ export default function Footer({
       <section className="border-b border-white/10 px-6 py-20 md:px-12 md:py-28 lg:px-16">
         <div className="mx-auto max-w-[1500px] text-center">
           <span className="block text-[9px] font-medium uppercase tracking-[0.35em] text-[#C59A6A]">
-            ALTUNHAN FARM
+            {content?.footer_label ||
+              "ALTUNHAN FARM"}
           </span>
 
           <h2 className="mx-auto mt-5 max-w-[800px] font-serif text-4xl leading-[1] md:text-5xl lg:text-7xl">
-            Sizi Saros&apos;un
-            <br />
-            huzuruna bekliyoruz.
+            {content?.footer_title ||
+              "Sizi Saros'un huzuruna bekliyoruz."}
           </h2>
 
           <p className="mx-auto mt-6 max-w-[500px] text-sm leading-6 text-white/60">
-            Doğanın içinde,
-            denizin kıyısında
-            unutulmaz bir
-            konaklama deneyimi
-            için yerinizi ayırın.
+            {content?.footer_description ||
+              "Doğanın içinde, denizin kıyısında unutulmaz bir konaklama deneyimi için yerinizi ayırın."}
           </p>
 
           <Link
@@ -99,7 +91,9 @@ export default function Footer({
             Rezervasyon Yap
 
             <FiArrowUpRight
-              size={14}
+              size={
+                14
+              }
               className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
             />
           </Link>
@@ -122,12 +116,10 @@ export default function Footer({
               </Link>
 
               <p className="mt-6 max-w-[280px] text-xs leading-6 text-white/55">
-                Saros&apos;un
-                kıyısında,
-                doğayla iç içe,
-                sakin ve
-                unutulmaz bir
-                yaşam deneyimi.
+                Saros&apos;un kıyısında,
+                doğayla iç içe, sakin ve
+                unutulmaz bir yaşam
+                deneyimi.
               </p>
             </div>
 
@@ -160,8 +152,7 @@ export default function Footer({
                     href="/rezervasyon/takip"
                     className="text-xs text-white/65 transition-colors hover:text-white"
                   >
-                    Rezervasyon
-                    Takip
+                    Rezervasyon Takip
                   </Link>
                 </li>
 
@@ -206,8 +197,7 @@ export default function Footer({
                   )
                 ) : (
                   <li className="text-xs text-white/45">
-                    Aktif
-                    konaklama
+                    Aktif konaklama
                     bulunmuyor.
                   </li>
                 )}
@@ -229,8 +219,12 @@ export default function Footer({
                   className="group flex items-start gap-3"
                 >
                   <FiMapPin
-                    size={15}
-                    strokeWidth={1.2}
+                    size={
+                      15
+                    }
+                    strokeWidth={
+                      1.2
+                    }
                     className="mt-0.5 shrink-0 text-[#C59A6A]"
                   />
 
@@ -249,15 +243,17 @@ export default function Footer({
                     className="group flex items-center gap-3"
                   >
                     <FiPhone
-                      size={15}
-                      strokeWidth={1.2}
+                      size={
+                        15
+                      }
+                      strokeWidth={
+                        1.2
+                      }
                       className="text-[#C59A6A]"
                     />
 
                     <span className="text-xs text-white/65 transition-colors group-hover:text-white">
-                      {
-                        phone
-                      }
+                      {phone}
                     </span>
                   </a>
                 )}
@@ -272,8 +268,12 @@ export default function Footer({
                     className="group flex items-center gap-3"
                   >
                     <FiMessageCircle
-                      size={15}
-                      strokeWidth={1.2}
+                      size={
+                        15
+                      }
+                      strokeWidth={
+                        1.2
+                      }
                       className="text-[#C59A6A]"
                     />
 
@@ -289,15 +289,17 @@ export default function Footer({
                     className="group flex items-center gap-3"
                   >
                     <FiMail
-                      size={15}
-                      strokeWidth={1.2}
+                      size={
+                        15
+                      }
+                      strokeWidth={
+                        1.2
+                      }
                       className="text-[#C59A6A]"
                     />
 
                     <span className="break-all text-xs text-white/65 transition-colors group-hover:text-white">
-                      {
-                        email
-                      }
+                      {email}
                     </span>
                   </a>
                 )}
@@ -307,9 +309,8 @@ export default function Footer({
 
           <div className="mt-14 flex flex-col gap-5 border-t border-white/10 pt-6 md:flex-row md:items-center md:justify-between">
             <p className="text-[10px] text-white/40">
-              © 2026 Altunhan
-              Farm. Tüm hakları
-              saklıdır.
+              © 2026 Altunhan Farm. Tüm
+              hakları saklıdır.
             </p>
 
             <div className="flex items-center gap-6">
@@ -324,16 +325,14 @@ export default function Footer({
                 href="/gizlilik"
                 className="text-[10px] text-white/40 transition-colors hover:text-white"
               >
-                Gizlilik
-                Politikası
+                Gizlilik Politikası
               </Link>
 
               <Link
                 href="/cerez-politikasi"
                 className="text-[10px] text-white/40 transition-colors hover:text-white"
               >
-                Çerez
-                Politikası
+                Çerez Politikası
               </Link>
             </div>
 
@@ -346,7 +345,9 @@ export default function Footer({
                 className="flex h-9 w-9 items-center justify-center border border-white/10 text-white/60 transition-all duration-300 hover:border-[#C59A6A] hover:bg-[#C59A6A] hover:text-white"
               >
                 <FiInstagram
-                  size={15}
+                  size={
+                    15
+                  }
                 />
               </a>
 
@@ -356,7 +357,9 @@ export default function Footer({
                 className="flex h-9 w-9 items-center justify-center border border-white/10 text-white/60 transition-all duration-300 hover:border-[#C59A6A] hover:bg-[#C59A6A] hover:text-white"
               >
                 <FiFacebook
-                  size={15}
+                  size={
+                    15
+                  }
                 />
               </a>
             </div>

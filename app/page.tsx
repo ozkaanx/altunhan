@@ -9,6 +9,8 @@ import Footer from "@/components/shared/footer";
 import { createClient } from "@/lib/supabase/server";
 
 import type { SiteSettings } from "@/types/site-settings";
+import type { Review } from "@/types/review";
+import type { HomepageContent } from "@/types/homepage-content";
 
 export type HomeAccommodation = {
   id: number;
@@ -32,10 +34,13 @@ export default async function Home() {
   const [
     accommodationsResult,
     settingsResult,
+    reviewsResult,
+    homepageContentResult,
   ] = await Promise.all([
     supabase
       .from("accommodations")
-      .select(`
+      .select(
+        `
         id,
         title,
         slug,
@@ -48,42 +53,58 @@ export default async function Home() {
           sort_order,
           is_cover
         )
-      `)
+      `,
+      )
       .eq("is_active", true)
       .order("created_at", {
         ascending: true,
       }),
 
+    supabase.from("site_settings").select("*").eq("id", 1).single(),
+
     supabase
-      .from("site_settings")
+      .from("reviews")
       .select("*")
-      .eq("id", 1)
-      .single(),
+      .eq("is_active", true)
+      .order("sort_order", {
+        ascending: true,
+      })
+      .order("created_at", {
+        ascending: false,
+      }),
+
+    supabase.from("homepage_content").select("*").eq("id", 1).single(),
   ]);
 
-  const {
-    data: accommodations,
-    error: accommodationsError,
-  } = accommodationsResult;
+  const { data: accommodations, error: accommodationsError } =
+    accommodationsResult;
 
-  const {
-    data: settings,
-    error: settingsError,
-  } = settingsResult;
+  const { data: settings, error: settingsError } = settingsResult;
+
+  const { data: reviews, error: reviewsError } = reviewsResult;
+
+  const { data: homepageContent, error: homepageContentError } =
+    homepageContentResult;
 
   if (accommodationsError) {
-    console.error(
-      "Ana sayfa konaklamaları alınamadı:",
-      accommodationsError,
-    );
+    console.error("Ana sayfa konaklamaları alınamadı:", accommodationsError);
   }
 
   if (settingsError) {
-    console.error(
-      "Site ayarları alınamadı:",
-      settingsError,
-    );
+    console.error("Site ayarları alınamadı:", settingsError);
   }
+
+  if (reviewsError) {
+    console.error("Yorumlar alınamadı:", reviewsError);
+  }
+
+  if (homepageContentError) {
+    console.error("Ana sayfa içeriği alınamadı:", homepageContentError);
+  }
+
+  const content = homepageContent as HomepageContent | null;
+
+  const siteSettings = settings as SiteSettings | null;
 
   return (
     <>
@@ -92,30 +113,26 @@ export default async function Home() {
       <Navbar />
 
       <main>
-        <Hero />
+        <Hero content={content} settings={siteSettings} />
 
-        <AboutExperience />
+        <AboutExperience content={content} />
 
         <Accommodation
-          accommodations={
-            (accommodations ?? []) as HomeAccommodation[]
-          }
+          accommodations={(accommodations ?? []) as HomeAccommodation[]}
+          content={content}
         />
 
         <LocationReviews
-          settings={
-            settings as SiteSettings | null
-          }
+          settings={siteSettings}
+          reviews={(reviews ?? []) as Review[]}
+          content={content}
         />
       </main>
 
       <Footer
-        settings={
-          settings as SiteSettings | null
-        }
-        accommodations={
-          (accommodations ?? []) as HomeAccommodation[]
-        }
+        settings={siteSettings}
+        accommodations={(accommodations ?? []) as HomeAccommodation[]}
+        content={content}
       />
     </>
   );
