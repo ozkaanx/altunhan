@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -16,6 +15,8 @@ import type { SiteSettings } from "@/types/site-settings";
 
 import type { HomeAccommodation } from "@/app/page";
 import type { HomepageContent } from "@/types/homepage-content";
+
+import AccommodationGallery from "@/components/shared/accommodation-gallery";
 
 import type { Metadata } from "next";
 
@@ -207,66 +208,7 @@ export default async function AccommodationDetailPage({
         </section>
 
         <section className="px-6 py-10 md:px-12 md:py-14 lg:px-16">
-          <div className="mx-auto max-w-[1500px]">
-            <div className="grid gap-3 lg:grid-cols-[1.5fr_0.5fr]">
-              <div className="relative aspect-[16/10] overflow-hidden bg-[#E8E2D7] lg:aspect-auto lg:min-h-[620px]">
-                {coverImage ? (
-                  <Image
-                    src={coverImage}
-                    alt={accommodation.title}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 75vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full min-h-[420px] items-center justify-center">
-                    <BedDouble
-                      size={56}
-                      strokeWidth={1}
-                      className="text-[#A69F94]"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
-                {images.slice(1, 3).map((image) => (
-                  <div
-                    key={image.id}
-                    className="relative aspect-square overflow-hidden bg-[#E8E2D7] lg:aspect-auto lg:min-h-[302px]"
-                  >
-                    <Image
-                      src={image.image_url}
-                      alt={accommodation.title}
-                      fill
-                      sizes="(max-width: 1024px) 50vw, 25vw"
-                      className="object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {images.length > 3 && (
-              <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                {images.slice(3).map((image) => (
-                  <div
-                    key={image.id}
-                    className="relative aspect-[4/3] overflow-hidden bg-[#E8E2D7]"
-                  >
-                    <Image
-                      src={image.image_url}
-                      alt={accommodation.title}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      className="object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <AccommodationGallery title={accommodation.title} images={images} />
         </section>
 
         <section className="px-6 pb-20 md:px-12 md:pb-24 lg:px-16">
