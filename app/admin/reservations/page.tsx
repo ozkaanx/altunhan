@@ -1,36 +1,33 @@
 import { createClient } from "@/lib/supabase/server";
 import { ReservationsList } from "@/components/admin/reservations-list";
 
-import type {
-  Reservation,
-} from "@/types/reservation";
+import type { Reservation } from "@/types/reservation";
 
 export default async function ReservationsPage() {
+  const supabase = await createClient();
 
-  
-
-  const supabase =
-    await createClient();
-
-  const { data, error } =
-    await supabase
-      .from("reservations")
-      .select(`
-        *,
-        accommodations (
-          id,
-          title
-        )
-      `)
-      .order("created_at", {
-        ascending: false,
-      });
+  const { data, error } = await supabase
+    .from("reservations")
+    .select(
+      `
+  *,
+  accommodations (
+    id,
+    title
+  ),
+  rooms (
+    id,
+    room_name,
+    room_number
+  )
+`,
+    )
+    .order("created_at", {
+      ascending: false,
+    });
 
   if (error) {
-    console.error(
-      "Rezervasyonlar alınamadı:",
-      error,
-    );
+    console.error("Rezervasyonlar alınamadı:", error);
 
     return (
       <section>
@@ -47,11 +44,5 @@ export default async function ReservationsPage() {
     );
   }
 
-  return (
-    <ReservationsList
-      reservations={
-        (data ?? []) as Reservation[]
-      }
-    />
-  );
+  return <ReservationsList reservations={(data ?? []) as Reservation[]} />;
 }
