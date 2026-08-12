@@ -215,7 +215,7 @@ export function ReservationsList({
               searchValue,
             ) ||
 
-            reservation.accommodations?.title
+            reservation.accommodations?.[0]?.title
               ?.toLocaleLowerCase(
                 "tr",
               )

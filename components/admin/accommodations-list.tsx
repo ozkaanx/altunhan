@@ -85,45 +85,23 @@ export function AccommodationsList({
           />
         </div>
       </div>
-      {filteredItems.length === 0 && (
-        <div className="relative aspect-[16/8] overflow-hidden bg-[#E9E6DE]">
-          {getCoverImage(item) ? (
-            <img
-              src={getCoverImage(item)!}
-              alt={item.title}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <BedDouble
-                size={34}
-                strokeWidth={1.3}
-                className="text-[#AAA69B]"
-              />
-            </div>
-          )}
+{filteredItems.length === 0 && (
+  <div className="mt-6 border border-[#E3E0D8] bg-white px-5 py-12 text-center">
+    <BedDouble
+      size={32}
+      strokeWidth={1.2}
+      className="mx-auto text-[#AAA69B]"
+    />
 
-          <span
-            className={`
-      absolute
-      left-3
-      top-3
-      inline-flex
-      px-2.5
-      py-1.5
-      text-[10px]
-      font-semibold
-      ${
-        item.is_active
-          ? "bg-[#263A2D] text-white"
-          : "bg-[#D9D6CF] text-[#666B65]"
-      }
-    `}
-          >
-            {item.is_active ? "Yayında" : "Pasif"}
-          </span>
-        </div>
-      )}
+    <p className="mt-4 text-sm font-semibold text-[#263A2D]">
+      Konaklama bulunamadı
+    </p>
+
+    <p className="mt-2 text-xs text-[#92968E]">
+      Arama kriterinize uygun konaklama bulunmuyor.
+    </p>
+  </div>
+)}
 
       {/* MOBILE */}
       <div className="mt-5 space-y-4 md:hidden">

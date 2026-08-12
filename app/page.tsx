@@ -58,19 +58,9 @@ export default async function Home() {
     );
   }
 
-  console.log(
-    "HOME ACCOMMODATIONS:",
-    JSON.stringify(
-      accommodations,
-      null,
-      2,
-    ),
-  );
-
   return (
     <>
       <Header />
-
       <Navbar />
 
       <main>
@@ -80,8 +70,7 @@ export default async function Home() {
 
         <Accommodation
           accommodations={
-            (accommodations ??
-              []) as HomeAccommodation[]
+            (accommodations ?? []) as HomeAccommodation[]
           }
         />
 
