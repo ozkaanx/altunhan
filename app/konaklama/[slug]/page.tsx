@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -15,12 +14,81 @@ import type { Accommodation } from "@/types/accommodation";
 import type { SiteSettings } from "@/types/site-settings";
 
 import type { HomeAccommodation } from "@/app/page";
+import type { HomepageContent } from "@/types/homepage-content";
+
+import AccommodationGallery from "@/components/shared/accommodation-gallery";
+
+import type { Metadata } from "next";
 
 type AccommodationDetailPageProps = {
   params: Promise<{
     slug: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: AccommodationDetailPageProps): Promise<Metadata> {
+  const { slug } = await params;
+
+  const supabase = await createClient();
+
+  const { data: accommodation } = await supabase
+    .from("accommodations")
+    .select(
+      `
+      title,
+      short_description,
+      accommodation_images!accommodation_images_accommodation_id_fkey (
+        image_url,
+        sort_order,
+        is_cover
+      )
+    `,
+    )
+    .eq("slug", slug)
+    .eq("is_active", true)
+    .single();
+
+  if (!accommodation) {
+    return {
+      title: "Konaklama Bulunamadı | Altunhan Farm",
+    };
+  }
+
+  const images = accommodation.accommodation_images ?? [];
+
+  const coverImage =
+    images.find((image) => image.is_cover) ??
+    [...images].sort(
+      (a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0),
+    )[0];
+
+  const description =
+    accommodation.short_description ||
+    `${accommodation.title} - Altunhan Farm, Saros'ta doğayla iç içe konaklama.`;
+
+  return {
+    title: `${accommodation.title} | Altunhan Farm`,
+
+    description,
+
+    openGraph: {
+      title: `${accommodation.title} | Altunhan Farm`,
+      description,
+      type: "website",
+
+      images: coverImage?.image_url
+        ? [
+            {
+              url: coverImage.image_url,
+              alt: accommodation.title,
+            },
+          ]
+        : [],
+    },
+  };
+}
 
 export default async function AccommodationDetailPage({
   params,
@@ -29,12 +97,16 @@ export default async function AccommodationDetailPage({
 
   const supabase = await createClient();
 
-  const [accommodationResult, settingsResult, accommodationsResult] =
-    await Promise.all([
-      supabase
-        .from("accommodations")
-        .select(
-          `
+  const [
+    accommodationResult,
+    settingsResult,
+    accommodationsResult,
+    homepageContentResult,
+  ] = await Promise.all([
+    supabase
+      .from("accommodations")
+      .select(
+        `
         id,
         title,
         slug,
@@ -56,17 +128,17 @@ export default async function AccommodationDetailPage({
           is_cover
         )
       `,
-        )
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .single(),
+      )
+      .eq("slug", slug)
+      .eq("is_active", true)
+      .single(),
 
-      supabase.from("site_settings").select("*").eq("id", 1).single(),
+    supabase.from("site_settings").select("*").eq("id", 1).single(),
 
-      supabase
-        .from("accommodations")
-        .select(
-          `
+    supabase
+      .from("accommodations")
+      .select(
+        `
         id,
         title,
         slug,
@@ -80,20 +152,22 @@ export default async function AccommodationDetailPage({
           is_cover
         )
       `,
-        )
-        .eq("is_active", true)
-        .order("created_at", {
-          ascending: true,
-        }),
-    ]);
+      )
+      .eq("is_active", true)
+      .order("created_at", {
+        ascending: true,
+      }),
+
+    supabase.from("homepage_content").select("*").eq("id", 1).single(),
+  ]);
 
   if (accommodationResult.error || !accommodationResult.data) {
     notFound();
   }
 
   const accommodation = accommodationResult.data as Accommodation;
-
   const settings = settingsResult.data as SiteSettings | null;
+  const homepageContent = homepageContentResult.data as HomepageContent | null;
 
   const accommodations = (accommodationsResult.data ??
     []) as HomeAccommodation[];
@@ -111,7 +185,6 @@ export default async function AccommodationDetailPage({
       return Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0);
     },
   );
-  
 
   const coverImage = images[0]?.image_url ?? null;
 
@@ -135,66 +208,7 @@ export default async function AccommodationDetailPage({
         </section>
 
         <section className="px-6 py-10 md:px-12 md:py-14 lg:px-16">
-          <div className="mx-auto max-w-[1500px]">
-            <div className="grid gap-3 lg:grid-cols-[1.5fr_0.5fr]">
-              <div className="relative aspect-[16/10] overflow-hidden bg-[#E8E2D7] lg:aspect-auto lg:min-h-[620px]">
-                {coverImage ? (
-                  <Image
-                    src={coverImage}
-                    alt={accommodation.title}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 75vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full min-h-[420px] items-center justify-center">
-                    <BedDouble
-                      size={56}
-                      strokeWidth={1}
-                      className="text-[#A69F94]"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
-                {images.slice(1, 3).map((image) => (
-                  <div
-                    key={image.id}
-                    className="relative aspect-square overflow-hidden bg-[#E8E2D7] lg:aspect-auto lg:min-h-[302px]"
-                  >
-                    <Image
-                      src={image.image_url}
-                      alt={accommodation.title}
-                      fill
-                      sizes="(max-width: 1024px) 50vw, 25vw"
-                      className="object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {images.length > 3 && (
-              <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-                {images.slice(3).map((image) => (
-                  <div
-                    key={image.id}
-                    className="relative aspect-[4/3] overflow-hidden bg-[#E8E2D7]"
-                  >
-                    <Image
-                      src={image.image_url}
-                      alt={accommodation.title}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      className="object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <AccommodationGallery title={accommodation.title} images={images} />
         </section>
 
         <section className="px-6 pb-20 md:px-12 md:pb-24 lg:px-16">
@@ -310,7 +324,7 @@ export default async function AccommodationDetailPage({
       <Footer
         settings={settings}
         accommodations={accommodations}
-        content={null}
+        content={homepageContent}
       />
     </>
   );
