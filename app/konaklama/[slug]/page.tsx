@@ -15,12 +15,79 @@ import type { Accommodation } from "@/types/accommodation";
 import type { SiteSettings } from "@/types/site-settings";
 
 import type { HomeAccommodation } from "@/app/page";
+import type { HomepageContent } from "@/types/homepage-content";
+
+import type { Metadata } from "next";
 
 type AccommodationDetailPageProps = {
   params: Promise<{
     slug: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: AccommodationDetailPageProps): Promise<Metadata> {
+  const { slug } = await params;
+
+  const supabase = await createClient();
+
+  const { data: accommodation } = await supabase
+    .from("accommodations")
+    .select(
+      `
+      title,
+      short_description,
+      accommodation_images!accommodation_images_accommodation_id_fkey (
+        image_url,
+        sort_order,
+        is_cover
+      )
+    `,
+    )
+    .eq("slug", slug)
+    .eq("is_active", true)
+    .single();
+
+  if (!accommodation) {
+    return {
+      title: "Konaklama Bulunamadı | Altunhan Farm",
+    };
+  }
+
+  const images = accommodation.accommodation_images ?? [];
+
+  const coverImage =
+    images.find((image) => image.is_cover) ??
+    [...images].sort(
+      (a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0),
+    )[0];
+
+  const description =
+    accommodation.short_description ||
+    `${accommodation.title} - Altunhan Farm, Saros'ta doğayla iç içe konaklama.`;
+
+  return {
+    title: `${accommodation.title} | Altunhan Farm`,
+
+    description,
+
+    openGraph: {
+      title: `${accommodation.title} | Altunhan Farm`,
+      description,
+      type: "website",
+
+      images: coverImage?.image_url
+        ? [
+            {
+              url: coverImage.image_url,
+              alt: accommodation.title,
+            },
+          ]
+        : [],
+    },
+  };
+}
 
 export default async function AccommodationDetailPage({
   params,
@@ -29,12 +96,16 @@ export default async function AccommodationDetailPage({
 
   const supabase = await createClient();
 
-  const [accommodationResult, settingsResult, accommodationsResult] =
-    await Promise.all([
-      supabase
-        .from("accommodations")
-        .select(
-          `
+  const [
+    accommodationResult,
+    settingsResult,
+    accommodationsResult,
+    homepageContentResult,
+  ] = await Promise.all([
+    supabase
+      .from("accommodations")
+      .select(
+        `
         id,
         title,
         slug,
@@ -56,17 +127,17 @@ export default async function AccommodationDetailPage({
           is_cover
         )
       `,
-        )
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .single(),
+      )
+      .eq("slug", slug)
+      .eq("is_active", true)
+      .single(),
 
-      supabase.from("site_settings").select("*").eq("id", 1).single(),
+    supabase.from("site_settings").select("*").eq("id", 1).single(),
 
-      supabase
-        .from("accommodations")
-        .select(
-          `
+    supabase
+      .from("accommodations")
+      .select(
+        `
         id,
         title,
         slug,
@@ -80,20 +151,22 @@ export default async function AccommodationDetailPage({
           is_cover
         )
       `,
-        )
-        .eq("is_active", true)
-        .order("created_at", {
-          ascending: true,
-        }),
-    ]);
+      )
+      .eq("is_active", true)
+      .order("created_at", {
+        ascending: true,
+      }),
+
+    supabase.from("homepage_content").select("*").eq("id", 1).single(),
+  ]);
 
   if (accommodationResult.error || !accommodationResult.data) {
     notFound();
   }
 
   const accommodation = accommodationResult.data as Accommodation;
-
   const settings = settingsResult.data as SiteSettings | null;
+  const homepageContent = homepageContentResult.data as HomepageContent | null;
 
   const accommodations = (accommodationsResult.data ??
     []) as HomeAccommodation[];
@@ -111,7 +184,6 @@ export default async function AccommodationDetailPage({
       return Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0);
     },
   );
-  
 
   const coverImage = images[0]?.image_url ?? null;
 
@@ -310,7 +382,7 @@ export default async function AccommodationDetailPage({
       <Footer
         settings={settings}
         accommodations={accommodations}
-        content={null}
+        content={homepageContent}
       />
     </>
   );
