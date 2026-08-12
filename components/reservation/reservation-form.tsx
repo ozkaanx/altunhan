@@ -519,8 +519,8 @@ export function ReservationForm({
               <div>
                 <p className="text-[10px] text-[#969990]">IBAN</p>
 
-                <div className="mt-1 flex items-center justify-between gap-3">
-                  <p className="break-all text-sm font-semibold tracking-wide text-[#263A2D]">
+               <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="min-w-0 break-all text-xs font-semibold tracking-wide text-[#263A2D] sm:text-sm">
                     {settings?.iban || "IBAN bilgisi henüz eklenmedi."}
                   </p>
 
@@ -941,10 +941,10 @@ export function ReservationForm({
           </div>
 
           <div className="mt-5">
-            <div className="flex items-end justify-between">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
               <p className="text-xs text-[#81857F]">Toplam</p>
 
-              <p className="text-2xl font-semibold text-[#263A2D]">
+           <p className="break-words text-2xl font-semibold text-[#263A2D]">
                 {estimatedTotal.toLocaleString("tr-TR")} TL
               </p>
             </div>
@@ -995,7 +995,7 @@ export function ReservationForm({
 }
 
 const inputClass =
-  "mt-2 h-11 w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-sm text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D]";
+  "mt-2 h-11 w-full min-w-0 border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:text-sm";
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (

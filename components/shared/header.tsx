@@ -1,30 +1,38 @@
-import { CiLocationOn } from "react-icons/ci";
-import { CiPhone } from "react-icons/ci";
+import {
+  CiLocationOn,
+  CiPhone,
+} from "react-icons/ci";
 
 export const Header = () => {
   return (
-    <>
-      <header className="w-full bg-header text-white p-2 px-16">
-        <div className="flex justify-between">
-          <div className="flex gap-2 items-center">
+    <header className="w-full bg-header px-4 py-2 text-white sm:px-6 md:px-12 lg:px-16">
+      <div className="mx-auto flex max-w-[1600px] items-center justify-center md:justify-between">
+        <div className="flex items-center gap-2">
+          <CiLocationOn className="shrink-0" />
+
+          <p className="text-center text-[10px] leading-4 sm:text-xs md:text-left">
+            Saros&apos;un kıyısında, doğanın içinde huzurlu bir kaçış.
+          </p>
+        </div>
+
+        <div className="hidden items-center gap-6 lg:flex">
+          <div className="flex items-center gap-2">
             <CiLocationOn />
-            <h5 className="text-xs">
-              Saros'un Kıyısında , doğanın içinde huzurlu bir kaçış.
-            </h5>
+
+            <span className="text-xs">
+              Adilhan Köyü, Keşan / Edirne
+            </span>
           </div>
 
-          <div className="flex gap-8 items-end">
-            <div className="flex gap-2 items-center">
-              <CiLocationOn />
-              <h6 className="text-xs">Adilhan Köyü, Keşan / Edirne</h6>
-            </div>
-            <div className="flex gap-2 items-center">
-              <CiPhone />
-              <h6 className="text-xs">0505 123 45 67</h6>
-            </div>
+          <div className="flex items-center gap-2">
+            <CiPhone />
+
+            <span className="text-xs">
+              0505 123 45 67
+            </span>
           </div>
         </div>
-      </header>
-    </>
+      </div>
+    </header>
   );
 };

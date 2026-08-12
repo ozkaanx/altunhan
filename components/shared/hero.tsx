@@ -2,10 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { CiLocationOn } from "react-icons/ci";
-import {
-  FiArrowDown,
-  FiArrowRight,
-} from "react-icons/fi";
+import { FiArrowDown, FiArrowRight } from "react-icons/fi";
 
 import type { HomepageContent } from "@/types/homepage-content";
 import type { SiteSettings } from "@/types/site-settings";
@@ -15,25 +12,16 @@ type HeroProps = {
   settings: SiteSettings | null;
 };
 
-export default function Hero({
-  content,
-  settings,
-}: HeroProps) {
-  const label =
-    content?.hero_label ||
-    "ALTUNHAN FARM";
+export default function Hero({ content, settings }: HeroProps) {
+  const label = content?.hero_label || "ALTUNHAN FARM";
 
-  const title =
-    content?.hero_title ||
-    "Saros'un doğayla buluştuğu yer.";
+  const title = content?.hero_title || "Saros'un doğayla buluştuğu yer.";
 
   const description =
     content?.hero_description ||
     "Doğanın içinde, denize birkaç adım. Uzun sofralar, sakin günler ve iyi hissettiren anlar.";
 
-  const address =
-    settings?.address?.trim() ||
-    "Adilhan Köyü, Keşan / Edirne";
+  const address = settings?.address?.trim() || "Adilhan Köyü, Keşan / Edirne";
 
   return (
     <section className="relative h-[calc(100vh-128px)] min-h-[600px] w-full overflow-hidden">
@@ -56,7 +44,8 @@ export default function Hero({
             {label}
           </p>
 
-          <h1 className="font-serif text-5xl leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
+          <h1 className="font-serif text-4xl leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+            {" "}
             {title}
           </h1>
 
@@ -70,7 +59,6 @@ export default function Hero({
               className="group inline-flex h-12 items-center gap-3 border border-white bg-white px-7 text-[11px] font-semibold uppercase tracking-[0.15em] text-[#263A2D] transition-all duration-300 hover:bg-transparent hover:text-white"
             >
               Konaklamayı Keşfet
-
               <FiArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
 
