@@ -26,6 +26,7 @@ import type { AccommodationBusyRange } from "@/app/rezervasyon/action";
 import { createClient } from "@/lib/supabase/client";
 
 import type { PublicAccommodation } from "@/types/public-reservation";
+import type { SiteSettings } from "@/types/site-settings";
 
 type ReservationFormProps = {
   accommodations: PublicAccommodation[];
