@@ -493,7 +493,7 @@ export function ReservationTracking({ settings }: ReservationTrackingProps) {
                   {reservation.guestName}
                 </h1>
 
-                <p className="mt-2 text-xs font-semibold tracking-[0.08em] text-[#7D817B]">
+                <p className="mt-2 break-all text-xs font-semibold tracking-[0.08em] text-[#7D817B]">
                   {reservation.reservationCode}
                 </p>
               </div>
@@ -505,10 +505,11 @@ export function ReservationTracking({ settings }: ReservationTrackingProps) {
           </div>
 
           <div className="p-5 sm:p-7">
-            <div className={`flex gap-3 border p-4 ${statusBox.className}`}>
+            <div
+              className={`flex min-w-0 items-start gap-3 border p-4 ${statusBox.className}`}
+            >
               <StatusIcon size={22} className="mt-0.5 shrink-0" />
-
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-semibold">{statusBox.title}</p>
 
                 <p className="mt-1 text-xs leading-5 opacity-80">
@@ -617,15 +618,15 @@ export function ReservationTracking({ settings }: ReservationTrackingProps) {
                   <div>
                     <p className="text-[10px] text-[#969990]">IBAN</p>
 
-                    <div className="mt-1 flex items-center justify-between gap-3">
-                      <p className="break-all text-sm font-semibold tracking-wide text-[#263A2D]">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="min-w-0 break-all text-xs font-semibold tracking-wide text-[#263A2D] sm:text-sm">
                         {settings?.iban || "TR00 0000 0000 0000 0000 0000 00"}
                       </p>
 
                       <button
                         type="button"
                         onClick={copyIban}
-                        className="flex h-9 shrink-0 items-center gap-2 border border-[#D7D3CA] bg-white px-3 text-[10px] font-semibold text-[#263A2D]"
+                        className="flex h-10 w-full shrink-0 items-center justify-center gap-2 border border-[#D7D3CA] bg-white px-3 text-[10px] font-semibold text-[#263A2D] sm:h-9 sm:w-auto"
                       >
                         <Copy size={13} />
                         Kopyala
@@ -637,7 +638,7 @@ export function ReservationTracking({ settings }: ReservationTrackingProps) {
                 <p className="mt-4 text-[11px] leading-5 text-[#777B74]">
                   Havale açıklamasına{" "}
                   <strong className="text-[#263A2D]">
-                    {reservation.reservationCode}
+                    {reservation?.reservationCode}
                   </strong>{" "}
                   yazın.
                 </p>

@@ -88,7 +88,45 @@ export default function Accommodation({
               return (
                 <article key={item.id} className="group relative pb-24">
                   {/* görsel vs... */}
+                  <Link href={`/konaklama/${item.slug}`} className="block">
+                    <div className="relative aspect-[1.15/1] overflow-hidden bg-[#E8E2D7] md:aspect-[1.05/1]">
+                      {image ? (
+                        <Image
+                          src={image}
+                          alt={item.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center">
+                          <LuBedDouble
+                            size={42}
+                            strokeWidth={1}
+                            className="text-[#AAA398]"
+                          />
+                        </div>
+                      )}
 
+                      <div className="absolute inset-0 bg-black/5 transition-colors duration-500 group-hover:bg-black/10" />
+
+                      <div className="absolute bottom-4 right-4 bg-white/90 px-3 py-2 backdrop-blur">
+                        <p className="text-[8px] uppercase tracking-[0.12em] text-[#8C9089]">
+                          Gecelik
+                        </p>
+
+                        <p className="mt-0.5 text-sm font-semibold text-[#263A2D]">
+                          {Number(item.price).toLocaleString("tr-TR")} TL
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                  <div className="absolute left-[-1px] top-[-1px] flex h-12 w-12 items-center justify-center rounded-full bg-[#526048] text-white md:h-14 md:w-14">
+                    <LuBedDouble
+                      strokeWidth={1.2}
+                      className="h-5 w-5 md:h-6 md:w-6"
+                    />
+                  </div>
                   <div className="absolute bottom-0 left-5 right-5 bg-[#F5F1E8] px-6 py-6 shadow-[0_5px_25px_rgba(38,58,45,0.06)] transition-transform duration-500 group-hover:-translate-y-1 md:left-6 md:right-6">
                     <h3 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#263A2D]">
                       {item.title}
