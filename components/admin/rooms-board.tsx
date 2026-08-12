@@ -269,7 +269,7 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
           </select>
         </div>
 
-        <div className="mt-5 flex flex-col gap-4 border border-[#E3E0D8] bg-white p-4 lg:flex-row lg:items-end">
+        <div className="mt-2 flex flex-col gap-4 bg-white p-2 pb-0 lg:flex-row lg:items-end">
           {[
             ["all", "Tümü"],
             ["available", "Müsait"],
