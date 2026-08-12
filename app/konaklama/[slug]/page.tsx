@@ -186,7 +186,6 @@ export default async function AccommodationDetailPage({
     },
   );
 
-  const coverImage = images[0]?.image_url ?? null;
 
   return (
     <>
