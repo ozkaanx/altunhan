@@ -5,6 +5,7 @@ import {
   Settings,
   SlidersHorizontal,
   UserRoundCog,
+  BedDouble
 } from "lucide-react";
 
 export const adminNavigation = [
@@ -38,4 +39,9 @@ export const adminNavigation = [
     href: "/admin/settings",
     icon: Settings,
   },
+  {
+  label: "Odalar",
+  href: "/admin/rooms",
+  icon: BedDouble,
+},
 ];
