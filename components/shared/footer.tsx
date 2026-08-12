@@ -185,7 +185,7 @@ export default function Footer({
                         }
                       >
                         <Link
-                          href="/rezervasyon"
+                            href={`/konaklama/${accommodation.slug}`}
                           className="text-xs text-white/65 transition-colors hover:text-white"
                         >
                           {
