@@ -30,8 +30,8 @@ import type { SiteSettings } from "@/types/site-settings";
 
 type ReservationFormProps = {
   accommodations: PublicAccommodation[];
-
   settings: SiteSettings | null;
+  initialAccommodationId?: number | null;
 };
 
 type CreatedReservation = {
@@ -102,9 +102,15 @@ function reservationOverlapsRange(
 export function ReservationForm({
   accommodations,
   settings,
+  initialAccommodationId,
 }: ReservationFormProps) {
-  const [accommodationId, setAccommodationId] = useState<number | null>(
-    accommodations[0]?.id ?? null,
+
+  
+ const [accommodationId, setAccommodationId] =
+  useState<number | null>(
+    initialAccommodationId ??
+      accommodations[0]?.id ??
+      null,
   );
 
   const [checkIn, setCheckIn] = useState("");
