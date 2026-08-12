@@ -506,14 +506,14 @@ export function ReservationForm({
               <BankRow
                 label="Hesap Sahibi"
                 value={
-                  settings?.bankAccountHolder ||
+                  settings?.bank_account_holder ||
                   "Hesap sahibi bilgisi henüz eklenmedi."
                 }
               />
 
               <BankRow
                 label="Banka"
-                value={settings?.bankName || "Banka bilgisi henüz eklenmedi."}
+                value={settings?.bank_name || "Banka bilgisi henüz eklenmedi."}
               />
 
               <div>
