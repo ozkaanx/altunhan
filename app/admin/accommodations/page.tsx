@@ -21,13 +21,6 @@ export default async function AccommodationsPage() {
       ascending: false,
     });
 
-  console.log(
-    "ACCOMMODATIONS:",
-    JSON.stringify(accommodations, null, 2),
-  );
-
-  console.log("ERROR:", error);
-
   if (error) {
     console.error(
       "Konaklamalar alınamadı:",

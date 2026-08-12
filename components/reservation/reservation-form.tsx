@@ -27,6 +27,7 @@ import { createClient } from "@/lib/supabase/client";
 
 import type { PublicAccommodation } from "@/types/public-reservation";
 import type { SiteSettings } from "@/types/site-settings";
+import Link from "next/link";
 
 type ReservationFormProps = {
   accommodations: PublicAccommodation[];
@@ -48,6 +49,8 @@ type CreatedReservation = {
   nightCount: number;
 
   totalPrice: number;
+
+  guestPhone: string;
 };
 
 function getTurkeyToday() {
@@ -104,13 +107,8 @@ export function ReservationForm({
   settings,
   initialAccommodationId,
 }: ReservationFormProps) {
-
-  
- const [accommodationId, setAccommodationId] =
-  useState<number | null>(
-    initialAccommodationId ??
-      accommodations[0]?.id ??
-      null,
+  const [accommodationId, setAccommodationId] = useState<number | null>(
+    initialAccommodationId ?? accommodations[0]?.id ?? null,
   );
 
   const [checkIn, setCheckIn] = useState("");
@@ -132,6 +130,8 @@ export function ReservationForm({
   const [createdReservation, setCreatedReservation] =
     useState<CreatedReservation | null>(null);
 
+  const [isReservationRestored, setIsReservationRestored] = useState(false);
+
   const [receipt, setReceipt] = useState<File | null>(null);
 
   const [isUploadingReceipt, setIsUploadingReceipt] = useState(false);
@@ -145,6 +145,8 @@ export function ReservationForm({
   const [availabilityError, setAvailabilityError] = useState<string | null>(
     null,
   );
+
+  const RESERVATION_STORAGE_KEY = "altunhan-active-reservation";
 
   const selectedAccommodation = useMemo(
     () =>
@@ -209,6 +211,29 @@ export function ReservationForm({
       cancelled = true;
     };
   }, [accommodationId]);
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(RESERVATION_STORAGE_KEY);
+
+      if (stored) {
+        const parsed = JSON.parse(stored) as {
+          reservation: CreatedReservation;
+          receiptSuccess?: boolean;
+        };
+
+        if (parsed.reservation) {
+          setCreatedReservation(parsed.reservation);
+
+          setReceiptSuccess(Boolean(parsed.receiptSuccess));
+        }
+      }
+    } catch (error) {
+      console.error("Rezervasyon bilgisi geri yüklenemedi:", error);
+    } finally {
+      setIsReservationRestored(true);
+    }
+  }, []);
 
   const checkInBusyRange = useMemo(() => {
     if (!checkIn) {
@@ -351,7 +376,21 @@ export function ReservationForm({
         return;
       }
 
-      setCreatedReservation(result.reservation);
+      const reservationData: CreatedReservation = {
+        ...result.reservation,
+        guestPhone,
+      };
+
+      setCreatedReservation(reservationData);
+
+      sessionStorage.setItem(
+        RESERVATION_STORAGE_KEY,
+        JSON.stringify({
+          reservation: reservationData,
+
+          receiptSuccess: false,
+        }),
+      );
 
       window.scrollTo({
         top: 0,
@@ -435,6 +474,15 @@ export function ReservationForm({
       setReceiptSuccess(true);
 
       setReceipt(null);
+
+      sessionStorage.setItem(
+        RESERVATION_STORAGE_KEY,
+        JSON.stringify({
+          reservation: createdReservation,
+
+          receiptSuccess: true,
+        }),
+      );
     } catch (error) {
       console.error(error);
 
@@ -451,6 +499,17 @@ export function ReservationForm({
 
     await navigator.clipboard.writeText(settings.iban.replace(/\s/g, ""));
   };
+
+  if (!isReservationRestored) {
+  return (
+    <div className="mx-auto flex min-h-[300px] max-w-[760px] items-center justify-center">
+      <Loader2
+        size={24}
+        className="animate-spin text-[#A8754F]"
+      />
+    </div>
+  );
+}
 
   if (createdReservation) {
     return (
@@ -519,7 +578,7 @@ export function ReservationForm({
               <div>
                 <p className="text-[10px] text-[#969990]">IBAN</p>
 
-               <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mt-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="min-w-0 break-all text-xs font-semibold tracking-wide text-[#263A2D] sm:text-sm">
                     {settings?.iban || "IBAN bilgisi henüz eklenmedi."}
                   </p>
@@ -602,6 +661,13 @@ export function ReservationForm({
               </>
             )}
           </div>
+
+          <Link
+  href="/rezervasyon/takip"
+  className="mt-4 flex h-11 w-full items-center justify-center border border-[#D7D3CA] text-xs font-semibold text-[#263A2D]"
+>
+  Rezervasyonumu Takip Et
+</Link>
 
           {error && (
             <div className="mt-4 border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs text-[#98584E]">
@@ -944,7 +1010,7 @@ export function ReservationForm({
             <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
               <p className="text-xs text-[#81857F]">Toplam</p>
 
-           <p className="break-words text-2xl font-semibold text-[#263A2D]">
+              <p className="break-words text-2xl font-semibold text-[#263A2D]">
                 {estimatedTotal.toLocaleString("tr-TR")} TL
               </p>
             </div>

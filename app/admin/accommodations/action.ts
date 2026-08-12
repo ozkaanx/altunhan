@@ -94,10 +94,6 @@ export async function updateAccommodation(
     .eq("id", id)
     .select("id");
 
-  console.log("UPDATE ID:", id);
-  console.log("UPDATE DATA:", data);
-  console.log("UPDATE ERROR:", error);
-
   if (error) {
     return {
       success: false,
