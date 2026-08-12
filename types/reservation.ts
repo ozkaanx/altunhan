@@ -39,9 +39,14 @@ export type Reservation = {
 
   created_at: string;
   updated_at: string;
-
+  room_id: number | null;
   accommodations: {
     id: number;
     title: string;
+  } | null;
+  rooms: {
+    id: number;
+    room_name: string;
+    room_number: string | null;
   } | null;
 };

@@ -5,326 +5,201 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 async function requireAdmin() {
-  const supabase =
-    await createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
     error,
-  } =
-    await supabase.auth.getUser();
+  } = await supabase.auth.getUser();
 
-  if (
-    error ||
-    !user
-  ) {
+  if (error || !user) {
     return {
-      success:
-        false as const,
+      success: false as const,
 
       supabase,
 
-      message:
-        "Bu işlem için yönetici girişi yapmanız gerekiyor.",
+      message: "Bu işlem için yönetici girişi yapmanız gerekiyor.",
     };
   }
 
   return {
-    success:
-      true as const,
+    success: true as const,
 
     supabase,
   };
 }
 
-export async function approveReservation(
-  id: number,
-) {
-  const auth =
-    await requireAdmin();
+export async function approveReservation(id: number) {
+  const auth = await requireAdmin();
 
   if (!auth.success) {
     return {
       success: false,
-      message:
-        auth.message,
+      message: auth.message,
     };
   }
 
-  const {
-    supabase,
-  } = auth;
+  const { supabase } = auth;
 
-  const {
-    data,
-    error,
-  } =
-    await supabase
-      .from(
-        "reservations",
-      )
-      .update({
-        status:
-          "confirmed",
+  const { data, error } = await supabase
+    .from("reservations")
+    .update({
+      status: "confirmed",
 
-        rejection_reason:
-          null,
+      rejection_reason: null,
 
-        cancellation_reason:
-          null,
+      cancellation_reason: null,
 
-        updated_at:
-          new Date().toISOString(),
-      })
-      .eq(
-        "id",
-        id,
-      )
-      .eq(
-        "status",
-        "pending_approval",
-      )
-      .select(
-        "id",
-      );
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("status", "pending_approval")
+    .select("id");
 
   if (error) {
-    console.error(
-      "Rezervasyon onaylanamadı:",
-      error,
-    );
+    console.error("Rezervasyon onaylanamadı:", error);
 
     return {
       success: false,
-      message:
-        error.message,
+      message: error.message,
     };
   }
 
   if (!data?.length) {
     return {
       success: false,
-      message:
-        "Rezervasyon bulunamadı veya artık onay beklemiyor.",
+      message: "Rezervasyon bulunamadı veya artık onay beklemiyor.",
     };
   }
 
-  revalidatePath(
-    "/admin/reservations",
-  );
+  revalidatePath("/admin/reservations");
 
-  revalidatePath(
-    "/admin",
-  );
+  revalidatePath("/admin");
 
-  revalidatePath(
-    "/rezervasyon/takip",
-  );
+  revalidatePath("/rezervasyon/takip");
 
   return {
     success: true,
   };
 }
 
-export async function rejectReservation(
-  id: number,
-  reason: string,
-) {
-  const cleanReason =
-    reason.trim();
+export async function rejectReservation(id: number, reason: string) {
+  const cleanReason = reason.trim();
 
-  if (
-    cleanReason.length <
-    5
-  ) {
+  if (cleanReason.length < 5) {
     return {
       success: false,
-      message:
-        "Lütfen en az 5 karakterlik bir red sebebi yazın.",
+      message: "Lütfen en az 5 karakterlik bir red sebebi yazın.",
     };
   }
 
-  if (
-    cleanReason.length >
-    500
-  ) {
+  if (cleanReason.length > 500) {
     return {
       success: false,
-      message:
-        "Red sebebi en fazla 500 karakter olabilir.",
+      message: "Red sebebi en fazla 500 karakter olabilir.",
     };
   }
 
-  const auth =
-    await requireAdmin();
+  const auth = await requireAdmin();
 
   if (!auth.success) {
     return {
       success: false,
-      message:
-        auth.message,
+      message: auth.message,
     };
   }
 
-  const {
-    supabase,
-  } = auth;
+  const { supabase } = auth;
 
-  const {
-    data,
-    error,
-  } =
-    await supabase
-      .from(
-        "reservations",
-      )
-      .update({
-        status:
-          "rejected",
+  const { data, error } = await supabase
+    .from("reservations")
+    .update({
+      status: "rejected",
 
-        rejection_reason:
-          cleanReason,
+      rejection_reason: cleanReason,
 
-        cancellation_reason:
-          null,
+      cancellation_reason: null,
 
-        updated_at:
-          new Date().toISOString(),
-      })
-      .eq(
-        "id",
-        id,
-      )
-      .eq(
-        "status",
-        "pending_approval",
-      )
-      .select(
-        "id",
-      );
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("status", "pending_approval")
+    .select("id");
 
   if (error) {
-    console.error(
-      "Rezervasyon reddedilemedi:",
-      error,
-    );
+    console.error("Rezervasyon reddedilemedi:", error);
 
     return {
       success: false,
-      message:
-        error.message,
+      message: error.message,
     };
   }
 
   if (!data?.length) {
     return {
       success: false,
-      message:
-        "Rezervasyon bulunamadı veya artık onay beklemiyor.",
+      message: "Rezervasyon bulunamadı veya artık onay beklemiyor.",
     };
   }
 
-  revalidatePath(
-    "/admin/reservations",
-  );
+  revalidatePath("/admin/reservations");
 
-  revalidatePath(
-    "/admin",
-  );
+  revalidatePath("/admin");
 
-  revalidatePath(
-    "/rezervasyon/takip",
-  );
+  revalidatePath("/rezervasyon/takip");
 
   return {
     success: true,
   };
 }
 
-export async function cancelReservation(
-  id: number,
-  reason: string,
-) {
-  const cleanReason =
-    reason.trim();
+export async function cancelReservation(id: number, reason: string) {
+  const cleanReason = reason.trim();
 
-  if (
-    cleanReason.length <
-    5
-  ) {
+  if (cleanReason.length < 5) {
     return {
       success: false,
-      message:
-        "Lütfen en az 5 karakterlik bir iptal sebebi yazın.",
+      message: "Lütfen en az 5 karakterlik bir iptal sebebi yazın.",
     };
   }
 
-  if (
-    cleanReason.length >
-    500
-  ) {
+  if (cleanReason.length > 500) {
     return {
       success: false,
-      message:
-        "İptal sebebi en fazla 500 karakter olabilir.",
+      message: "İptal sebebi en fazla 500 karakter olabilir.",
     };
   }
 
-  const auth =
-    await requireAdmin();
+  const auth = await requireAdmin();
 
   if (!auth.success) {
     return {
       success: false,
-      message:
-        auth.message,
+      message: auth.message,
     };
   }
 
-  const {
-    supabase,
-  } = auth;
+  const { supabase } = auth;
 
-  const {
-    data,
-    error,
-  } =
-    await supabase
-      .from(
-        "reservations",
-      )
-      .update({
-        status:
-          "cancelled",
+  const { data, error } = await supabase
+    .from("reservations")
+    .update({
+      status: "cancelled",
 
-        cancellation_reason:
-          cleanReason,
+      cancellation_reason: cleanReason,
 
-        updated_at:
-          new Date().toISOString(),
-      })
-      .eq(
-        "id",
-        id,
-      )
-      .eq(
-        "status",
-        "confirmed",
-      )
-      .select(
-        "id",
-      );
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("status", "confirmed")
+    .select("id");
 
   if (error) {
-    console.error(
-      "Rezervasyon iptal edilemedi:",
-      error,
-    );
+    console.error("Rezervasyon iptal edilemedi:", error);
 
     return {
       success: false,
-      message:
-        error.message,
+      message: error.message,
     };
   }
 
@@ -336,72 +211,125 @@ export async function cancelReservation(
     };
   }
 
-  revalidatePath(
-    "/admin/reservations",
-  );
+  revalidatePath("/admin/reservations");
 
-  revalidatePath(
-    "/admin",
-  );
+  revalidatePath("/admin");
 
-  revalidatePath(
-    "/rezervasyon/takip",
-  );
+  revalidatePath("/rezervasyon/takip");
 
   return {
     success: true,
   };
 }
 
-export async function getReceiptSignedUrl(
-  storagePath: string,
+export async function getAvailableRooms(reservationId: number) {
+  const auth = await requireAdmin();
+
+  if (!auth.success) {
+    return {
+      success: false as const,
+      message: auth.message,
+      rooms: [],
+    };
+  }
+
+  const { supabase } = auth;
+
+  const { data, error } = await supabase.rpc(
+    "get_available_rooms_for_reservation",
+    {
+      p_reservation_id: reservationId,
+    },
+  );
+
+  if (error) {
+    console.error("Müsait odalar alınamadı:", error);
+
+    return {
+      success: false as const,
+      message: error.message ?? "Müsait odalar alınamadı.",
+      rooms: [],
+    };
+  }
+
+  return {
+    success: true as const,
+    rooms: (data ?? []).map((room) => ({
+      id: Number(room.room_id),
+      roomName: room.room_name,
+      roomNumber: room.room_number,
+      isCurrent: Boolean(room.is_current),
+      isAvailable: Boolean(room.is_available),
+    })),
+  };
+}
+
+export async function changeReservationRoom(
+  reservationId: number,
+  roomId: number,
 ) {
-  const auth =
-    await requireAdmin();
+  const auth = await requireAdmin();
+
+  if (!auth.success) {
+    return {
+      success: false as const,
+      message: auth.message,
+    };
+  }
+
+  const { supabase } = auth;
+
+  const { data, error } = await supabase.rpc("change_reservation_room", {
+    p_reservation_id: reservationId,
+    p_room_id: roomId,
+  });
+
+  if (error || !data) {
+    console.error("Rezervasyon odası değiştirilemedi:", error);
+
+    return {
+      success: false as const,
+      message: error?.message ?? "Oda değiştirilemedi.",
+    };
+  }
+
+  revalidatePath("/admin/reservations");
+
+  revalidatePath("/admin/rooms");
+
+  revalidatePath("/admin");
+
+  return {
+    success: true as const,
+  };
+}
+
+export async function getReceiptSignedUrl(storagePath: string) {
+  const auth = await requireAdmin();
 
   if (!auth.success) {
     return {
       success: false,
 
-      message:
-        auth.message,
+      message: auth.message,
 
       url: null,
     };
   }
 
-  const {
-    supabase,
-  } = auth;
+  const { supabase } = auth;
 
-  const {
-    data,
-    error,
-  } =
-    await supabase.storage
-      .from(
-        "reservation-receipts",
-      )
-      .createSignedUrl(
-        storagePath,
-        60 * 10,
-      );
+  const { data, error } = await supabase.storage
+    .from("reservation-receipts")
+    .createSignedUrl(storagePath, 60 * 10);
 
-  if (
-    error ||
-    !data
-  ) {
-    console.error(
-      "Dekont URL oluşturulamadı:",
-      error,
-    );
+  if (error || !data) {
+    console.error("Dekont URL oluşturulamadı:", error);
 
     return {
       success: false,
 
-      message:
-        error?.message ??
-        "Dekont açılamadı.",
+      message: error?.message ?? "Dekont açılamadı.",
 
       url: null,
     };
@@ -410,7 +338,6 @@ export async function getReceiptSignedUrl(
   return {
     success: true,
 
-    url:
-      data.signedUrl,
+    url: data.signedUrl,
   };
 }
