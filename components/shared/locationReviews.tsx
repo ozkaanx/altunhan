@@ -10,78 +10,35 @@ import {
   FiMapPin,
 } from "react-icons/fi";
 
-import type {
-  SiteSettings,
-} from "@/types/site-settings";
+import type { SiteSettings } from "@/types/site-settings";
 
-const reviews = [
-  {
-    text: "Doğayla iç içe, huzurlu ve çok güzel bir yer. Kesinlikle tekrar gelmek istiyoruz.",
-    name: "Buse K.",
-  },
-  {
-    text: "Denizi, yemekleri ve çalışanların ilgisi mükemmeldi. Her şey harikaydı.",
-    name: "Mehmet T.",
-  },
-  {
-    text: "Uzun zamandır bu kadar iyi dinlenmemiştim. Bir tatil değil, gerçekten deneyimdi.",
-    name: "Ayşe D.",
-  },
-  {
-    text: "Hem konumu hem de atmosferi gerçekten çok güzel. Ailece çok keyifli vakit geçirdik.",
-    name: "Can K.",
-  },
-  {
-    text: "Yemekler çok başarılıydı. Özellikle gün batımında restoranın atmosferi harika.",
-    name: "Elif T.",
-  },
-  {
-    text: "Sakinlik arayanlar için kesinlikle tavsiye ederim. Tekrar geleceğiz.",
-    name: "Mert A.",
-  },
-];
+import type { Review } from "@/types/review";
 
 type LocationReviewsProps = {
-  settings:
-    SiteSettings | null;
+  settings: SiteSettings | null;
+  reviews: Review[];
 };
 
-export default function LocationReviews({
-  settings,
-}: LocationReviewsProps) {
-  const sliderRef =
-    useRef<HTMLDivElement>(null);
+export default function LocationReviews({ settings, reviews }: LocationReviewsProps) {
+  const sliderRef = useRef<HTMLDivElement>(null);
 
-  const scrollSlider = (
-    direction:
-      | "prev"
-      | "next",
-  ) => {
-    if (
-      !sliderRef.current
-    ) {
+  const scrollSlider = (direction: "prev" | "next") => {
+    if (!sliderRef.current) {
       return;
     }
 
-    const firstCard =
-      sliderRef.current
-        .children[0] as HTMLElement;
+    const firstCard = sliderRef.current.children[0] as HTMLElement;
 
-    if (
-      !firstCard
-    ) {
+    if (!firstCard) {
       return;
     }
 
-    const cardWidth =
-      firstCard.offsetWidth;
+    const cardWidth = firstCard.offsetWidth;
 
     const gap = 16;
 
     const scrollAmount =
-      direction === "next"
-        ? cardWidth + gap
-        : -(cardWidth + gap);
+      direction === "next" ? cardWidth + gap : -(cardWidth + gap);
 
     sliderRef.current.scrollBy({
       left: scrollAmount,
@@ -89,19 +46,15 @@ export default function LocationReviews({
     });
   };
 
-  const address =
-    settings?.address?.trim() ||
-    "Adilhan Köyü, Keşan / Edirne";
+  const address = settings?.address?.trim() || "Adilhan Köyü, Keşan / Edirne";
 
-  const mapsSearchUrl =
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      address,
-    )}`;
+  const mapsSearchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    address,
+  )}`;
 
-  const mapsEmbedUrl =
-    `https://www.google.com/maps?q=${encodeURIComponent(
-      address,
-    )}&output=embed`;
+  const mapsEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(
+    address,
+  )}&output=embed`;
 
   return (
     <section
@@ -140,7 +93,6 @@ export default function LocationReviews({
                   className="group mt-5 inline-flex items-center gap-3 text-[9px] font-semibold uppercase tracking-[0.16em] text-[#263A2D]"
                 >
                   Nasıl Gidilir?
-
                   <FiArrowRight
                     size={12}
                     className="transition-transform duration-300 group-hover:translate-x-1"
@@ -178,31 +130,19 @@ export default function LocationReviews({
                 <button
                   type="button"
                   aria-label="Önceki yorum"
-                  onClick={() =>
-                    scrollSlider(
-                      "prev",
-                    )
-                  }
+                  onClick={() => scrollSlider("prev")}
                   className="flex h-10 w-10 items-center justify-center border border-[#CFC8BA] text-[#263A2D] transition-all duration-300 hover:bg-[#263A2D] hover:text-white"
                 >
-                  <FiChevronLeft
-                    size={18}
-                  />
+                  <FiChevronLeft size={18} />
                 </button>
 
                 <button
                   type="button"
                   aria-label="Sonraki yorum"
-                  onClick={() =>
-                    scrollSlider(
-                      "next",
-                    )
-                  }
+                  onClick={() => scrollSlider("next")}
                   className="flex h-10 w-10 items-center justify-center border border-[#CFC8BA] text-[#263A2D] transition-all duration-300 hover:bg-[#263A2D] hover:text-white"
                 >
-                  <FiChevronRight
-                    size={18}
-                  />
+                  <FiChevronRight size={18} />
                 </button>
               </div>
             </div>
@@ -211,65 +151,44 @@ export default function LocationReviews({
               ref={sliderRef}
               className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              {reviews.map(
-                (
-                  review,
-                ) => (
+              <div
+                ref={sliderRef}
+                className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              >
+                {reviews.map((review) => (
                   <article
-                    key={
-                      review.name
-                    }
+                    key={review.id}
                     className="w-full shrink-0 snap-start border border-[#DDD8CC] bg-[#F8F4EB] p-6 md:w-[calc((100%-16px)/2)] lg:w-[calc((100%-32px)/3)]"
                   >
                     <div className="flex min-h-[220px] flex-col justify-between">
                       <p className="font-serif text-[17px] leading-[1.45] text-[#3A423A]">
-                        “
-                        {
-                          review.text
-                        }
-                        ”
+                        “{review.review_text}”
                       </p>
 
                       <div className="mt-8">
                         <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#263A2D]">
-                          {
-                            review.name
-                          }
+                          {review.guest_name}
                         </p>
 
                         <div className="mt-2 flex gap-1 text-[#B9823F]">
-                          <span>
-                            ★
-                          </span>
-                          <span>
-                            ★
-                          </span>
-                          <span>
-                            ★
-                          </span>
-                          <span>
-                            ★
-                          </span>
-                          <span>
-                            ★
-                          </span>
+                          {Array.from({
+                            length: review.rating,
+                          }).map((_, index) => (
+                            <span key={index}>★</span>
+                          ))}
                         </div>
                       </div>
                     </div>
                   </article>
-                ),
-              )}
+                ))}
+              </div>
             </div>
 
             <div className="mt-5 flex gap-2 md:hidden">
               <button
                 type="button"
                 aria-label="Önceki yorum"
-                onClick={() =>
-                  scrollSlider(
-                    "prev",
-                  )
-                }
+                onClick={() => scrollSlider("prev")}
                 className="flex h-10 w-10 items-center justify-center border border-[#CFC8BA] text-[#263A2D]"
               >
                 <FiChevronLeft />
@@ -278,11 +197,7 @@ export default function LocationReviews({
               <button
                 type="button"
                 aria-label="Sonraki yorum"
-                onClick={() =>
-                  scrollSlider(
-                    "next",
-                  )
-                }
+                onClick={() => scrollSlider("next")}
                 className="flex h-10 w-10 items-center justify-center border border-[#CFC8BA] text-[#263A2D]"
               >
                 <FiChevronRight />

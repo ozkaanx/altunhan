@@ -9,6 +9,7 @@ import Footer from "@/components/shared/footer";
 import { createClient } from "@/lib/supabase/server";
 
 import type { SiteSettings } from "@/types/site-settings";
+import type { Review } from "@/types/review";
 
 export type HomeAccommodation = {
   id: number;
@@ -32,6 +33,7 @@ export default async function Home() {
   const [
     accommodationsResult,
     settingsResult,
+    reviewsResult,
   ] = await Promise.all([
     supabase
       .from("accommodations")
@@ -59,6 +61,17 @@ export default async function Home() {
       .select("*")
       .eq("id", 1)
       .single(),
+
+    supabase
+      .from("reviews")
+      .select("*")
+      .eq("is_active", true)
+      .order("sort_order", {
+        ascending: true,
+      })
+      .order("created_at", {
+        ascending: false,
+      }),
   ]);
 
   const {
@@ -71,6 +84,11 @@ export default async function Home() {
     error: settingsError,
   } = settingsResult;
 
+  const {
+    data: reviews,
+    error: reviewsError,
+  } = reviewsResult;
+
   if (accommodationsError) {
     console.error(
       "Ana sayfa konaklamaları alınamadı:",
@@ -82,6 +100,13 @@ export default async function Home() {
     console.error(
       "Site ayarları alınamadı:",
       settingsError,
+    );
+  }
+
+  if (reviewsError) {
+    console.error(
+      "Yorumlar alınamadı:",
+      reviewsError,
     );
   }
 
@@ -103,16 +128,13 @@ export default async function Home() {
         />
 
         <LocationReviews
-          settings={
-            settings as SiteSettings | null
-          }
+          settings={settings as SiteSettings | null}
+          reviews={(reviews ?? []) as Review[]}
         />
       </main>
 
       <Footer
-        settings={
-          settings as SiteSettings | null
-        }
+        settings={settings as SiteSettings | null}
         accommodations={
           (accommodations ?? []) as HomeAccommodation[]
         }
