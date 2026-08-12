@@ -8,6 +8,8 @@ import Footer from "@/components/shared/footer";
 
 import { createClient } from "@/lib/supabase/server";
 
+import type { SiteSettings } from "@/types/site-settings";
+
 export type HomeAccommodation = {
   id: number;
   title: string;
@@ -27,40 +29,66 @@ export type HomeAccommodation = {
 export default async function Home() {
   const supabase = await createClient();
 
+  const [
+    accommodationsResult,
+    settingsResult,
+  ] = await Promise.all([
+    supabase
+      .from("accommodations")
+      .select(`
+        id,
+        title,
+        slug,
+        short_description,
+        price,
+        capacity,
+        accommodation_images!accommodation_images_accommodation_id_fkey (
+          id,
+          image_url,
+          sort_order,
+          is_cover
+        )
+      `)
+      .eq("is_active", true)
+      .order("created_at", {
+        ascending: true,
+      }),
+
+    supabase
+      .from("site_settings")
+      .select("*")
+      .eq("id", 1)
+      .single(),
+  ]);
+
   const {
     data: accommodations,
-    error,
-  } = await supabase
-    .from("accommodations")
-    .select(`
-      id,
-      title,
-      slug,
-      short_description,
-      price,
-      capacity,
-      accommodation_images!accommodation_images_accommodation_id_fkey (
-        id,
-        image_url,
-        sort_order,
-        is_cover
-      )
-    `)
-    .eq("is_active", true)
-    .order("created_at", {
-      ascending: true,
-    });
+    error: accommodationsError,
+  } = accommodationsResult;
 
-  if (error) {
+  const {
+    data: settings,
+    error: settingsError,
+  } = settingsResult;
+
+  if (accommodationsError) {
     console.error(
       "Ana sayfa konaklamaları alınamadı:",
-      error,
+      accommodationsError,
+    );
+  }
+
+  if (settingsError) {
+    console.error(
+      "Site ayarları alınamadı:",
+      settingsError,
     );
   }
 
   return (
     <>
       <Header />
+
       <Navbar />
 
       <main>
@@ -74,10 +102,21 @@ export default async function Home() {
           }
         />
 
-        <LocationReviews />
+        <LocationReviews
+          settings={
+            settings as SiteSettings | null
+          }
+        />
       </main>
 
-      <Footer />
+      <Footer
+        settings={
+          settings as SiteSettings | null
+        }
+        accommodations={
+          (accommodations ?? []) as HomeAccommodation[]
+        }
+      />
     </>
   );
 }
