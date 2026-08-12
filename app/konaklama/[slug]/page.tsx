@@ -69,12 +69,12 @@ export async function generateMetadata({
     `${accommodation.title} - Altunhan Farm, Saros'ta doğayla iç içe konaklama.`;
 
   return {
-    title: `${accommodation.title} | Altunhan Farm`,
+    title: accommodation.title,
 
     description,
 
     openGraph: {
-      title: `${accommodation.title} | Altunhan Farm`,
+      title: accommodation.title,
       description,
       type: "website",
 
