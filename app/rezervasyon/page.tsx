@@ -6,30 +6,66 @@ import { createClient } from "@/lib/supabase/server";
 
 import type { PublicAccommodation } from "@/types/public-reservation";
 
-export default async function ReservationPage() {
+import type { SiteSettings } from "@/types/site-settings";
+
+type ReservationPageProps = {
+  searchParams: Promise<{
+    accommodation?: string;
+  }>;
+};
+
+export default async function ReservationPage({
+  searchParams,
+}: ReservationPageProps) {
+  const params = await searchParams;
+  const requestedAccommodationSlug = params.accommodation ?? null;
+
   const supabase = await createClient();
 
-  const { data: accommodations, error } =
-    await supabase
+  const [accommodationsResult, settingsResult] = await Promise.all([
+    supabase
       .from("accommodations")
-      .select(`
+      .select(
+        `
         id,
         title,
+        slug,
         short_description,
         price,
         capacity
-      `)
+      `,
+      )
       .eq("is_active", true)
       .order("created_at", {
         ascending: true,
-      });
+      }),
 
-  if (error) {
-    console.error(
-      "Konaklamalar alınamadı:",
-      error,
-    );
+    supabase.from("site_settings").select("*").eq("id", 1).single(),
+  ]);
+
+  const { data: accommodations, error: accommodationsError } =
+    accommodationsResult;
+
+  const { data: settings, error: settingsError } = settingsResult;
+
+  if (accommodationsError) {
+    console.error("Konaklamalar alınamadı:", accommodationsError);
   }
+
+  if (settingsError) {
+    console.error("Site ayarları alınamadı:", settingsError);
+  }
+
+  const publicAccommodations = (accommodations ?? []) as PublicAccommodation[];
+
+  const requestedAccommodation = requestedAccommodationSlug
+    ? publicAccommodations.find(
+        (accommodation) => accommodation.slug === requestedAccommodationSlug,
+      )
+    : null;
+
+  const initialAccommodationId =
+    requestedAccommodation?.id ?? publicAccommodations[0]?.id ?? null;
 
   return (
     <main className="min-h-screen bg-[#F4F2ED]">
@@ -56,17 +92,16 @@ export default async function ReservationPage() {
           </h1>
 
           <p className="mt-4 text-sm leading-6 text-[#71756E]">
-            Konaklamanızı ve tarihlerinizi seçin. Müsaitliği
-            kontrol ettikten sonra rezervasyon talebinizi
-            oluşturabilirsiniz.
+            Konaklamanızı ve tarihlerinizi seçin. Müsaitliği kontrol ettikten
+            sonra rezervasyon talebinizi oluşturabilirsiniz.
           </p>
         </div>
 
         {accommodations?.length ? (
           <ReservationForm
-            accommodations={
-              accommodations as PublicAccommodation[]
-            }
+            accommodations={publicAccommodations}
+            settings={settings as SiteSettings | null}
+            initialAccommodationId={initialAccommodationId}
           />
         ) : (
           <div className="border border-[#E3E0D8] bg-white px-5 py-16 text-center">

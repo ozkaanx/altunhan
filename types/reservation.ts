@@ -32,7 +32,10 @@ export type Reservation = {
   status: ReservationStatus;
 
   admin_note: string | null;
+
   rejection_reason: string | null;
+
+  cancellation_reason: string | null;
 
   created_at: string;
   updated_at: string;
