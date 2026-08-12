@@ -216,8 +216,7 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Misafir, telefon veya rezervasyon kodu ara..."
-              className="h-11 w-full border border-[#DDD9D1] bg-white pl-10 pr-4 text-sm text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:max-w-[420px]"
-            />
+className="h-11 w-full min-w-0 border border-[#DDD9D1] bg-white pl-10 pr-4 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:max-w-[420px] sm:text-sm"            />
           </div>
 
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -256,9 +255,9 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
               key={reservation.id}
               className="border border-[#E3E0D8] bg-white p-4"
             >
-              <div className="flex items-start justify-between gap-3">
+             <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A8754F]">
+                <p className="break-all text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A8754F]">
                     {reservation.reservation_code}
                   </p>
 
@@ -322,7 +321,7 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
                 </div>
               </div>
 
-              <div className="mt-4 flex items-end justify-between gap-4">
+            <div className="flex h-10 w-full items-center justify-center gap-2 bg-[#263A2D] px-4 text-xs font-medium text-white sm:w-auto">
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.1em] text-[#969990]">
                     Toplam
