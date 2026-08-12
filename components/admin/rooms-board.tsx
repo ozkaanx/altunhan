@@ -290,13 +290,12 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
             </button>
           ))}
         </div>
-
         <p className="text-xs text-[#8B8E87] lg:ml-auto">
           {filteredRooms.length} oda gösteriliyor
         </p>
       </div>
       <div className="mt-7 border border-[#E3E0D8] bg-white">
-        <div className="flex flex-col gap-4 border-b border-[#EEEAE3] p-5 sm:flex-row sm:items-center sm:justify-between">
+        {/* <div className="flex flex-col gap-4 border-b border-[#EEEAE3] p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A8754F]">
               Resepsiyon Planı
@@ -329,11 +328,10 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
               Sonraki →
             </button>
           </div>
-        </div>
+        </div> */}
 
-        <div className="overflow-x-auto">
+        {/* <div className="overflow-x-auto">
           <div className="min-w-[900px]">
-            {/* HEADER */}
             <div className="grid grid-cols-[160px_repeat(7,minmax(100px,1fr))] border-b border-[#EEEAE3] bg-[#FAF9F6]">
               <div className="flex items-center px-4 py-3">
                 <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#92968F]">
@@ -361,7 +359,6 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
               ))}
             </div>
 
-            {/* ROOMS */}
             {rooms
               .filter((room) => {
                 if (accommodationFilter === "all") {
@@ -375,7 +372,9 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
                   key={room.id}
                   className="grid grid-cols-[160px_repeat(7,minmax(100px,1fr))] border-b border-[#F0EDE7] last:border-b-0"
                 >
-                  {/* ROOM */}
+            
+
+
                   <div className="flex items-center gap-3 px-4 py-3">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-[#F1EFEA] text-[#263A2D]">
                       <DoorClosed size={15} />
@@ -392,7 +391,6 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
                     </div>
                   </div>
 
-                  {/* DAYS */}
                   {weekDates.map((date) => {
                     const reservation = getReservationForDate(room, date);
 
@@ -447,7 +445,7 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
                 </div>
               ))}
           </div>
-        </div>
+        </div> */}
 
         <div className="flex flex-wrap items-center gap-5 border-t border-[#EEEAE3] px-5 py-3">
           <div className="flex items-center gap-2">
