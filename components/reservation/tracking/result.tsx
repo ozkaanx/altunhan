@@ -9,42 +9,22 @@ import {
   Users,
 } from "lucide-react";
 
-import {
-  BankInformation,
-} from "@/components/reservation/payment/bank-information";
+import { useTrackingReceiptUpload } from "@/hooks/reservation/use-tracking-receipt-upload";
 
-import {
-  TrackingReceiptUpload,
-} from "@/components/reservation/tracking/tracking-receipt-upload";
+import { formatReservationDate } from "@/lib/reservation/date-utils";
 
-import {
-  TrackingStatusCard,
-} from "@/components/reservation/tracking/tracking-status-card";
+import { formatReservationPrice } from "@/lib/reservation/reservation-utils";
 
-import {
-  TrackingTimeline,
-} from "@/components/reservation/tracking/tracking-timeline";
-
-import {
-  useTrackingReceiptUpload,
-} from "@/hooks/reservation/use-tracking-receipt-upload";
-
-import {
-  formatReservationDate,
-} from "@/lib/reservation/date-utils";
-
-import {
-  formatReservationPrice,
-} from "@/lib/reservation/reservation-utils";
-
-import type {
-  SiteSettings,
-} from "@/types/site-settings";
+import type { SiteSettings } from "@/types/site-settings";
 
 import type {
   PublicReservationStatus,
   ReservationTrackingResult,
 } from "@/types/reservation-tracking";
+import { TrackingStatusCard } from "./statusCard";
+import { TrackingTimeline } from "./timeline";
+import { BankInformation } from "../payment/bankInformation";
+import { TrackingReceiptUpload } from "./receiptUpload";
 
 type TrackingResultProps = {
   reservation: ReservationTrackingResult;
@@ -53,29 +33,19 @@ type TrackingResultProps = {
 
   onReset: () => void;
 
-  onReservationChange: (
-    reservation: ReservationTrackingResult,
-  ) => void;
+  onReservationChange: (reservation: ReservationTrackingResult) => void;
 };
 
-const statusLabels: Record<
-  PublicReservationStatus,
-  string
-> = {
-  pending_payment:
-    "Ödeme Bekleniyor",
+const statusLabels: Record<PublicReservationStatus, string> = {
+  pending_payment: "Ödeme Bekleniyor",
 
-  pending_approval:
-    "Onay Bekliyor",
+  pending_approval: "Onay Bekliyor",
 
-  confirmed:
-    "Onaylandı",
+  confirmed: "Onaylandı",
 
-  rejected:
-    "Reddedildi",
+  rejected: "Reddedildi",
 
-  cancelled:
-    "İptal Edildi",
+  cancelled: "İptal Edildi",
 };
 
 export function TrackingResult({
@@ -94,14 +64,12 @@ export function TrackingResult({
     selectReceipt,
     clearReceipt,
     uploadReceipt,
-  } =
-    useTrackingReceiptUpload({
-      reservation,
-      phone,
+  } = useTrackingReceiptUpload({
+    reservation,
+    phone,
 
-      onReservationRefresh:
-        onReservationChange,
-    });
+    onReservationRefresh: onReservationChange,
+  });
 
   return (
     <div className="mx-auto max-w-[760px]">
@@ -110,10 +78,7 @@ export function TrackingResult({
         onClick={onReset}
         className="mb-5 inline-flex items-center gap-2 text-xs font-medium text-[#777C75]"
       >
-        <ArrowLeft
-          size={14}
-        />
-
+        <ArrowLeft size={14} />
         Başka Rezervasyon Sorgula
       </button>
 
@@ -126,162 +91,94 @@ export function TrackingResult({
           <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h1 className="font-serif text-3xl text-[#263A2D]">
-                {
-                  reservation.guestName
-                }
+                {reservation.guestName}
               </h1>
 
               <p className="mt-2 break-all text-xs font-semibold tracking-[0.08em] text-[#7D817B]">
-                {
-                  reservation.reservationCode
-                }
+                {reservation.reservationCode}
               </p>
             </div>
 
             <span className="w-fit bg-[#F0EFEA] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#60665F]">
-              {
-                statusLabels[
-                  reservation.status
-                ]
-              }
+              {statusLabels[reservation.status]}
             </span>
           </div>
         </div>
 
         <div className="p-5 sm:p-7">
-          <TrackingStatusCard
-            status={
-              reservation.status
-            }
-          />
+          <TrackingStatusCard status={reservation.status} />
 
-          {reservation.status ===
-            "rejected" &&
-            reservation.rejectionReason && (
-              <ReasonBox
-                title="Red Açıklaması"
-                description={
-                  reservation.rejectionReason
-                }
-              />
-            )}
+          {reservation.status === "rejected" && reservation.rejectionReason && (
+            <ReasonBox
+              title="Red Açıklaması"
+              description={reservation.rejectionReason}
+            />
+          )}
 
-          {reservation.status ===
-            "cancelled" &&
+          {reservation.status === "cancelled" &&
             reservation.cancellationReason && (
               <ReasonBox
                 title="İptal Açıklaması"
-                description={
-                  reservation.cancellationReason
-                }
+                description={reservation.cancellationReason}
               />
             )}
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <InfoCard
-              icon={
-                Home
-              }
+              icon={Home}
               label="Konaklama"
-              value={
-                reservation.accommodationTitle
-              }
+              value={reservation.accommodationTitle}
             />
 
             <InfoCard
-              icon={
-                Users
-              }
+              icon={Users}
               label="Misafir"
               value={`${reservation.guestCount} kişi`}
             />
 
             <InfoCard
-              icon={
-                CalendarDays
-              }
+              icon={CalendarDays}
               label="Giriş"
-              value={
-                formatReservationDate(
-                  reservation.checkIn,
-                )
-              }
+              value={formatReservationDate(reservation.checkIn)}
             />
 
             <InfoCard
-              icon={
-                CalendarDays
-              }
+              icon={CalendarDays}
               label="Çıkış"
-              value={
-                formatReservationDate(
-                  reservation.checkOut,
-                )
-              }
+              value={formatReservationDate(reservation.checkOut)}
             />
 
             <InfoCard
-              icon={
-                ShieldCheck
-              }
+              icon={ShieldCheck}
               label="Konaklama Süresi"
               value={`${reservation.nightCount} gece`}
             />
 
             <InfoCard
-              icon={
-                Phone
-              }
+              icon={Phone}
               label="Toplam"
-              value={
-                formatReservationPrice(
-                  reservation.totalPrice,
-                )
-              }
+              value={formatReservationPrice(reservation.totalPrice)}
             />
           </div>
 
-          <TrackingTimeline
-            reservation={
-              reservation
-            }
-          />
+          <TrackingTimeline reservation={reservation} />
 
-          {reservation.status ===
-            "pending_payment" &&
+          {reservation.status === "pending_payment" &&
             !reservation.hasReceipt && (
               <>
                 <BankInformation
-                  settings={
-                    settings
-                  }
-                  reservationCode={
-                    reservation.reservationCode
-                  }
+                  settings={settings}
+                  reservationCode={reservation.reservationCode}
                 />
 
                 <TrackingReceiptUpload
-                  receipt={
-                    receipt
-                  }
-                  error={
-                    error
-                  }
-                  uploadSuccess={
-                    uploadSuccess
-                  }
-                  isUploading={
-                    isUploading
-                  }
-                  onSelect={
-                    selectReceipt
-                  }
-                  onRemove={
-                    clearReceipt
-                  }
-                  onUpload={
-                    uploadReceipt
-                  }
+                  receipt={receipt}
+                  error={error}
+                  uploadSuccess={uploadSuccess}
+                  isUploading={isUploading}
+                  onSelect={selectReceipt}
+                  onRemove={clearReceipt}
+                  onUpload={uploadReceipt}
                 />
               </>
             )}
@@ -304,9 +201,7 @@ function ReasonBox({
         {title}
       </p>
 
-      <p className="mt-2 text-xs leading-5 text-[#8A635D]">
-        {description}
-      </p>
+      <p className="mt-2 text-xs leading-5 text-[#8A635D]">{description}</p>
     </div>
   );
 }
@@ -322,15 +217,10 @@ function InfoCard({
 }) {
   return (
     <div className="flex min-w-0 items-start gap-3 border border-[#E8E4DC] bg-[#FAF9F6] p-4">
-      <Icon
-        size={16}
-        className="mt-0.5 shrink-0 text-[#A8754F]"
-      />
+      <Icon size={16} className="mt-0.5 shrink-0 text-[#A8754F]" />
 
       <div className="min-w-0">
-        <p className="text-[10px] text-[#969990]">
-          {label}
-        </p>
+        <p className="text-[10px] text-[#969990]">{label}</p>
 
         <p className="mt-1 break-words text-xs font-semibold text-[#263A2D]">
           {value}
