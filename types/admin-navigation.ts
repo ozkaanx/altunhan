@@ -24,13 +24,18 @@ export const adminNavigation = [
     href: "/admin/accommodations",
     icon: SlidersHorizontal,
   },
+    {
+  label: "Odalar",
+  href: "/admin/rooms",
+  icon: BedDouble,
+},
   {
     label: "Yorumlar",
     href: "/admin/reviews",
     icon: MessageSquareQuote,
   },
   {
-    label: "Ana Sayfa",
+    label: "Ana Sayfa Düzenle",
     href: "/admin/homepage",
     icon: UserRoundCog,
   },
@@ -39,9 +44,5 @@ export const adminNavigation = [
     href: "/admin/settings",
     icon: Settings,
   },
-  {
-  label: "Odalar",
-  href: "/admin/rooms",
-  icon: BedDouble,
-},
+
 ];
