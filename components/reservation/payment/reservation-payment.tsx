@@ -10,7 +10,7 @@ import type { CreatedReservation } from "@/types/reservation-ui";
 
 import { ReservationDetailCard } from "@/components/reservation/payment/reservation-detail-card";
 
-import { BankInformation } from "@/components/reservation/payment/bankInformation";
+import { BankInformation } from "@/components/reservation/payment/bank-information";
 
 import { ReceiptUpload } from "@/components/reservation/payment/receipt-upload";
 
