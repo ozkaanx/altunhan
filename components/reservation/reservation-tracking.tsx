@@ -1,19 +1,6 @@
 "use client";
 
 import {
-  useEffect,
-  useState,
-} from "react";
-
-import {
-  useSearchParams,
-} from "next/navigation";
-
-import {
-  findReservation,
-} from "@/app/rezervasyon/takip/action";
-
-import {
   TrackingResult,
 } from "@/components/reservation/tracking/result";
 
@@ -21,13 +8,13 @@ import {
   TrackingSearchForm,
 } from "@/components/reservation/tracking/searchForm";
 
+import {
+  useReservationTracking,
+} from "@/hooks/reservation/use-reservation-tracking";
+
 import type {
   SiteSettings,
 } from "@/types/site-settings";
-
-import type {
-  ReservationTrackingResult,
-} from "@/types/reservation-tracking";
 
 type ReservationTrackingProps = {
   settings: SiteSettings | null;
@@ -36,244 +23,42 @@ type ReservationTrackingProps = {
 export function ReservationTracking({
   settings,
 }: ReservationTrackingProps) {
-  const searchParams =
-    useSearchParams();
-
-  const codeFromUrl =
-    searchParams.get(
-      "code",
-    );
-
-  const [
+  const {
     reservationCode,
-    setReservationCode,
-  ] =
-    useState(
-      codeFromUrl ?? "",
-    );
-
-  const [
     phone,
-    setPhone,
-  ] =
-    useState("");
-
-  const [
     reservation,
-    setReservation,
-  ] =
-    useState<ReservationTrackingResult | null>(
-      null,
-    );
-
-  const [
     isLoading,
-    setIsLoading,
-  ] =
-    useState(false);
-
-  const [
     error,
-    setError,
-  ] =
-    useState<string | null>(
-      null,
-    );
 
-  useEffect(() => {
-    if (
-      codeFromUrl
-    ) {
-      setReservationCode(
-        codeFromUrl,
-      );
-    }
-  }, [
-    codeFromUrl,
-  ]);
+    setReservationCode,
+    setPhone,
+    setReservation,
 
-  useEffect(() => {
-    if (
-      !reservation ||
-      !phone.trim()
-    ) {
-      return;
-    }
+    handleSubmit,
+    resetSearch,
+  } = useReservationTracking();
 
-    if (
-      reservation.status ===
-        "confirmed" ||
-      reservation.status ===
-        "rejected" ||
-      reservation.status ===
-        "cancelled"
-    ) {
-      return;
-    }
-
-    let cancelled =
-      false;
-
-    const refreshReservation =
-      async () => {
-        try {
-          const result =
-            await findReservation(
-              reservation.reservationCode,
-              phone,
-            );
-
-          if (
-            cancelled ||
-            !result.success
-          ) {
-            return;
-          }
-
-          setReservation(
-            result.reservation,
-          );
-        } catch (
-          error
-        ) {
-          console.error(
-            "Rezervasyon durumu otomatik güncellenemedi:",
-            error,
-          );
-        }
-      };
-
-    const interval =
-      window.setInterval(
-        refreshReservation,
-        15_000,
-      );
-
-    return () => {
-      cancelled =
-        true;
-
-      window.clearInterval(
-        interval,
-      );
-    };
-  }, [
-    reservation,
-    phone,
-  ]);
-
-  const handleSubmit =
-    async (
-      event:
-        React.FormEvent<HTMLFormElement>,
-    ) => {
-      event.preventDefault();
-
-      setError(null);
-
-      setReservation(
-        null,
-      );
-
-      setIsLoading(
-        true,
-      );
-
-      try {
-        const result =
-          await findReservation(
-            reservationCode,
-            phone,
-          );
-
-        if (
-          !result.success
-        ) {
-          setError(
-            result.message,
-          );
-
-          return;
-        }
-
-        setReservation(
-          result.reservation,
-        );
-      } catch (
-        error
-      ) {
-        console.error(
-          error,
-        );
-
-        setError(
-          "Rezervasyon sorgulanırken beklenmeyen bir hata oluştu.",
-        );
-      } finally {
-        setIsLoading(
-          false,
-        );
-      }
-    };
-
-  const resetSearch =
-    () => {
-      setReservation(
-        null,
-      );
-
-      setError(
-        null,
-      );
-    };
-
-  if (
-    reservation
-  ) {
+  if (reservation) {
     return (
       <TrackingResult
-        reservation={
-          reservation
-        }
-        phone={
-          phone
-        }
-        settings={
-          settings
-        }
-        onReset={
-          resetSearch
-        }
-        onReservationChange={
-          setReservation
-        }
+        reservation={reservation}
+        phone={phone}
+        settings={settings}
+        onReset={resetSearch}
+        onReservationChange={setReservation}
       />
     );
   }
 
   return (
     <TrackingSearchForm
-      reservationCode={
-        reservationCode
-      }
-      phone={
-        phone
-      }
-      error={
-        error
-      }
-      isLoading={
-        isLoading
-      }
-      onReservationCodeChange={
-        setReservationCode
-      }
-      onPhoneChange={
-        setPhone
-      }
-      onSubmit={
-        handleSubmit
-      }
+      reservationCode={reservationCode}
+      phone={phone}
+      error={error}
+      isLoading={isLoading}
+      onReservationCodeChange={setReservationCode}
+      onPhoneChange={setPhone}
+      onSubmit={handleSubmit}
     />
   );
 }

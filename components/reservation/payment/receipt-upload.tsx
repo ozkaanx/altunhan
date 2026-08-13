@@ -67,7 +67,6 @@ export function ReceiptUpload({
 
             <p className="mt-1 text-[10px] text-[#969990]">
               {formatFileSize(receipt.size)}
-              MB
             </p>
           </div>
 
