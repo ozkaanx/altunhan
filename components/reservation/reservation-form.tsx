@@ -19,6 +19,7 @@ import {
   createPublicReservation,
   getAccommodationBusyRanges,
   saveReceiptPath,
+  getReservationStatusForPayment,
 } from "@/app/rezervasyon/action";
 
 import type { AccommodationBusyRange } from "@/app/rezervasyon/action";
@@ -213,27 +214,118 @@ export function ReservationForm({
   }, [accommodationId]);
 
   useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem(RESERVATION_STORAGE_KEY);
+    let cancelled = false;
 
-      if (stored) {
+    const restoreReservation = async () => {
+      try {
+        const stored = sessionStorage.getItem(RESERVATION_STORAGE_KEY);
+
+        if (!stored) {
+          return;
+        }
+
         const parsed = JSON.parse(stored) as {
           reservation: CreatedReservation;
+
           receiptSuccess?: boolean;
         };
 
-        if (parsed.reservation) {
-          setCreatedReservation(parsed.reservation);
+        if (!parsed.reservation) {
+          return;
+        }
 
+        const restored = parsed.reservation;
+
+        const result = await getReservationStatusForPayment(
+          restored.reservationCode,
+          restored.guestPhone,
+        );
+
+        if (cancelled) {
+          return;
+        }
+
+        if (!result.success) {
+          setCreatedReservation(restored);
+          setReservationStatus(result.status);
           setReceiptSuccess(Boolean(parsed.receiptSuccess));
+
+          return;
+        }
+
+        if (result.status === "rejected" || result.status === "cancelled") {
+          sessionStorage.removeItem(RESERVATION_STORAGE_KEY);
+
+          return;
+        }
+
+        setCreatedReservation(restored);
+
+        setReceiptSuccess(
+          result.hasReceipt ||
+            result.status === "pending_approval" ||
+            result.status === "confirmed",
+        );
+      } catch (error) {
+        console.error("Rezervasyon bilgisi geri yüklenemedi:", error);
+      } finally {
+        if (!cancelled) {
+          setIsReservationRestored(true);
         }
       }
-    } catch (error) {
-      console.error("Rezervasyon bilgisi geri yüklenemedi:", error);
-    } finally {
-      setIsReservationRestored(true);
-    }
+    };
+
+    void restoreReservation();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  useEffect(() => {
+    if (!createdReservation) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const checkStatus = async () => {
+      try {
+        const result = await getReservationStatusForPayment(
+          createdReservation.reservationCode,
+          createdReservation.guestPhone,
+        );
+
+        if (cancelled || !result.success) {
+          return;
+        }
+
+        setReservationStatus(result.status);
+
+        setReceiptSuccess(
+          result.hasReceipt ||
+            result.status === "pending_approval" ||
+            result.status === "confirmed",
+        );
+
+        if (result.status === "rejected" || result.status === "cancelled") {
+          sessionStorage.removeItem(RESERVATION_STORAGE_KEY);
+        }
+      } catch (error) {
+        console.error("Rezervasyon durumu güncellenemedi:", error);
+      }
+    };
+
+    void checkStatus();
+
+    const interval = window.setInterval(checkStatus, 15_000);
+
+    return () => {
+      cancelled = true;
+
+      window.clearInterval(interval);
+    };
+  }, [createdReservation]);
 
   const checkInBusyRange = useMemo(() => {
     if (!checkIn) {
@@ -294,6 +386,16 @@ export function ReservationForm({
 
     return Math.max(0, value);
   }, [checkIn, checkOut]);
+
+  type PaymentReservationStatus =
+    | "pending_payment"
+    | "pending_approval"
+    | "confirmed"
+    | "rejected"
+    | "cancelled";
+
+  const [reservationStatus, setReservationStatus] =
+    useState<PaymentReservationStatus | null>(null);
 
   const estimatedTotal = selectedAccommodation
     ? Number(selectedAccommodation.price) * estimatedNightCount
@@ -382,6 +484,7 @@ export function ReservationForm({
       };
 
       setCreatedReservation(reservationData);
+      setReservationStatus("pending_payment");
 
       sessionStorage.setItem(
         RESERVATION_STORAGE_KEY,
@@ -501,15 +604,12 @@ export function ReservationForm({
   };
 
   if (!isReservationRestored) {
-  return (
-    <div className="mx-auto flex min-h-[300px] max-w-[760px] items-center justify-center">
-      <Loader2
-        size={24}
-        className="animate-spin text-[#A8754F]"
-      />
-    </div>
-  );
-}
+    return (
+      <div className="mx-auto flex min-h-[300px] max-w-[760px] items-center justify-center">
+        <Loader2 size={24} className="animate-spin text-[#A8754F]" />
+      </div>
+    );
+  }
 
   if (createdReservation) {
     return (
@@ -615,9 +715,50 @@ export function ReservationForm({
 
             {receiptSuccess ? (
               <div className="mt-4 flex items-center gap-3 bg-[#E8EFE6] p-4 text-sm font-medium text-[#496449]">
-                <CheckCircle2 size={18} />
-                Dekontunuz başarıyla gönderildi. Rezervasyonunuz yönetici onayı
-                bekliyor.
+                {reservationStatus === "confirmed" ? (
+                  <div className="border border-[#CBDDC8] bg-[#EAF2E8] p-4 text-[#456044]">
+                    <p className="text-sm font-semibold">
+                      Rezervasyonunuz onaylandı.
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5">
+                      Ödemeniz kontrol edildi ve rezervasyonunuz kesinleşti.
+                      Altunhan Farm sizi bekliyor.
+                    </p>
+                  </div>
+                ) : reservationStatus === "pending_approval" ? (
+                  <div className="border border-[#DDD4E8] bg-[#F0EDF6] p-4 text-[#655D8A]">
+                    <p className="text-sm font-semibold">
+                      Dekontunuz başarıyla gönderildi.
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5">
+                      Rezervasyonunuz yönetici onayı bekliyor.
+                    </p>
+                  </div>
+                ) : reservationStatus === "rejected" ? (
+                  <div className="border border-[#E4C6BF] bg-[#F7EBE8] p-4 text-[#98584E]">
+                    <p className="text-sm font-semibold">
+                      Rezervasyonunuz onaylanamadı.
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5">
+                      Detayları rezervasyon takip ekranından kontrol
+                      edebilirsiniz.
+                    </p>
+                  </div>
+                ) : reservationStatus === "cancelled" ? (
+                  <div className="border border-[#DEDCD6] bg-[#EEEEEB] p-4 text-[#666B65]">
+                    <p className="text-sm font-semibold">
+                      Rezervasyonunuz iptal edildi.
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5">
+                      Detayları rezervasyon takip ekranından
+                      görüntüleyebilirsiniz.
+                    </p>
+                  </div>
+                ) : null}
               </div>
             ) : (
               <>
@@ -663,11 +804,11 @@ export function ReservationForm({
           </div>
 
           <Link
-  href="/rezervasyon/takip"
-  className="mt-4 flex h-11 w-full items-center justify-center border border-[#D7D3CA] text-xs font-semibold text-[#263A2D]"
->
-  Rezervasyonumu Takip Et
-</Link>
+            href="/rezervasyon/takip"
+            className="mt-4 flex h-11 w-full items-center justify-center border border-[#D7D3CA] text-xs font-semibold text-[#263A2D]"
+          >
+            Rezervasyonumu Takip Et
+          </Link>
 
           {error && (
             <div className="mt-4 border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs text-[#98584E]">
