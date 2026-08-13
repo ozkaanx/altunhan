@@ -275,3 +275,66 @@ export async function saveReceiptPath(
     success: true,
   };
 }
+
+export async function getReservationStatusForPayment(
+  reservationCode: string,
+  phone: string,
+) {
+  const supabase =
+    await createClient();
+
+  const {
+    data,
+    error,
+  } = await supabase.rpc(
+    "get_public_reservation_status",
+    {
+      p_reservation_code:
+        reservationCode.trim(),
+
+      p_guest_phone:
+        phone.trim(),
+    },
+  );
+
+  if (error) {
+    console.error(
+      "Rezervasyon durumu alınamadı:",
+      error,
+    );
+
+    return {
+      success: false as const,
+      message:
+        "Rezervasyon durumu alınamadı.",
+    };
+  }
+
+  const reservation =
+    data?.[0];
+
+  if (!reservation) {
+    return {
+      success: false as const,
+      message:
+        "Rezervasyon bulunamadı.",
+    };
+  }
+
+  return {
+    success: true as const,
+
+    status:
+      reservation.status as
+        | "pending_payment"
+        | "pending_approval"
+        | "confirmed"
+        | "rejected"
+        | "cancelled",
+
+    hasReceipt:
+      Boolean(
+        reservation.has_receipt,
+      ),
+  };
+}
