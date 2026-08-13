@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Clock3, Eye, Search, XCircle } from "lucide-react";
+import { CheckCircle2, Clock3, Eye, Search, XCircle, Plus } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 
@@ -197,12 +197,23 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
             </p>
           </div>
 
-          {pendingCount > 0 && (
-            <div className="flex w-fit items-center gap-2 bg-[#EAE6F4] px-3 py-2 text-xs font-medium text-[#655D8A]">
-              <Clock3 size={15} />
-              {pendingCount} ödeme kontrol bekliyor
-            </div>
-          )}
+          <div className="flex flex-col gap-3 sm:items-end">
+            <button
+              type="button"
+              onClick={() => router.push("/admin/reservations/new")}
+              className="flex h-11 items-center justify-center gap-2 bg-[#263A2D] px-5 text-xs font-semibold text-white"
+            >
+              <Plus size={15} />
+              Yeni Rezervasyon
+            </button>
+
+            {pendingCount > 0 && (
+              <div className="flex w-fit items-center gap-2 bg-[#EAE6F4] px-3 py-2 text-xs font-medium text-[#655D8A]">
+                <Clock3 size={15} />
+                {pendingCount} ödeme kontrol bekliyor
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="mt-6 space-y-4">
@@ -216,7 +227,8 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Misafir, telefon veya rezervasyon kodu ara..."
-className="h-11 w-full min-w-0 border border-[#DDD9D1] bg-white pl-10 pr-4 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:max-w-[420px] sm:text-sm"            />
+              className="h-11 w-full min-w-0 border border-[#DDD9D1] bg-white pl-10 pr-4 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:max-w-[420px] sm:text-sm"
+            />
           </div>
 
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -255,9 +267,9 @@ className="h-11 w-full min-w-0 border border-[#DDD9D1] bg-white pl-10 pr-4 text-
               key={reservation.id}
               className="border border-[#E3E0D8] bg-white p-4"
             >
-             <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                <p className="break-all text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A8754F]">
+                  <p className="break-all text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A8754F]">
                     {reservation.reservation_code}
                   </p>
 
@@ -321,7 +333,7 @@ className="h-11 w-full min-w-0 border border-[#DDD9D1] bg-white pl-10 pr-4 text-
                 </div>
               </div>
 
-            <div className="flex h-10 w-full items-center justify-center gap-2 bg-[#263A2D] px-4 text-xs font-medium text-white sm:w-auto">
+              <div className="flex h-10 w-full items-center justify-center gap-2 bg-[#263A2D] px-4 text-xs font-medium text-white sm:w-auto">
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.1em] text-[#969990]">
                     Toplam
