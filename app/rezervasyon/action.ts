@@ -1,8 +1,6 @@
 "use server";
 
-import {
-  createClient,
-} from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 import type {
   ReservationCreateInput,
@@ -42,63 +40,40 @@ export async function getAccommodationBusyRanges(
 
   message?: string;
 }> {
-  if (
-    !accommodationId
-  ) {
+  if (!accommodationId) {
     return {
       success: false,
 
       ranges: [],
 
-      message:
-        "Konaklama seçilemedi.",
+      message: "Konaklama seçilemedi.",
     };
   }
 
-  const supabase =
-    await createClient();
+  const supabase = await createClient();
 
-  const {
-    data,
-    error,
-  } = await supabase.rpc(
-    "get_accommodation_busy_ranges",
-    {
-      p_accommodation_id:
-        accommodationId,
-    },
-  );
+  const { data, error } = await supabase.rpc("get_accommodation_busy_ranges", {
+    p_accommodation_id: accommodationId,
+  });
 
   if (error) {
-    console.error(
-      "Dolu tarihler alınamadı:",
-      error,
-    );
+    console.error("Dolu tarihler alınamadı:", error);
 
     return {
       success: false,
 
       ranges: [],
 
-      message:
-        "Müsaitlik bilgisi alınamadı.",
+      message: "Müsaitlik bilgisi alınamadı.",
     };
   }
 
   const ranges =
-    (
-      data as AccommodationBusyRangeRpc[]
-    )?.map(
-      (
-        item,
-      ) => ({
-        checkIn:
-          item.check_in,
+    (data as AccommodationBusyRangeRpc[])?.map((item) => ({
+      checkIn: item.check_in,
 
-        checkOut:
-          item.check_out,
-      }),
-    ) ?? [];
+      checkOut: item.check_out,
+    })) ?? [];
 
   return {
     success: true,
@@ -110,8 +85,7 @@ export async function getAccommodationBusyRanges(
 export async function createPublicReservation(
   values: ReservationCreateInput,
 ): Promise<ReservationCreateResult> {
-  const supabase =
-    await createClient();
+  const supabase = await createClient();
 
   if (
     !values.accommodationId ||
@@ -123,69 +97,43 @@ export async function createPublicReservation(
     return {
       success: false,
 
-      message:
-        "Lütfen zorunlu alanları doldurun.",
+      message: "Lütfen zorunlu alanları doldurun.",
     };
   }
 
-  const {
-    data,
-    error,
-  } = await supabase.rpc(
-    "create_public_reservation",
-    {
-      p_accommodation_id:
-        values.accommodationId,
+  const { data, error } = await supabase.rpc("create_public_reservation", {
+    p_accommodation_id: values.accommodationId,
 
-      p_check_in:
-        values.checkIn,
+    p_check_in: values.checkIn,
 
-      p_check_out:
-        values.checkOut,
+    p_check_out: values.checkOut,
 
-      p_guest_count:
-        values.guestCount,
+    p_guest_count: values.guestCount,
 
-      p_guest_name:
-        values.guestName,
+    p_guest_name: values.guestName,
 
-      p_guest_phone:
-        values.guestPhone,
+    p_guest_phone: values.guestPhone,
 
-      p_guest_email:
-        values.guestEmail ||
-        null,
-    },
-  );
+    p_guest_email: values.guestEmail || null,
+  });
 
   if (error) {
-    console.error(
-      "Rezervasyon oluşturulamadı:",
-      error,
-    );
+    console.error("Rezervasyon oluşturulamadı:", error);
 
     return {
       success: false,
 
-      message:
-        error.message ??
-        "Rezervasyon oluşturulamadı.",
+      message: error.message ?? "Rezervasyon oluşturulamadı.",
     };
   }
 
-  const reservation =
-    (
-      data as ReservationRpcResult[]
-    )?.[0];
+  const reservation = (data as ReservationRpcResult[])?.[0];
 
-  if (
-    !reservation
-  ) {
+  if (!reservation) {
     return {
       success: false,
 
-      message:
-        "Rezervasyon oluşturulamadı.",
+      message: "Rezervasyon oluşturulamadı.",
     };
   }
 
@@ -193,35 +141,23 @@ export async function createPublicReservation(
     success: true,
 
     reservation: {
-      id:
-        Number(
-          reservation.reservation_id,
-        ),
+      id: Number(reservation.reservation_id),
 
-      reservationCode:
-        reservation.reservation_code,
+      reservationCode: reservation.reservation_code,
 
-      accommodationTitle:
-        reservation.accommodation_title,
+      accommodationTitle: reservation.accommodation_title,
 
-      checkIn:
-        values.checkIn,
+      checkIn: values.checkIn,
 
-      checkOut:
-        values.checkOut,
+      checkOut: values.checkOut,
 
-      nightCount:
-        Number(
-          reservation.night_count,
-        ),
+      nightCount: Number(reservation.night_count),
 
-      totalPrice:
-        Number(
-          reservation.total_price,
-        ),
+      totalPrice: Number(reservation.total_price),
     },
   };
 }
+
 
 export async function saveReceiptPath(
   reservationId: number,
@@ -255,8 +191,7 @@ export async function saveReceiptPath(
     );
 
     return {
-      success: false,
-
+      success: false as const,
       message:
         error.message,
     };
@@ -264,77 +199,14 @@ export async function saveReceiptPath(
 
   if (!data) {
     return {
-      success: false,
-
+      success: false as const,
       message:
         "Dekont kaydedilemedi.",
     };
   }
 
   return {
-    success: true,
-  };
-}
-
-export async function getReservationStatusForPayment(
-  reservationCode: string,
-  phone: string,
-) {
-  const supabase =
-    await createClient();
-
-  const {
-    data,
-    error,
-  } = await supabase.rpc(
-    "get_public_reservation_status",
-    {
-      p_reservation_code:
-        reservationCode.trim(),
-
-      p_guest_phone:
-        phone.trim(),
-    },
-  );
-
-  if (error) {
-    console.error(
-      "Rezervasyon durumu alınamadı:",
-      error,
-    );
-
-    return {
-      success: false as const,
-      message:
-        "Rezervasyon durumu alınamadı.",
-    };
-  }
-
-  const reservation =
-    data?.[0];
-
-  if (!reservation) {
-    return {
-      success: false as const,
-      message:
-        "Rezervasyon bulunamadı.",
-    };
-  }
-
-  return {
     success: true as const,
-
-    status:
-      reservation.status as
-        | "pending_payment"
-        | "pending_approval"
-        | "confirmed"
-        | "rejected"
-        | "cancelled",
-
-    hasReceipt:
-      Boolean(
-        reservation.has_receipt,
-      ),
   };
 }
+

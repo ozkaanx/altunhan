@@ -27,13 +27,13 @@ export default async function ReservationPage({
       .from("accommodations")
       .select(
         `
-        id,
-        title,
-        slug,
-        short_description,
-        price,
-        capacity
-      `,
+      id,
+      title,
+      slug,
+      short_description,
+      price,
+      capacity
+    `,
       )
       .eq("is_active", true)
       .order("created_at", {
@@ -47,14 +47,18 @@ export default async function ReservationPage({
     accommodationsResult;
 
   const { data: settings, error: settingsError } = settingsResult;
+  // const { data: accommodations, error: accommodationsError } =
+  //   accommodationsResult;
+
+  // const { data: settings, error: settingsError } = settingsResult;
 
   if (accommodationsError) {
     console.error("Konaklamalar alınamadı:", accommodationsError);
   }
 
-  if (settingsError) {
-    console.error("Site ayarları alınamadı:", settingsError);
-  }
+  // if (settingsError) {
+  //   console.error("Site ayarları alınamadı:", settingsError);
+  // }
 
   const publicAccommodations = (accommodations ?? []) as PublicAccommodation[];
 

@@ -22,7 +22,9 @@ import {
 
 import type { SiteSettings } from "@/types/site-settings";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { useSearchParams } from "next/navigation";
 
 import {
   findReservation,
@@ -308,7 +310,11 @@ type ReservationTrackingProps = {
 };
 
 export function ReservationTracking({ settings }: ReservationTrackingProps) {
-  const [reservationCode, setReservationCode] = useState("");
+  const searchParams = useSearchParams();
+
+  const codeFromUrl = searchParams.get("code");
+
+  const [reservationCode, setReservationCode] = useState(codeFromUrl ?? "");
 
   const [phone, setPhone] = useState("");
 
@@ -324,6 +330,53 @@ export function ReservationTracking({ settings }: ReservationTrackingProps) {
   const [isUploading, setIsUploading] = useState(false);
 
   const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  useEffect(() => {
+    if (codeFromUrl) {
+      setReservationCode(codeFromUrl);
+    }
+  }, [codeFromUrl]);
+
+  useEffect(() => {
+    if (!reservation || !phone.trim()) {
+      return;
+    }
+
+    if (
+      reservation.status === "confirmed" ||
+      reservation.status === "rejected" ||
+      reservation.status === "cancelled"
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const refreshReservation = async () => {
+      try {
+        const result = await findReservation(
+          reservation.reservationCode,
+          phone,
+        );
+
+        if (cancelled || !result.success) {
+          return;
+        }
+
+        setReservation(result.reservation);
+      } catch (error) {
+        console.error("Rezervasyon durumu otomatik güncellenemedi:", error);
+      }
+    };
+
+    const interval = window.setInterval(refreshReservation, 15_000);
+
+    return () => {
+      cancelled = true;
+
+      window.clearInterval(interval);
+    };
+  }, [reservation, phone]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
