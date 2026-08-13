@@ -161,6 +161,23 @@ export default async function AccommodationDetailPage({
     supabase.from("homepage_content").select("*").eq("id", 1).single(),
   ]);
 
+  const amenityLabels: Record<string, string> = {
+    wifi: "Wi-Fi",
+    air_conditioning: "Klima",
+    private_bathroom: "Özel Banyo",
+    sea_view: "Deniz Manzarası",
+    breakfast: "Kahvaltı",
+  };
+
+  function getAmenityLabel(amenity: string) {
+    return (
+      amenityLabels[amenity] ??
+      amenity
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, (letter) => letter.toLocaleUpperCase("tr-TR"))
+    );
+  }
+
   if (accommodationResult.error || !accommodationResult.data) {
     notFound();
   }
@@ -185,7 +202,6 @@ export default async function AccommodationDetailPage({
       return Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0);
     },
   );
-
 
   return (
     <>
@@ -266,20 +282,25 @@ export default async function AccommodationDetailPage({
                   </h2>
 
                   <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    {accommodation.amenities.map((amenity) => (
-                      <div
-                        key={amenity}
-                        className="flex items-center gap-3 border border-[#DED9D0] bg-[#F8F4EB] px-4 py-4"
-                      >
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-[#E9EDE6] text-[#526048]">
-                          <Check size={14} />
-                        </div>
+                    {accommodation.amenities.map(
+                      (amenity) => (
+                        console.log(amenity),
+                        (
+                          <div
+                            key={amenity}
+                            className="flex items-center gap-3 border border-[#DED9D0] bg-[#F8F4EB] px-4 py-4"
+                          >
+                            <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-[#E9EDE6] text-[#526048]">
+                              <Check size={14} />
+                            </div>
 
-                        <span className="text-xs font-medium text-[#505750]">
-                          {amenity}
-                        </span>
-                      </div>
-                    ))}
+                            <span className="text-xs font-medium text-[#505750]">
+                              {getAmenityLabel(amenity)}
+                            </span>
+                          </div>
+                        )
+                      ),
+                    )}
                   </div>
                 </div>
               )}

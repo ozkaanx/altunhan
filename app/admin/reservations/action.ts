@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
+import {
+  requireAdmin,
+} from "@/lib/auth/admin";
 
 type AvailableReservationRoomRpc = {
   room_id: number | string;
@@ -17,31 +19,6 @@ type AvailableRoomRpc = {
   room_name: string;
   room_number: string | null;
 };
-
-async function requireAdmin() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) {
-    return {
-      success: false as const,
-
-      supabase,
-
-      message: "Bu işlem için yönetici girişi yapmanız gerekiyor.",
-    };
-  }
-
-  return {
-    success: true as const,
-
-    supabase,
-  };
-}
 
 export async function approveReservation(id: number) {
   const auth = await requireAdmin();

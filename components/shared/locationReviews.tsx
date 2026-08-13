@@ -26,18 +26,12 @@ export default function LocationReviews({
   content,
 }: LocationReviewsProps) {
   const sliderRef =
-    useRef<HTMLDivElement>(
-      null,
-    );
+    useRef<HTMLDivElement>(null);
 
   const scrollSlider = (
-    direction:
-      | "prev"
-      | "next",
+    direction: "prev" | "next",
   ) => {
-    if (
-      !sliderRef.current
-    ) {
+    if (!sliderRef.current) {
       return;
     }
 
@@ -52,24 +46,15 @@ export default function LocationReviews({
     const cardWidth =
       firstCard.offsetWidth;
 
-    const gap = 16;
+    const gap = 12;
 
-    sliderRef.current.scrollBy(
-      {
-        left:
-          direction ===
-          "next"
-            ? cardWidth +
-              gap
-            : -(
-                cardWidth +
-                gap
-              ),
-
-        behavior:
-          "smooth",
-      },
-    );
+    sliderRef.current.scrollBy({
+      left:
+        direction === "next"
+          ? cardWidth + gap
+          : -(cardWidth + gap),
+      behavior: "smooth",
+    });
   };
 
   const address =
@@ -89,99 +74,82 @@ export default function LocationReviews({
   return (
     <section
       id="iletisim"
-      className="w-full bg-[#F5F1E8] px-6 py-20 md:px-12 md:py-24 lg:px-16"
+      className="w-full border-y border-[#DDD8CC] bg-[#F5F1E8]"
     >
-      <div className="mx-auto max-w-[1500px]">
-        <div className="grid gap-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-          <div className="min-w-0">
-            <span className="block text-[9px] font-semibold uppercase tracking-[0.3em] text-[#A8754F]">
+      <div className="mx-auto max-w-[1600px] px-5 py-14 sm:px-6 sm:py-16 md:px-12 lg:px-16 lg:py-20">
+        <div className="grid gap-10 lg:grid-cols-[250px_320px_minmax(0,1fr)] lg:items-stretch lg:gap-8 xl:grid-cols-[270px_360px_minmax(0,1fr)] xl:gap-10">
+          {/* KONUM BİLGİSİ */}
+          <div className="flex min-w-0 flex-col justify-center">
+            <span className="block text-[8px] font-semibold uppercase tracking-[0.3em] text-[#A8754F] sm:text-[9px]">
               {content?.location_label ||
                 "KONUM"}
             </span>
 
-            <h2 className="mt-3 max-w-[430px] font-serif text-4xl leading-[1.05] text-[#263A2D] md:text-5xl">
+            <h2 className="mt-3 max-w-[290px] font-serif text-[30px] leading-[1.08] text-[#263A2D] sm:text-3xl lg:text-[32px]">
               {content?.location_title ||
                 "Saros'un kıyısında, doğanın içinde."}
             </h2>
 
-            <div className="mt-7 flex items-start gap-3">
-              <FiMapPin
-                size={18}
-                strokeWidth={
-                  1.3
-                }
-                className="mt-0.5 shrink-0 text-[#A8754F]"
-              />
+            <div className="mt-7">
+              <div className="flex items-start gap-3">
+                <FiMapPin
+                  size={17}
+                  strokeWidth={1.3}
+                  className="mt-0.5 shrink-0 text-[#A8754F]"
+                />
 
-              <div>
-                <p className="max-w-[320px] text-xs font-semibold leading-5 tracking-wide text-[#263A2D]">
+                <p className="max-w-[220px] text-[11px] font-semibold leading-5 text-[#263A2D] sm:text-xs">
                   {address}
                 </p>
-
-                <Link
-                  href={
-                    mapsSearchUrl
-                  }
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group mt-5 inline-flex items-center gap-3 text-[9px] font-semibold uppercase tracking-[0.16em] text-[#263A2D]"
-                >
-                  Nasıl Gidilir?
-
-                  <FiArrowRight
-                    size={
-                      12
-                    }
-                    className="transition-transform duration-300 group-hover:translate-x-1"
-                  />
-                </Link>
               </div>
-            </div>
 
-            <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden border border-[#DDD8CC]">
-              <iframe
-                src={
-                  mapsEmbedUrl
-                }
-                title="Altunhan Farm konumu"
-                className="absolute inset-0 h-full w-full border-0 grayscale-[30%]"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+              <Link
+                href={mapsSearchUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group mt-6 inline-flex items-center gap-3 text-[9px] font-semibold uppercase tracking-[0.17em] text-[#263A2D]"
+              >
+                Nasıl Gidilir?
+
+                <FiArrowRight
+                  size={12}
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </Link>
             </div>
           </div>
 
+          {/* HARİTA */}
+          <div className="relative min-h-[260px] overflow-hidden border border-[#DDD8CC] bg-[#E8E4DB] sm:min-h-[320px] lg:min-h-0">
+            <iframe
+              src={mapsEmbedUrl}
+              title="Altunhan Farm konumu"
+              className="absolute inset-0 h-full w-full border-0 grayscale-[20%]"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+
+          {/* YORUMLAR */}
           <div className="min-w-0">
-            <div className="flex items-end justify-between">
-              <div>
-                <span className="block text-[9px] font-semibold uppercase tracking-[0.3em] text-[#A8754F]">
-                  {content?.reviews_label ||
-                    "MİSAFİRLERİMİZ NE DİYOR?"}
-                </span>
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <span className="block text-[8px] font-semibold uppercase tracking-[0.3em] text-[#A8754F] sm:text-[9px]">
+                {content?.reviews_label ||
+                  "MİSAFİRLERİMİZ NE DİYOR?"}
+              </span>
 
-                <h2 className="mt-3 font-serif text-4xl leading-[1.05] text-[#263A2D] md:text-5xl">
-                  {content?.reviews_title ||
-                    "Güzel anılar, güzel sözler."}
-                </h2>
-              </div>
-
-              {reviews.length >
-                1 && (
-                <div className="hidden gap-2 md:flex">
+              {reviews.length > 1 && (
+                <div className="hidden items-center gap-2 lg:flex">
                   <button
                     type="button"
                     aria-label="Önceki yorum"
                     onClick={() =>
-                      scrollSlider(
-                        "prev",
-                      )
+                      scrollSlider("prev")
                     }
-                    className="flex h-10 w-10 items-center justify-center border border-[#CFC8BA] text-[#263A2D] transition-all duration-300 hover:bg-[#263A2D] hover:text-white"
+                    className="flex h-9 w-9 items-center justify-center border border-[#CCC5B8] text-[#263A2D] transition-colors hover:bg-[#263A2D] hover:text-white"
                   >
                     <FiChevronLeft
-                      size={
-                        18
-                      }
+                      size={17}
                     />
                   </button>
 
@@ -189,120 +157,143 @@ export default function LocationReviews({
                     type="button"
                     aria-label="Sonraki yorum"
                     onClick={() =>
-                      scrollSlider(
-                        "next",
-                      )
+                      scrollSlider("next")
                     }
-                    className="flex h-10 w-10 items-center justify-center border border-[#CFC8BA] text-[#263A2D] transition-all duration-300 hover:bg-[#263A2D] hover:text-white"
+                    className="flex h-9 w-9 items-center justify-center border border-[#CCC5B8] text-[#263A2D] transition-colors hover:bg-[#263A2D] hover:text-white"
                   >
                     <FiChevronRight
-                      size={
-                        18
-                      }
+                      size={17}
                     />
                   </button>
                 </div>
               )}
             </div>
 
-            {reviews.length ===
-            0 ? (
-              <div className="mt-8 border border-[#DDD8CC] bg-[#F8F4EB] p-8 text-center">
-                <p className="text-sm text-[#747972]">
+            {reviews.length === 0 ? (
+              <div className="flex min-h-[260px] items-center justify-center border border-[#DDD8CC] bg-[#F8F4EB] p-8 text-center">
+                <p className="text-xs leading-6 text-[#747972]">
                   Henüz yayınlanmış
                   misafir yorumu
                   bulunmuyor.
                 </p>
               </div>
             ) : (
-              <div
-                ref={
-                  sliderRef
-                }
-                className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              >
-                {reviews.map(
-                  (
-                    review,
-                  ) => (
-                    <article
-                      key={
-                        review.id
-                      }
-                      className="w-full shrink-0 snap-start border border-[#DDD8CC] bg-[#F8F4EB] p-6 md:w-[calc((100%-16px)/2)] lg:w-[calc((100%-32px)/3)]"
-                    >
-                      <div className="flex min-h-[220px] flex-col justify-between">
-                        <p className="font-serif text-[17px] leading-[1.45] text-[#3A423A]">
-                          “
-                          {
-                            review.review_text
-                          }
-                          ”
-                        </p>
+              <div className="relative">
+                {/* DESKTOP SOL OK */}
+                {reviews.length > 1 && (
+                  <button
+                    type="button"
+                    aria-label="Önceki yorum"
+                    onClick={() =>
+                      scrollSlider("prev")
+                    }
+                    className="absolute -left-5 top-1/2 z-10 hidden h-10 w-10 -translate-x-full -translate-y-1/2 items-center justify-center text-[#526048] transition-transform hover:-translate-x-[105%] xl:flex"
+                  >
+                    <FiChevronLeft
+                      size={25}
+                      strokeWidth={1.2}
+                    />
+                  </button>
+                )}
 
-                        <div className="mt-8">
-                          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#263A2D]">
+                <div
+                  ref={sliderRef}
+                  className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                >
+                  {reviews.map(
+                    (review) => (
+                      <article
+                        key={review.id}
+                        className="w-[85%] shrink-0 snap-start border border-[#DDD8CC] bg-[#FAF7F0] p-5 sm:w-[55%] md:w-[42%] lg:w-[calc((100%-12px)/2)] xl:w-[calc((100%-24px)/3)]"
+                      >
+                        <div className="flex min-h-[225px] flex-col justify-between">
+                          <p className="font-serif text-[15px] leading-[1.55] text-[#343C35]">
+                            “
                             {
-                              review.guest_name
+                              review.review_text
                             }
+                            ”
                           </p>
 
-                          <div className="mt-2 flex gap-1 text-[#B9823F]">
-                            {Array.from(
+                          <div className="mt-7">
+                            <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#263A2D]">
                               {
+                                review.guest_name
+                              }
+                            </p>
+
+                            <div className="mt-2 flex gap-1 text-[13px] text-[#B9823F]">
+                              {Array.from({
                                 length:
                                   review.rating,
-                              },
-                            ).map(
-                              (
-                                _,
-                                index,
-                              ) => (
-                                <span
-                                  key={
-                                    index
-                                  }
-                                >
-                                  ★
-                                </span>
-                              ),
-                            )}
+                              }).map(
+                                (
+                                  _,
+                                  index,
+                                ) => (
+                                  <span
+                                    key={
+                                      index
+                                    }
+                                  >
+                                    ★
+                                  </span>
+                                ),
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </article>
-                  ),
+                      </article>
+                    ),
+                  )}
+                </div>
+
+                {/* DESKTOP SAĞ OK */}
+                {reviews.length > 1 && (
+                  <button
+                    type="button"
+                    aria-label="Sonraki yorum"
+                    onClick={() =>
+                      scrollSlider("next")
+                    }
+                    className="absolute -right-5 top-1/2 z-10 hidden h-10 w-10 translate-x-full -translate-y-1/2 items-center justify-center text-[#526048] transition-transform hover:translate-x-[105%] xl:flex"
+                  >
+                    <FiChevronRight
+                      size={25}
+                      strokeWidth={1.2}
+                    />
+                  </button>
                 )}
               </div>
             )}
 
-            {reviews.length >
-              1 && (
-              <div className="mt-5 flex gap-2 md:hidden">
+            {/* MOBİL OKLAR */}
+            {reviews.length > 1 && (
+              <div className="mt-5 flex items-center justify-end gap-2 lg:hidden">
                 <button
                   type="button"
                   aria-label="Önceki yorum"
                   onClick={() =>
-                    scrollSlider(
-                      "prev",
-                    )
+                    scrollSlider("prev")
                   }
-                  className="flex h-10 w-10 items-center justify-center border border-[#CFC8BA] text-[#263A2D]"
+                  className="flex h-10 w-10 items-center justify-center border border-[#CCC5B8] text-[#263A2D]"
                 >
-                  <FiChevronLeft />
+                  <FiChevronLeft
+                    size={17}
+                  />
                 </button>
 
                 <button
                   type="button"
                   aria-label="Sonraki yorum"
                   onClick={() =>
-                    scrollSlider(
-                      "next",
-                    )
+                    scrollSlider("next")
                   }
-                  className="flex h-10 w-10 items-center justify-center border border-[#CFC8BA] text-[#263A2D]"
+                  className="flex h-10 w-10 items-center justify-center border border-[#CCC5B8] text-[#263A2D]"
                 >
-                  <FiChevronRight />
+                  <FiChevronRight
+                    size={17}
+                  />
                 </button>
               </div>
             )}

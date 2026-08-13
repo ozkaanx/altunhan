@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { SiteSettings } from "@/types/site-settings";
 import type { Review } from "@/types/review";
 import type { HomepageContent } from "@/types/homepage-content";
+import Restaurant from "@/components/shared/restaurant";
 
 export type HomeAccommodation = {
   id: number;
@@ -121,7 +122,7 @@ export default async function Home() {
           accommodations={(accommodations ?? []) as HomeAccommodation[]}
           content={content}
         />
-
+        <Restaurant />
         <LocationReviews
           settings={siteSettings}
           reviews={(reviews ?? []) as Review[]}
