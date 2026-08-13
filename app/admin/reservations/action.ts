@@ -4,6 +4,20 @@ import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
 
+type AvailableReservationRoomRpc = {
+  room_id: number | string;
+  room_name: string;
+  room_number: string | null;
+  is_current: boolean;
+  is_available: boolean;
+};
+
+type AvailableRoomRpc = {
+  room_id: number | string;
+  room_name: string;
+  room_number: string | null;
+};
+
 async function requireAdmin() {
   const supabase = await createClient();
 
@@ -254,7 +268,7 @@ export async function getAvailableRooms(reservationId: number) {
 
   return {
     success: true as const,
-    rooms: (data ?? []).map((room) => ({
+    rooms: ((data ?? []) as AvailableReservationRoomRpc[]).map((room) => ({
       id: Number(room.room_id),
       roomName: room.room_name,
       roomNumber: room.room_number,
@@ -342,189 +356,112 @@ export async function getReceiptSignedUrl(storagePath: string) {
   };
 }
 
-
 export type CreateAdminReservationInput = {
   accommodationId: number;
 
-  roomId:
-    number | null;
+  roomId: number | null;
 
-  checkIn:
-    string;
+  checkIn: string;
 
-  checkOut:
-    string;
+  checkOut: string;
 
-  guestCount:
-    number;
+  guestCount: number;
 
-  guestName:
-    string;
+  guestName: string;
 
-  guestPhone:
-    string;
+  guestPhone: string;
 
-  guestEmail:
-    string;
+  guestEmail: string;
 
-  status:
-    "pending_payment" |
-    "pending_approval" |
-    "confirmed";
+  status: "pending_payment" | "pending_approval" | "confirmed";
 
-  source:
-    "phone" |
-    "whatsapp" |
-    "walk_in" |
-    "admin";
+  source: "phone" | "whatsapp" | "walk_in" | "admin";
 
-  adminNote:
-    string;
+  adminNote: string;
 };
 
 export async function createAdminReservation(
-  values:
-    CreateAdminReservationInput,
+  values: CreateAdminReservationInput,
 ) {
-  const auth =
-    await requireAdmin();
+  const auth = await requireAdmin();
 
-  if (
-    !auth.success
-  ) {
+  if (!auth.success) {
     return {
-      success:
-        false as const,
+      success: false as const,
 
-      message:
-        auth.message,
+      message: auth.message,
     };
   }
 
-  const {
-    supabase,
-  } = auth;
+  const { supabase } = auth;
 
-  const {
-    data,
-    error,
-  } =
-    await supabase.rpc(
-      "create_admin_reservation",
-      {
-        p_accommodation_id:
-          values.accommodationId,
+  const { data, error } = await supabase.rpc("create_admin_reservation", {
+    p_accommodation_id: values.accommodationId,
 
-        p_room_id:
-          values.roomId,
+    p_room_id: values.roomId,
 
-        p_check_in:
-          values.checkIn,
+    p_check_in: values.checkIn,
 
-        p_check_out:
-          values.checkOut,
+    p_check_out: values.checkOut,
 
-        p_guest_count:
-          values.guestCount,
+    p_guest_count: values.guestCount,
 
-        p_guest_name:
-          values.guestName,
+    p_guest_name: values.guestName,
 
-        p_guest_phone:
-          values.guestPhone,
+    p_guest_phone: values.guestPhone,
 
-        p_guest_email:
-          values.guestEmail ||
-          null,
+    p_guest_email: values.guestEmail || null,
 
-        p_status:
-          values.status,
+    p_status: values.status,
 
-        p_source:
-          values.source,
+    p_source: values.source,
 
-        p_admin_note:
-          values.adminNote ||
-          null,
-      },
-    );
+    p_admin_note: values.adminNote || null,
+  });
 
-  if (
-    error
-  ) {
-    console.error(
-      "Manuel rezervasyon oluşturulamadı:",
-      error,
-    );
+  if (error) {
+    console.error("Manuel rezervasyon oluşturulamadı:", error);
 
     return {
-      success:
-        false as const,
+      success: false as const,
 
-      message:
-        error.message,
+      message: error.message,
     };
   }
 
-  const reservation =
-    data?.[0];
+  const reservation = data?.[0];
 
-  if (
-    !reservation
-  ) {
+  if (!reservation) {
     return {
-      success:
-        false as const,
+      success: false as const,
 
-      message:
-        "Rezervasyon oluşturulamadı.",
+      message: "Rezervasyon oluşturulamadı.",
     };
   }
 
-  revalidatePath(
-    "/admin/reservations",
-  );
+  revalidatePath("/admin/reservations");
 
-  revalidatePath(
-    "/admin/rooms",
-  );
+  revalidatePath("/admin/rooms");
 
-  revalidatePath(
-    "/admin",
-  );
+  revalidatePath("/admin");
 
-  revalidatePath(
-    "/rezervasyon",
-  );
+  revalidatePath("/rezervasyon");
 
   return {
-    success:
-      true as const,
+    success: true as const,
 
     reservation: {
-      id:
-        Number(
-          reservation.reservation_id,
-        ),
+      id: Number(reservation.reservation_id),
 
-      reservationCode:
-        reservation.reservation_code,
+      reservationCode: reservation.reservation_code,
 
-      roomId:
-        Number(
-          reservation.room_id,
-        ),
+      roomId: Number(reservation.room_id),
 
-      roomName:
-        reservation.room_name,
+      roomName: reservation.room_name,
 
-      roomNumber:
-        reservation.room_number,
+      roomNumber: reservation.room_number,
 
-      totalPrice:
-        Number(
-          reservation.total_price,
-        ),
+      totalPrice: Number(reservation.total_price),
     },
   };
 }
@@ -534,8 +471,7 @@ export async function getAvailableRoomsForDates(
   checkIn: string,
   checkOut: string,
 ) {
-  const auth =
-    await requireAdmin();
+  const auth = await requireAdmin();
 
   if (!auth.success) {
     return {
@@ -545,85 +481,48 @@ export async function getAvailableRoomsForDates(
     };
   }
 
-  if (
-    !accommodationId ||
-    !checkIn ||
-    !checkOut
-  ) {
+  if (!accommodationId || !checkIn || !checkOut) {
     return {
       success: false as const,
-      message:
-        "Oda tipi ve tarihler zorunludur.",
+      message: "Oda tipi ve tarihler zorunludur.",
       rooms: [],
     };
   }
 
-  if (
-    checkOut <= checkIn
-  ) {
+  if (checkOut <= checkIn) {
     return {
       success: false as const,
-      message:
-        "Çıkış tarihi giriş tarihinden sonra olmalıdır.",
+      message: "Çıkış tarihi giriş tarihinden sonra olmalıdır.",
       rooms: [],
     };
   }
 
-  const {
-    supabase,
-  } = auth;
+  const { supabase } = auth;
 
-  const {
-    data,
-    error,
-  } =
-    await supabase.rpc(
-      "get_available_rooms_for_dates",
-      {
-        p_accommodation_id:
-          accommodationId,
+  const { data, error } = await supabase.rpc("get_available_rooms_for_dates", {
+    p_accommodation_id: accommodationId,
 
-        p_check_in:
-          checkIn,
+    p_check_in: checkIn,
 
-        p_check_out:
-          checkOut,
-      },
-    );
+    p_check_out: checkOut,
+  });
 
   if (error) {
-    console.error(
-      "Müsait odalar alınamadı:",
-      error,
-    );
+    console.error("Müsait odalar alınamadı:", error);
 
     return {
       success: false as const,
-      message:
-        error.message,
+      message: error.message,
       rooms: [],
     };
   }
 
   return {
     success: true as const,
-
-    rooms:
-      (
-        data ?? []
-      ).map(
-        (room) => ({
-          id:
-            Number(
-              room.room_id,
-            ),
-
-          roomName:
-            room.room_name,
-
-          roomNumber:
-            room.room_number,
-        }),
-      ),
+    rooms: ((data ?? []) as AvailableRoomRpc[]).map((room) => ({
+      id: Number(room.room_id),
+      roomName: room.room_name,
+      roomNumber: room.room_number,
+    })),
   };
 }

@@ -101,12 +101,6 @@ export function ReservationPayment({
           onRemove={clearReceipt}
           onUpload={uploadReceipt}
         />
-
-        {error && (
-          <div className="mt-4 border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs leading-5 text-[#98584E]">
-            {error}
-          </div>
-        )}
       </div>
     </div>
   );
