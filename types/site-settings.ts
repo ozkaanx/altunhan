@@ -18,6 +18,8 @@ export type SiteSettings = {
   created_at: string;
 
   updated_at: string;
+
+  hero_image_url: string | null;
 };
 
 export type SiteSettingsFormValues = {
@@ -34,4 +36,6 @@ export type SiteSettingsFormValues = {
   email: string;
 
   address: string;
+
+  hero_image_url: string | null;
 };

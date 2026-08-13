@@ -113,7 +113,7 @@ export default async function Home() {
       <Navbar />
 
       <main>
-        <Hero content={content} settings={siteSettings} />
+        <Hero content={content} settings={settings as SiteSettings | null} />
 
         <AboutExperience content={content} />
 
