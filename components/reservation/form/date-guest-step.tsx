@@ -18,6 +18,17 @@ import type {
   AccommodationBusyRange,
 } from "@/app/rezervasyon/action";
 
+
+import {
+  SectionTitle,
+} from "@/components/shared/sectionTitle";
+
+
+import {
+  FieldLabel,
+} from "@/components/shared/fieldLabel";
+
+
 import {
   formatReservationDate,
   getTurkeyToday,
@@ -379,35 +390,5 @@ export function DateGuestStep({
 const inputClass =
   "h-11 w-full min-w-0 border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:text-sm";
 
-function FieldLabel({
-  children,
-}: {
-  children:
-    React.ReactNode;
-}) {
-  return (
-    <label className="text-xs font-medium text-[#40463F]">
-      {children}
-    </label>
-  );
-}
 
-function SectionTitle({
-  number,
-  title,
-}: {
-  number: string;
-  title: string;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="text-[10px] font-semibold tracking-[0.15em] text-[#A8754F]">
-        {number}
-      </span>
 
-      <h2 className="text-sm font-semibold text-[#263A2D]">
-        {title}
-      </h2>
-    </div>
-  );
-}
