@@ -23,8 +23,7 @@ export function AdminSidebar() {
   };
 
   return (
-    <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-[#E5E1D8] bg-[#F8F6F1] lg:flex">
-      {/* Logo */}
+<aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-[#E5E1D8] bg-[#F8F6F1] xl:flex">      {/* Logo */}
       <div className="border-b border-[#E5E1D8] px-6 py-6">
         <Link href="/admin" className="block">
           <span className="font-serif text-2xl tracking-tight text-[#263A2D]">

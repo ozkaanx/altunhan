@@ -1,19 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Bell,
-  ChevronDown,
-  ExternalLink,
-  Menu,
-} from "lucide-react";
+import { Bell, ChevronDown, ExternalLink, Menu } from "lucide-react";
 import { useState } from "react";
 
 import { AdminMobileSidebar } from "@/components/admin/mobile-sidebar";
 
 export function AdminHeader() {
-  const [mobileMenuOpen, setMobileMenuOpen] =
-    useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <>
@@ -24,7 +18,7 @@ export function AdminHeader() {
             type="button"
             onClick={() => setMobileMenuOpen(true)}
             aria-label="Menüyü aç"
-            className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#E5E1D8] text-[#263A2D] lg:hidden"
+            className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#E5E1D8] text-[#263A2D] xl:hidden"
           >
             <Menu size={19} />
           </button>
@@ -48,7 +42,6 @@ export function AdminHeader() {
             className="hidden h-10 items-center gap-2 border border-[#E5E1D8] px-4 text-xs text-[#5F655E] transition-colors hover:border-[#263A2D] hover:text-[#263A2D] md:flex"
           >
             Siteyi Gör
-
             <ExternalLink size={14} />
           </Link>
 
@@ -71,19 +64,12 @@ export function AdminHeader() {
             </div>
 
             <div className="hidden text-left md:block">
-              <p className="text-xs font-semibold text-[#263A2D]">
-                Admin
-              </p>
+              <p className="text-xs font-semibold text-[#263A2D]">Admin</p>
 
-              <p className="text-[10px] text-[#969990]">
-                Yönetici
-              </p>
+              <p className="text-[10px] text-[#969990]">Yönetici</p>
             </div>
 
-            <ChevronDown
-              size={14}
-              className="hidden text-[#969990] md:block"
-            />
+            <ChevronDown size={14} className="hidden text-[#969990] md:block" />
           </button>
         </div>
       </header>
