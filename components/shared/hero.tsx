@@ -26,7 +26,7 @@ export default function Hero({ content, settings }: HeroProps) {
   return (
     <section className="relative h-[calc(100vh-128px)] min-h-[600px] w-full overflow-hidden">
       <Image
-        src="/images/hero/altunhan-farm.jpg"
+        src={settings?.hero_image_url || "/images/hero/altunhan-farm.jpg"}
         alt="Altunhan Farm - Saros Körfezi"
         fill
         priority

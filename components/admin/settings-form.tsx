@@ -10,11 +10,19 @@ import {
   Phone,
   Save,
   UserRound,
+  ImageIcon,
+Upload,
 } from "lucide-react";
 
 import {
   useState,
 } from "react";
+
+import Image from "next/image";
+
+import {
+  createClient,
+} from "@/lib/supabase/client";
 
 import {
   updateSiteSettings,
@@ -109,6 +117,32 @@ export function SettingsForm({
       null,
     );
 
+    const [
+  heroImageUrl,
+  setHeroImageUrl,
+] = useState(
+  settings.hero_image_url ?? "",
+);
+
+const [
+  heroImage,
+  setHeroImage,
+] = useState<File | null>(
+  null,
+);
+
+const [
+  isUploadingHero,
+  setIsUploadingHero,
+] = useState(false);
+
+const [
+  heroError,
+  setHeroError,
+] = useState<string | null>(
+  null,
+);
+
   const handleSubmit =
     async (
       event:
@@ -178,6 +212,164 @@ export function SettingsForm({
       }
     };
 
+    const handleHeroUpload =
+  async () => {
+    if (!heroImage) {
+      return;
+    }
+
+    setHeroError(null);
+    setIsUploadingHero(true);
+
+    try {
+      const maxSize =
+        10 * 1024 * 1024;
+
+      if (
+        heroImage.size >
+        maxSize
+      ) {
+        setHeroError(
+          "Hero görseli en fazla 10 MB olabilir.",
+        );
+
+        return;
+      }
+
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+      ];
+
+      if (
+        !allowedTypes.includes(
+          heroImage.type,
+        )
+      ) {
+        setHeroError(
+          "Sadece JPG, PNG veya WEBP yükleyebilirsiniz.",
+        );
+
+        return;
+      }
+
+      const extension =
+        heroImage.name
+          .split(".")
+          .pop()
+          ?.toLowerCase() ??
+        "jpg";
+
+      const storagePath =
+        `hero/hero-${Date.now()}.${extension}`;
+
+      const supabase =
+        createClient();
+
+      const {
+        error:
+          uploadError,
+      } =
+        await supabase.storage
+          .from(
+            "site-assets",
+          )
+          .upload(
+            storagePath,
+            heroImage,
+            {
+              cacheControl:
+                "3600",
+              upsert:
+                false,
+              contentType:
+                heroImage.type,
+            },
+          );
+
+      if (
+        uploadError
+      ) {
+        throw uploadError;
+      }
+
+      const {
+        data:
+          publicUrlData,
+      } =
+        supabase.storage
+          .from(
+            "site-assets",
+          )
+          .getPublicUrl(
+            storagePath,
+          );
+
+      const imageUrl =
+        publicUrlData
+          .publicUrl;
+
+      const {
+        error:
+          updateError,
+      } =
+        await supabase
+          .from(
+            "site_settings",
+          )
+          .update({
+            hero_image_url:
+              imageUrl,
+            updated_at:
+              new Date().toISOString(),
+          })
+          .eq(
+            "id",
+            1,
+          );
+
+      if (
+        updateError
+      ) {
+        await supabase.storage
+          .from(
+            "site-assets",
+          )
+          .remove([
+            storagePath,
+          ]);
+
+        throw updateError;
+      }
+
+      setHeroImageUrl(
+        imageUrl,
+      );
+
+      setHeroImage(
+        null,
+      );
+
+      window.location.reload();
+    } catch (error) {
+      console.error(
+        error,
+      );
+
+      setHeroError(
+        error instanceof
+        Error
+          ? error.message
+          : "Hero görseli yüklenemedi.",
+      );
+    } finally {
+      setIsUploadingHero(
+        false,
+      );
+    }
+  };
+
   return (
     <form
       onSubmit={
@@ -185,6 +377,110 @@ export function SettingsForm({
       }
       className="space-y-5"
     >
+
+      <section className="border border-[#E3E0D8] bg-white">
+  <div className="border-b border-[#EEEAE3] px-4 py-4 sm:px-5">
+    <div className="flex items-center gap-3">
+      <div className="flex h-9 w-9 items-center justify-center bg-[#F1EFE9] text-[#A8754F]">
+        <ImageIcon
+          size={17}
+        />
+      </div>
+
+      <div>
+        <h2 className="text-sm font-semibold text-[#263A2D]">
+          Hero Görseli
+        </h2>
+
+        <p className="mt-1 text-[10px] text-[#969990]">
+          Ana sayfanın üst bölümünde kullanılan görsel.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div className="space-y-4 p-4 sm:p-5">
+    {heroImageUrl && (
+      <div className="relative aspect-[16/7] overflow-hidden bg-[#EEEAE3]">
+        <Image
+          src={
+            heroImageUrl
+          }
+          alt="Hero önizleme"
+          fill
+          sizes="700px"
+          className="object-cover"
+        />
+      </div>
+    )}
+
+    <div>
+      <label className="flex cursor-pointer items-center justify-center gap-2 border border-dashed border-[#CFC9BE] bg-[#FAF9F6] px-4 py-8 text-xs font-semibold text-[#626860] transition hover:border-[#A8754F]">
+        <Upload
+          size={16}
+        />
+
+        {heroImage
+          ? heroImage.name
+          : "Yeni Hero Görseli Seç"}
+
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={(
+            event,
+          ) => {
+            setHeroImage(
+              event
+                .target
+                .files?.[0] ??
+                null,
+            );
+
+            setHeroError(
+              null,
+            );
+          }}
+        />
+      </label>
+    </div>
+
+    {heroError && (
+      <div className="border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs text-[#98584E]">
+        {heroError}
+      </div>
+    )}
+
+    <button
+      type="button"
+      onClick={
+        handleHeroUpload
+      }
+      disabled={
+        !heroImage ||
+        isUploadingHero
+      }
+      className="flex h-11 w-full items-center justify-center gap-2 bg-[#263A2D] px-4 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+    >
+      {isUploadingHero ? (
+        <Loader2
+          size={15}
+          className="animate-spin"
+        />
+      ) : (
+        <Upload
+          size={15}
+        />
+      )}
+
+      {isUploadingHero
+        ? "Yükleniyor..."
+        : "Hero Görselini Güncelle"}
+    </button>
+  </div>
+</section>
+      
       {/* BANK */}
       <section className="border border-[#E3E0D8] bg-white">
         <div className="border-b border-[#EEEAE3] px-4 py-4 sm:px-5">
