@@ -2,7 +2,7 @@
 
 import {
   TrackingResult,
-} from "@/components/reservation/tracking/result";
+} from "@/components/reservation/tracking/tracking-result.tsx";
 
 import {
   TrackingSearchForm,

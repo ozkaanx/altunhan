@@ -21,10 +21,10 @@ import type {
   PublicReservationStatus,
   ReservationTrackingResult,
 } from "@/types/reservation-tracking";
-import { TrackingStatusCard } from "./statusCard";
-import { TrackingTimeline } from "./timeline";
-import { BankInformation } from "../payment/bankInformation";
-import { TrackingReceiptUpload } from "./receiptUpload";
+import { TrackingStatusCard } from "./tracking-status-card";
+import { TrackingTimeline } from "./tracking-timeline";
+import { BankInformation } from "../payment/bank-information";
+import { TrackingReceiptUpload } from "./tracking-receipt-upload";
 
 type TrackingResultProps = {
   reservation: ReservationTrackingResult;
