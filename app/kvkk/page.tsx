@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Gizlilik Politikası",
+  title: "KVKK Aydınlatma Metni",
   robots: {
     index: false,
     follow: false,
   },
 };
 
-export default function GizlilikPage() {
+export default function KvkkPage() {
   return (
     <main className="min-h-screen bg-[#F4F2ED] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl bg-white p-6 sm:p-10">
@@ -22,67 +22,69 @@ export default function GizlilikPage() {
         </Link>
 
         <h1 className="mt-6 font-serif text-4xl text-[#263A2D]">
-          Gizlilik Politikası
+          KVKK Aydınlatma Metni
         </h1>
 
         <div className="mt-8 space-y-6 text-sm leading-7 text-[#626860]">
           <p>
-            Altunhan Farm, kullanıcıların gizliliğine önem verir ve
-            internet sitesi üzerinden paylaşılan bilgilerin güvenli
-            şekilde işlenmesini amaçlar.
+            Bu metin, Altunhan Farm internet sitesi üzerinden
+            işlenen kişisel veriler hakkında genel bilgilendirme
+            amacıyla hazırlanmıştır.
           </p>
 
           <section>
             <h2 className="font-semibold text-[#263A2D]">
-              Toplanan Bilgiler
+              İşlenen Kişisel Veriler
             </h2>
 
             <p className="mt-2">
-              Rezervasyon sürecinde ad-soyad, telefon, e-posta,
-              rezervasyon tarihleri, konaklama bilgileri ve
-              ödeme/dekont bilgileri toplanabilir.
+              Rezervasyon işlemleri kapsamında ad-soyad, telefon
+              numarası, e-posta adresi, konaklama tarihleri,
+              rezervasyon bilgileri ve ödeme/dekont bilgileri
+              işlenebilir.
             </p>
           </section>
 
           <section>
             <h2 className="font-semibold text-[#263A2D]">
-              Bilgilerin Kullanımı
+              İşleme Amaçları
             </h2>
 
             <p className="mt-2">
-              Bu bilgiler yalnızca rezervasyon ve müşteri hizmetleri
-              süreçlerinin yürütülmesi, ödeme kontrolü ve gerekli
-              bilgilendirmelerin yapılması amacıyla kullanılır.
+              Kişisel veriler; rezervasyon taleplerinin alınması,
+              rezervasyon sürecinin yürütülmesi, müşteriyle iletişim
+              kurulması, ödeme kontrolü ve yasal yükümlülüklerin
+              yerine getirilmesi amacıyla kullanılabilir.
             </p>
           </section>
 
           <section>
             <h2 className="font-semibold text-[#263A2D]">
-              Üçüncü Taraflarla Paylaşım
+              Verilerin Saklanması
             </h2>
 
             <p className="mt-2">
-              Kişisel bilgiler yasal zorunluluklar dışında yetkisiz
-              üçüncü kişilerle paylaşılmaz. Hizmetin yürütülmesi için
-              kullanılan teknik altyapı sağlayıcılarıyla gerekli
-              ölçüde veri paylaşımı yapılabilir.
+              Kişisel veriler, ilgili mevzuatta öngörülen süreler ve
+              işleme amacının gerektirdiği süre boyunca saklanabilir.
             </p>
           </section>
 
           <section>
             <h2 className="font-semibold text-[#263A2D]">
-              Güvenlik
+              Haklarınız
             </h2>
 
             <p className="mt-2">
-              Kişisel verilerin yetkisiz erişime, kayba ve kötüye
-              kullanıma karşı korunması için makul teknik ve idari
-              önlemler uygulanır.
+              6698 sayılı Kişisel Verilerin Korunması Kanunu
+              kapsamında kişisel verileriniz hakkında bilgi talep
+              etme, düzeltilmesini veya silinmesini isteme ve diğer
+              yasal haklarınızı kullanma hakkınız bulunmaktadır.
             </p>
           </section>
 
           <p className="border-t border-[#E3E0D8] pt-6 text-xs text-[#8A8E87]">
-            Not: İşletmenin resmi bilgileri netleştiğinde bu politika
+            Not: Bu metin taslak niteliğindedir. İşletmenin resmi
+            unvanı, adresi ve iletişim bilgileri netleştiğinde
             güncellenecektir.
           </p>
         </div>
