@@ -21,17 +21,44 @@ export async function createPublicReservation(
   values:
     ReservationCreateInput,
 ): Promise<ReservationCreateResult> {
+  const guestName =
+    values.guestName.trim();
+
+  const guestPhone =
+    values.guestPhone.trim();
+
+  const guestEmail =
+    values.guestEmail
+      .trim()
+      .toLowerCase();
+
   if (
     !values.accommodationId ||
     !values.checkIn ||
     !values.checkOut ||
-    !values.guestName.trim() ||
-    !values.guestPhone.trim()
+    !guestName ||
+    !guestPhone ||
+    !guestEmail
   ) {
     return {
       success: false,
       message:
         "Lütfen zorunlu alanları doldurun.",
+    };
+  }
+
+  const emailPattern =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (
+    !emailPattern.test(
+      guestEmail,
+    )
+  ) {
+    return {
+      success: false,
+      message:
+        "Lütfen geçerli bir e-posta adresi girin.",
     };
   }
 
@@ -57,14 +84,13 @@ export async function createPublicReservation(
         values.guestCount,
 
       p_guest_name:
-        values.guestName,
+        guestName,
 
       p_guest_phone:
-        values.guestPhone,
+        guestPhone,
 
       p_guest_email:
-        values.guestEmail ||
-        null,
+        guestEmail,
     },
   );
 
