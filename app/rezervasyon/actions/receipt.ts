@@ -4,6 +4,10 @@ import {
   createClient,
 } from "@/lib/supabase/server";
 
+import {
+  notifyReceiptSubmitted,
+} from "@/lib/notifications/reservation-emails";
+
 type SaveReceiptResult =
   | {
       success: true;
@@ -70,6 +74,21 @@ export async function saveReceiptPath(
       message:
         "Dekont kaydedilemedi.",
     };
+  }
+
+  try {
+    await notifyReceiptSubmitted(
+      supabase,
+      reservationCode,
+      storagePath,
+    );
+  } catch (
+    notificationError
+  ) {
+    console.error(
+      "Dekont bildirimi gönderilemedi:",
+      notificationError,
+    );
   }
 
   return {
