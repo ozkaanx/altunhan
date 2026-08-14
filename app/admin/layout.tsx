@@ -1,15 +1,37 @@
-import type { ReactNode } from "react";
+import type {
+  ReactNode,
+} from "react";
 
-import { AdminHeader } from "@/components/admin/header";
-import { AdminSidebar } from "@/components/admin/sidebar";
+import {
+  redirect,
+} from "next/navigation";
+
+import {
+  requireAdmin,
+} from "@/lib/auth/admin";
+
+import {
+  AdminHeader,
+} from "@/components/admin/header";
+
+import {
+  AdminSidebar,
+} from "@/components/admin/sidebar";
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: AdminLayoutProps) {
+  const admin =
+    await requireAdmin();
+
+  if (!admin.success) {
+    redirect("/");
+  }
+
   return (
     <div className="min-h-[100dvh] overflow-x-hidden bg-[#F3F1EC]">
       <div className="flex min-h-[100dvh]">
