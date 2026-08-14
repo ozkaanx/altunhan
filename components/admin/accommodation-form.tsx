@@ -1,13 +1,18 @@
 "use client";
 
 import {
+  Baby,
   Bath,
   BedDouble,
+  Car,
   ImagePlus,
   Minus,
   Plus,
   Save,
+  ShieldCheck,
   Trash2,
+  Trees,
+  Umbrella,
   Users,
   Utensils,
   Waves,
@@ -57,6 +62,41 @@ const amenityOptions = [
   {
     label: "Kahvaltı",
     value: "breakfast",
+    icon: Utensils,
+  },
+  {
+    label: "Kendine Ait Beach",
+    value: "private_beach",
+    icon: Waves,
+  },
+  {
+    label: "Beyaz Şezlong ve Şemsiye",
+    value: "white_sunbed_and_umbrella",
+    icon: Umbrella,
+  },
+  {
+    label: "Açık Otopark",
+    value: "open_parking",
+    icon: Car,
+  },
+  {
+    label: "Geniş Bahçe",
+    value: "large_garden",
+    icon: Trees,
+  },
+  {
+    label: "Çocuk Oyun Parkı",
+    value: "children_playground",
+    icon: Baby,
+  },
+  {
+    label: "Sürekli İlaçlanan Alan",
+    value: "regularly_treated_area",
+    icon: ShieldCheck,
+  },
+  {
+    label: "Denize Sıfır Restoran",
+    value: "seafront_restaurant",
     icon: Utensils,
   },
 ];

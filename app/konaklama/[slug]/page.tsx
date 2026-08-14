@@ -176,6 +176,14 @@ export default async function AccommodationDetailPage({
     private_bathroom: "Özel Banyo",
     sea_view: "Deniz Manzarası",
     breakfast: "Kahvaltı",
+
+    private_beach: "Kendine Ait Beach",
+    white_sunbed_and_umbrella: "Beyaz Şezlong ve Şemsiye",
+    open_parking: "Açık Otopark",
+    large_garden: "Geniş Bahçe",
+    children_playground: "Çocuk Oyun Parkı",
+    regularly_treated_area: "Sürekli İlaçlanan Alan",
+    seafront_restaurant: "Denize Sıfır Restoran",
   };
 
   function getAmenityLabel(amenity: string) {
@@ -291,24 +299,20 @@ export default async function AccommodationDetailPage({
                   </h2>
 
                   <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    {accommodation.amenities.map(
-                      (amenity) => (
-                        (
-                          <div
-                            key={amenity}
-                            className="flex items-center gap-3 border border-[#DED9D0] bg-[#F8F4EB] px-4 py-4"
-                          >
-                            <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-[#E9EDE6] text-[#526048]">
-                              <Check size={14} />
-                            </div>
+                    {accommodation.amenities.map((amenity) => (
+                      <div
+                        key={amenity}
+                        className="flex items-center gap-3 border border-[#DED9D0] bg-[#F8F4EB] px-4 py-4"
+                      >
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-[#E9EDE6] text-[#526048]">
+                          <Check size={14} />
+                        </div>
 
-                            <span className="text-xs font-medium text-[#505750]">
-                              {getAmenityLabel(amenity)}
-                            </span>
-                          </div>
-                        )
-                      ),
-                    )}
+                        <span className="text-xs font-medium text-[#505750]">
+                          {getAmenityLabel(amenity)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
