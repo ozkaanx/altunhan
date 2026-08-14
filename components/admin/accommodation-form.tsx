@@ -33,9 +33,7 @@ import type {
 type AccommodationFormProps = {
   initialValues?: Partial<AccommodationFormValues>;
   submitLabel?: string;
-  onSubmit?: (
-    values: AccommodationFormValues,
-  ) => void | Promise<void>;
+  onSubmit?: (values: AccommodationFormValues) => void | Promise<void>;
 };
 
 const amenityOptions = [
@@ -107,6 +105,9 @@ const defaultValues: AccommodationFormValues = {
   description: "",
   price: 0,
   capacity: 2,
+  maxAdults: 2,
+  maxChildren: 0,
+  maxTotalGuests: 2,
   bedCount: 1,
   bathroomCount: 1,
   isActive: true,
@@ -122,24 +123,18 @@ export function AccommodationForm({
 }: AccommodationFormProps) {
   const router = useRouter();
 
-  const [values, setValues] =
-    useState<AccommodationFormValues>({
-      ...defaultValues,
-      ...initialValues,
-      images: initialValues?.images ?? [],
-      deletedImages:
-        initialValues?.deletedImages ?? [],
-    });
+  const [values, setValues] = useState<AccommodationFormValues>({
+    ...defaultValues,
+    ...initialValues,
+    images: initialValues?.images ?? [],
+    deletedImages: initialValues?.deletedImages ?? [],
+  });
 
-  const [isSubmitting, setIsSubmitting] =
-    useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [submitError, setSubmitError] =
-    useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const updateValue = <
-    K extends keyof AccommodationFormValues,
-  >(
+  const updateValue = <K extends keyof AccommodationFormValues>(
     key: K,
     value: AccommodationFormValues[K],
   ) => {
@@ -149,57 +144,95 @@ export function AccommodationForm({
     }));
   };
 
-  const increment = (
-    key:
-      | "capacity"
-      | "bedCount"
-      | "bathroomCount",
-  ) => {
-    updateValue(
-      key,
-      values[key] + 1,
-    );
+  type CounterKey =
+    | "maxAdults"
+    | "maxChildren"
+    | "maxTotalGuests"
+    | "bedCount"
+    | "bathroomCount";
+
+  const increment = (key: CounterKey) => {
+    setValues((current) => {
+      const nextValue = current[key] + 1;
+
+      if (key === "maxAdults" || key === "maxChildren") {
+        const nextTotal = Math.max(current.maxTotalGuests, nextValue);
+
+        return {
+          ...current,
+          [key]: nextValue,
+          maxTotalGuests: nextTotal,
+          capacity: nextTotal,
+        };
+      }
+
+      if (key === "maxTotalGuests") {
+        return {
+          ...current,
+          maxTotalGuests: nextValue,
+          capacity: nextValue,
+        };
+      }
+
+      return {
+        ...current,
+        [key]: nextValue,
+      };
+    });
   };
 
-  const decrement = (
-    key:
-      | "capacity"
-      | "bedCount"
-      | "bathroomCount",
-  ) => {
-    updateValue(
-      key,
-      Math.max(1, values[key] - 1),
-    );
+  const decrement = (key: CounterKey) => {
+    setValues((current) => {
+      if (key === "maxAdults") {
+        return {
+          ...current,
+          maxAdults: Math.max(1, current.maxAdults - 1),
+        };
+      }
+
+      if (key === "maxChildren") {
+        return {
+          ...current,
+          maxChildren: Math.max(0, current.maxChildren - 1),
+        };
+      }
+
+      if (key === "maxTotalGuests") {
+        const minimumTotal = Math.max(
+          1,
+          current.maxAdults,
+          current.maxChildren,
+        );
+
+        const nextTotal = Math.max(minimumTotal, current.maxTotalGuests - 1);
+
+        return {
+          ...current,
+          maxTotalGuests: nextTotal,
+          capacity: nextTotal,
+        };
+      }
+
+      return {
+        ...current,
+        [key]: Math.max(1, current[key] - 1),
+      };
+    });
   };
 
-  const toggleAmenity = (
-    amenity: string,
-  ) => {
-    const exists =
-      values.amenities.includes(
-        amenity,
-      );
+  const toggleAmenity = (amenity: string) => {
+    const exists = values.amenities.includes(amenity);
 
     updateValue(
       "amenities",
       exists
-        ? values.amenities.filter(
-            (item) =>
-              item !== amenity,
-          )
-        : [
-            ...values.amenities,
-            amenity,
-          ],
+        ? values.amenities.filter((item) => item !== amenity)
+        : [...values.amenities, amenity],
     );
   };
 
-  const handleImageUpload = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files =
-      event.target.files;
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
 
     if (!files?.length) {
       return;
@@ -207,140 +240,83 @@ export function AccommodationForm({
 
     setSubmitError(null);
 
-    const selectedFiles =
-      Array.from(files);
+    const selectedFiles = Array.from(files);
 
-    const maxFileSize =
-      10 * 1024 * 1024;
+    const maxFileSize = 10 * 1024 * 1024;
 
-    const oversizedFile =
-      selectedFiles.find(
-        (file) =>
-          file.size >
-          maxFileSize,
-      );
+    const oversizedFile = selectedFiles.find((file) => file.size > maxFileSize);
 
     if (oversizedFile) {
-      setSubmitError(
-        "Fotoğrafların her biri en fazla 10 MB olabilir.",
-      );
+      setSubmitError("Fotoğrafların her biri en fazla 10 MB olabilir.");
 
       event.target.value = "";
       return;
     }
 
-    const newImages: AccommodationImageValue[] =
-      selectedFiles.map(
-        (file, index) => ({
-          id: crypto.randomUUID(),
-          file,
-          previewUrl:
-            URL.createObjectURL(
-              file,
-            ),
-          isCover:
-            values.images.length ===
-              0 &&
-            index === 0,
-        }),
-      );
+    const newImages: AccommodationImageValue[] = selectedFiles.map(
+      (file, index) => ({
+        id: crypto.randomUUID(),
+        file,
+        previewUrl: URL.createObjectURL(file),
+        isCover: values.images.length === 0 && index === 0,
+      }),
+    );
 
-    updateValue("images", [
-      ...values.images,
-      ...newImages,
-    ]);
+    updateValue("images", [...values.images, ...newImages]);
 
     event.target.value = "";
   };
 
-  const setCoverImage = (
-    id: string,
-  ) => {
+  const setCoverImage = (id: string) => {
     updateValue(
       "images",
-      values.images.map(
-        (image) => ({
-          ...image,
-          isCover:
-            image.id === id,
-        }),
-      ),
+      values.images.map((image) => ({
+        ...image,
+        isCover: image.id === id,
+      })),
     );
   };
 
-  const removeImage = (
-    id: string,
-  ) => {
-    const imageToRemove =
-      values.images.find(
-        (image) =>
-          image.id === id,
-      );
+  const removeImage = (id: string) => {
+    const imageToRemove = values.images.find((image) => image.id === id);
 
     if (!imageToRemove) {
       return;
     }
 
-    let deletedImages =
-      values.deletedImages;
+    let deletedImages = values.deletedImages;
 
-    if (
-      imageToRemove.isExisting &&
-      imageToRemove.storagePath
-    ) {
+    if (imageToRemove.isExisting && imageToRemove.storagePath) {
       deletedImages = [
         ...deletedImages,
         {
-          id: Number(
-            imageToRemove.id,
-          ),
-          storagePath:
-            imageToRemove.storagePath,
+          id: Number(imageToRemove.id),
+          storagePath: imageToRemove.storagePath,
         },
       ];
     }
 
-    let remainingImages =
-      values.images.filter(
-        (image) =>
-          image.id !== id,
-      );
+    let remainingImages = values.images.filter((image) => image.id !== id);
 
-    if (
-      imageToRemove.file &&
-      imageToRemove.previewUrl
-    ) {
-      URL.revokeObjectURL(
-        imageToRemove.previewUrl,
-      );
+    if (imageToRemove.file && imageToRemove.previewUrl) {
+      URL.revokeObjectURL(imageToRemove.previewUrl);
     }
 
-    if (
-      imageToRemove.isCover &&
-      remainingImages.length >
-        0
-    ) {
-      remainingImages =
-        remainingImages.map(
-          (image, index) => ({
-            ...image,
-            isCover:
-              index === 0,
-          }),
-        );
+    if (imageToRemove.isCover && remainingImages.length > 0) {
+      remainingImages = remainingImages.map((image, index) => ({
+        ...image,
+        isCover: index === 0,
+      }));
     }
 
     setValues((current) => ({
       ...current,
-      images:
-        remainingImages,
+      images: remainingImages,
       deletedImages,
     }));
   };
 
-  const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setSubmitError(null);
@@ -352,58 +328,36 @@ export function AccommodationForm({
         return;
       }
 
-      const result =
-        await createAccommodation(
-          {
-            title:
-              values.title,
-            shortDescription:
-              values.shortDescription,
-            description:
-              values.description,
-            price:
-              values.price,
-            capacity:
-              values.capacity,
-            bedCount:
-              values.bedCount,
-            bathroomCount:
-              values.bathroomCount,
-            amenities:
-              values.amenities,
-            isActive:
-              values.isActive,
-          },
-        );
+      const result = await createAccommodation({
+        title: values.title,
+        shortDescription: values.shortDescription,
+        description: values.description,
+        price: values.price,
+        maxAdults: values.maxAdults,
+        maxChildren: values.maxChildren,
+        maxTotalGuests: values.maxTotalGuests,
+        bedCount: values.bedCount,
+        bathroomCount: values.bathroomCount,
+        amenities: values.amenities,
+        isActive: values.isActive,
+      });
 
       if (!result.success) {
-        setSubmitError(
-          result.message,
-        );
+        setSubmitError(result.message);
         return;
       }
 
-      if (
-        values.images.length >
-        0
-      ) {
-        await uploadAccommodationImages(
-          result.accommodationId,
-          values.images,
-        );
+      if (values.images.length > 0) {
+        await uploadAccommodationImages(result.accommodationId, values.images);
       }
 
-      router.push(
-        "/admin/accommodations",
-      );
+      router.push("/admin/accommodations");
       router.refresh();
     } catch (error) {
       console.error(error);
 
       setSubmitError(
-        error instanceof Error
-          ? error.message
-          : "Beklenmeyen bir hata oluştu.",
+        error instanceof Error ? error.message : "Beklenmeyen bir hata oluştu.",
       );
     } finally {
       setIsSubmitting(false);
@@ -411,10 +365,7 @@ export function AccommodationForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mx-auto max-w-[900px] space-y-5"
-    >
+    <form onSubmit={handleSubmit} className="mx-auto max-w-[900px] space-y-5">
       <section className="border border-[#E3E0D8] bg-white">
         <SectionHeader
           title="Temel Bilgiler"
@@ -422,37 +373,21 @@ export function AccommodationForm({
         />
 
         <div className="space-y-5 p-4 sm:p-5">
-          <Field
-            label="Konaklama Adı"
-          >
+          <Field label="Konaklama Adı">
             <input
               value={values.title}
               required
-              onChange={(event) =>
-                updateValue(
-                  "title",
-                  event.target
-                    .value,
-                )
-              }
+              onChange={(event) => updateValue("title", event.target.value)}
               placeholder="Örn. Bungalov"
               className={inputClass}
             />
           </Field>
 
-          <Field
-            label="Kısa Açıklama"
-          >
+          <Field label="Kısa Açıklama">
             <input
-              value={
-                values.shortDescription
-              }
+              value={values.shortDescription}
               onChange={(event) =>
-                updateValue(
-                  "shortDescription",
-                  event.target
-                    .value,
-                )
+                updateValue("shortDescription", event.target.value)
               }
               placeholder="Kartlarda gösterilecek kısa açıklama"
               className={inputClass}
@@ -466,26 +401,16 @@ export function AccommodationForm({
               </label>
 
               <span className="text-[10px] text-[#A0A39C]">
-                {
-                  values
-                    .description
-                    .length
-                }
+                {values.description.length}
                 /1000
               </span>
             </div>
 
             <textarea
-              value={
-                values.description
-              }
+              value={values.description}
               maxLength={1000}
               onChange={(event) =>
-                updateValue(
-                  "description",
-                  event.target
-                    .value,
-                )
+                updateValue("description", event.target.value)
               }
               rows={6}
               placeholder="Konaklama hakkında detaylı açıklama..."
@@ -505,21 +430,9 @@ export function AccommodationForm({
                 type="number"
                 min={0}
                 required
-                value={
-                  values.price ||
-                  ""
-                }
-                onChange={(
-                  event,
-                ) =>
-                  updateValue(
-                    "price",
-                    Number(
-                      event
-                        .target
-                        .value,
-                    ),
-                  )
+                value={values.price || ""}
+                onChange={(event) =>
+                  updateValue("price", Number(event.target.value))
                 }
                 className={`${inputClass} pr-14 text-lg font-semibold`}
               />
@@ -535,65 +448,34 @@ export function AccommodationForm({
       <section className="border border-[#E3E0D8] bg-white">
         <SectionHeader
           title="Konaklama Bilgileri"
-          description="Kapasite ve oda detaylarını belirleyin."
+          description="Yetişkin, çocuk, toplam misafir kapasitesi ve oda detaylarını belirleyin."
         />
-
         <div className="divide-y divide-[#EEEAE3] px-4 sm:px-5">
           <CounterRow
             icon={Users}
-            label="Kapasite"
-            description="Maksimum misafir sayısı"
-            value={
-              values.capacity
-            }
-            onDecrease={() =>
-              decrement(
-                "capacity",
-              )
-            }
-            onIncrease={() =>
-              increment(
-                "capacity",
-              )
-            }
+            label="Maks. Yetişkin"
+            description="Aynı rezervasyonda seçilebilecek en fazla yetişkin"
+            value={values.maxAdults}
+            onDecrease={() => decrement("maxAdults")}
+            onIncrease={() => increment("maxAdults")}
           />
 
           <CounterRow
-            icon={BedDouble}
-            label="Yatak"
-            description="Toplam yatak sayısı"
-            value={
-              values.bedCount
-            }
-            onDecrease={() =>
-              decrement(
-                "bedCount",
-              )
-            }
-            onIncrease={() =>
-              increment(
-                "bedCount",
-              )
-            }
+            icon={Baby}
+            label="Maks. Çocuk"
+            description="Aynı rezervasyonda seçilebilecek en fazla çocuk"
+            value={values.maxChildren}
+            onDecrease={() => decrement("maxChildren")}
+            onIncrease={() => increment("maxChildren")}
           />
 
           <CounterRow
-            icon={Bath}
-            label="Banyo"
-            description="Toplam banyo sayısı"
-            value={
-              values.bathroomCount
-            }
-            onDecrease={() =>
-              decrement(
-                "bathroomCount",
-              )
-            }
-            onIncrease={() =>
-              increment(
-                "bathroomCount",
-              )
-            }
+            icon={Users}
+            label="Toplam Misafir"
+            description="Yetişkin + çocuk toplam kapasitesi"
+            value={values.maxTotalGuests}
+            onDecrease={() => decrement("maxTotalGuests")}
+            onIncrease={() => increment("maxTotalGuests")}
           />
         </div>
       </section>
@@ -606,94 +488,66 @@ export function AccommodationForm({
 
         <div className="p-4 sm:p-5">
           <label className="flex min-h-36 cursor-pointer flex-col items-center justify-center border border-dashed border-[#CBC7BE] bg-[#FAF9F6] px-4 text-center transition-colors hover:border-[#263A2D]">
-            <ImagePlus
-              size={28}
-              strokeWidth={1.5}
-              className="text-[#A8754F]"
-            />
+            <ImagePlus size={28} strokeWidth={1.5} className="text-[#A8754F]" />
 
             <p className="mt-3 text-xs font-semibold text-[#263A2D]">
               Fotoğraf Ekle
             </p>
 
             <p className="mt-1 max-w-[300px] text-[10px] leading-4 text-[#969990]">
-              JPG, PNG veya WEBP.
-              Maksimum 10 MB.
+              JPG, PNG veya WEBP. Maksimum 10 MB.
             </p>
 
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
               multiple
-              onChange={
-                handleImageUpload
-              }
+              onChange={handleImageUpload}
               className="hidden"
             />
           </label>
 
-          {values.images.length >
-            0 && (
+          {values.images.length > 0 && (
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {values.images.map(
-                (image) => (
-                  <div
-                    key={
-                      image.id
-                    }
-                    className="overflow-hidden border border-[#E3E0D8] bg-white"
-                  >
-                    <div className="relative aspect-[4/3]">
-                      <img
-                        src={
-                          image.previewUrl
-                        }
-                        alt="Konaklama fotoğrafı"
-                        className="h-full w-full object-cover"
-                      />
+              {values.images.map((image) => (
+                <div
+                  key={image.id}
+                  className="overflow-hidden border border-[#E3E0D8] bg-white"
+                >
+                  <div className="relative aspect-[4/3]">
+                    <img
+                      src={image.previewUrl}
+                      alt="Konaklama fotoğrafı"
+                      className="h-full w-full object-cover"
+                    />
 
-                      {image.isCover && (
-                        <span className="absolute left-2 top-2 bg-[#263A2D] px-2 py-1 text-[9px] font-semibold text-white">
-                          Ana
-                          Fotoğraf
-                        </span>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          removeImage(
-                            image.id,
-                          )
-                        }
-                        className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center bg-white text-[#98584E] shadow"
-                        aria-label="Fotoğrafı sil"
-                      >
-                        <Trash2
-                          size={
-                            14
-                          }
-                        />
-                      </button>
-                    </div>
-
-                    {!image.isCover && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setCoverImage(
-                            image.id,
-                          )
-                        }
-                        className="flex h-10 w-full items-center justify-center border-t border-[#E3E0D8] text-[10px] font-semibold text-[#263A2D]"
-                      >
+                    {image.isCover && (
+                      <span className="absolute left-2 top-2 bg-[#263A2D] px-2 py-1 text-[9px] font-semibold text-white">
                         Ana Fotoğraf
-                        Yap
-                      </button>
+                      </span>
                     )}
+
+                    <button
+                      type="button"
+                      onClick={() => removeImage(image.id)}
+                      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center bg-white text-[#98584E] shadow"
+                      aria-label="Fotoğrafı sil"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
-                ),
-              )}
+
+                  {!image.isCover && (
+                    <button
+                      type="button"
+                      onClick={() => setCoverImage(image.id)}
+                      className="flex h-10 w-full items-center justify-center border-t border-[#E3E0D8] text-[10px] font-semibold text-[#263A2D]"
+                    >
+                      Ana Fotoğraf Yap
+                    </button>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -706,84 +560,51 @@ export function AccommodationForm({
         />
 
         <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 sm:p-5">
-          {amenityOptions.map(
-            (amenity) => {
-              const Icon =
-                amenity.icon;
+          {amenityOptions.map((amenity) => {
+            const Icon = amenity.icon;
 
-              const selected =
-                values.amenities.includes(
-                  amenity.value,
-                );
+            const selected = values.amenities.includes(amenity.value);
 
-              return (
-                <button
-                  key={
-                    amenity.value
-                  }
-                  type="button"
-                  onClick={() =>
-                    toggleAmenity(
-                      amenity.value,
-                    )
-                  }
-                  className={`flex min-h-20 flex-col items-center justify-center gap-2 border px-3 py-3 text-center ${
-                    selected
-                      ? "border-[#263A2D] bg-[#EEF0EA] text-[#263A2D]"
-                      : "border-[#E1DED7] bg-white text-[#777C75]"
-                  }`}
-                >
-                  <Icon
-                    size={20}
-                    strokeWidth={
-                      1.5
-                    }
-                  />
+            return (
+              <button
+                key={amenity.value}
+                type="button"
+                onClick={() => toggleAmenity(amenity.value)}
+                className={`flex min-h-20 flex-col items-center justify-center gap-2 border px-3 py-3 text-center ${
+                  selected
+                    ? "border-[#263A2D] bg-[#EEF0EA] text-[#263A2D]"
+                    : "border-[#E1DED7] bg-white text-[#777C75]"
+                }`}
+              >
+                <Icon size={20} strokeWidth={1.5} />
 
-                  <span className="text-[11px] font-medium">
-                    {
-                      amenity.label
-                    }
-                  </span>
-                </button>
-              );
-            },
-          )}
+                <span className="text-[11px] font-medium">{amenity.label}</span>
+              </button>
+            );
+          })}
         </div>
       </section>
 
       <section className="border border-[#E3E0D8] bg-white p-4 sm:p-5">
         <div className="flex items-center justify-between gap-5">
           <div>
-            <p className="text-sm font-semibold text-[#263A2D]">
-              Yayın Durumu
-            </p>
+            <p className="text-sm font-semibold text-[#263A2D]">Yayın Durumu</p>
 
             <p className="mt-1 text-[11px] text-[#969990]">
-              Web sitesinde
-              göster.
+              Web sitesinde göster.
             </p>
           </div>
 
           <button
             type="button"
-            onClick={() =>
-              updateValue(
-                "isActive",
-                !values.isActive,
-              )
-            }
+            onClick={() => updateValue("isActive", !values.isActive)}
             className={`relative h-7 w-12 shrink-0 rounded-full ${
-              values.isActive
-                ? "bg-[#263A2D]"
-                : "bg-[#D8D6D0]"
+              values.isActive ? "bg-[#263A2D]" : "bg-[#D8D6D0]"
             }`}
           >
             <span
               className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${
-                values.isActive
-                  ? "left-6"
-                  : "left-1"
+                values.isActive ? "left-6" : "left-1"
               }`}
             />
           </button>
@@ -799,16 +620,12 @@ export function AccommodationForm({
 
         <button
           type="submit"
-          disabled={
-            isSubmitting
-          }
+          disabled={isSubmitting}
           className="flex h-12 w-full items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white disabled:opacity-60 sm:ml-auto sm:w-auto sm:px-8"
         >
           <Save size={16} />
 
-          {isSubmitting
-            ? "Kaydediliyor..."
-            : submitLabel}
+          {isSubmitting ? "Kaydediliyor..." : submitLabel}
         </button>
       </div>
     </form>
@@ -827,9 +644,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="text-xs font-medium text-[#40463F]">
-        {label}
-      </label>
+      <label className="text-xs font-medium text-[#40463F]">{label}</label>
 
       {children}
     </div>
@@ -845,14 +660,10 @@ function SectionHeader({
 }) {
   return (
     <div className="border-b border-[#ECE8E1] px-4 py-4 sm:px-5">
-      <h2 className="text-sm font-semibold text-[#263A2D]">
-        {title}
-      </h2>
+      <h2 className="text-sm font-semibold text-[#263A2D]">{title}</h2>
 
       {description && (
-        <p className="mt-1 text-[11px] text-[#92968E]">
-          {description}
-        </p>
+        <p className="mt-1 text-[11px] text-[#92968E]">{description}</p>
       )}
     </div>
   );
@@ -883,13 +694,9 @@ function CounterRow({
         </div>
 
         <div>
-          <p className="text-xs font-medium text-[#40463F]">
-            {label}
-          </p>
+          <p className="text-xs font-medium text-[#40463F]">{label}</p>
 
-          <p className="mt-0.5 text-[10px] text-[#969990]">
-            {description}
-          </p>
+          <p className="mt-0.5 text-[10px] text-[#969990]">{description}</p>
         </div>
       </div>
 

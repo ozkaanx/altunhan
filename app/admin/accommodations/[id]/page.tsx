@@ -1,12 +1,22 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { notFound } from "next/navigation";
+import {
+  ArrowLeft,
+} from "lucide-react";
+import {
+  notFound,
+} from "next/navigation";
 
+import {
+  EditAccommodationForm,
+} from "@/components/admin/edit-accommodation-form";
 
-import { EditAccommodationForm } from "@/components/admin/edit-accommodation-form";
-import { createClient } from "@/lib/supabase/server";
+import {
+  createClient,
+} from "@/lib/supabase/server";
 
-import type { AccommodationFormValues } from "@/types/accommodation";
+import type {
+  AccommodationFormValues,
+} from "@/types/accommodation";
 
 type EditAccommodationPageProps = {
   params: Promise<{
@@ -19,9 +29,25 @@ export default async function EditAccommodationPage({
 }: EditAccommodationPageProps) {
   const { id } = await params;
 
-  const supabase = await createClient();
+  const accommodationId =
+    Number(id);
 
-  const { data: accommodation, error } = await supabase
+  if (
+    !Number.isInteger(
+      accommodationId,
+    ) ||
+    accommodationId < 1
+  ) {
+    notFound();
+  }
+
+  const supabase =
+    await createClient();
+
+  const {
+    data: accommodation,
+    error,
+  } = await supabase
     .from("accommodations")
     .select(
       `
@@ -35,35 +61,96 @@ export default async function EditAccommodationPage({
       )
     `,
     )
-    .eq("id", Number(id))
+    .eq(
+      "id",
+      accommodationId,
+    )
     .single();
 
-  if (error || !accommodation) {
+  if (
+    error ||
+    !accommodation
+  ) {
     notFound();
   }
 
-  const initialValues: AccommodationFormValues = {
-    title: accommodation.title,
+  const maxTotalGuests =
+    Number(
+      accommodation
+        .max_total_guests ??
+        accommodation.capacity ??
+        1,
+    );
 
-    shortDescription: accommodation.short_description ?? "",
+  const maxAdults =
+    Number(
+      accommodation
+        .max_adults ??
+        maxTotalGuests,
+    );
 
-    description: accommodation.description ?? "",
+  const maxChildren =
+    Number(
+      accommodation
+        .max_children ??
+        0,
+    );
 
-    price: Number(accommodation.price),
+  const initialValues:
+    AccommodationFormValues = {
+    title:
+      accommodation.title,
 
-    capacity: accommodation.capacity,
+    shortDescription:
+      accommodation
+        .short_description ??
+      "",
 
-    bedCount: accommodation.bed_count,
+    description:
+      accommodation
+        .description ??
+      "",
 
-    bathroomCount: accommodation.bathroom_count,
+    price:
+      Number(
+        accommodation.price,
+      ),
 
-    amenities: accommodation.amenities ?? [],
+    capacity:
+      maxTotalGuests,
 
-    isActive: accommodation.is_active,
+    maxAdults,
+    maxChildren,
+    maxTotalGuests,
+
+    bedCount:
+      Number(
+        accommodation
+          .bed_count,
+      ),
+
+    bathroomCount:
+      Number(
+        accommodation
+          .bathroom_count,
+      ),
+
+    amenities:
+      accommodation
+        .amenities ??
+      [],
+
+    isActive:
+      accommodation
+        .is_active,
 
     deletedImages: [],
 
-    images: (accommodation.accommodation_images ?? [])
+    images: (
+      accommodation
+        .accommodation_images ??
+      []
+    )
       .sort(
         (
           a: {
@@ -72,7 +159,9 @@ export default async function EditAccommodationPage({
           b: {
             sort_order: number;
           },
-        ) => a.sort_order - b.sort_order,
+        ) =>
+          a.sort_order -
+          b.sort_order,
       )
       .map(
         (image: {
@@ -81,11 +170,23 @@ export default async function EditAccommodationPage({
           storage_path: string;
           is_cover: boolean;
         }) => ({
-          id: String(image.id),
-          previewUrl: image.image_url,
-          existingUrl: image.image_url,
-          storagePath: image.storage_path,
-          isCover: image.is_cover,
+          id:
+            String(
+              image.id,
+            ),
+
+          previewUrl:
+            image.image_url,
+
+          existingUrl:
+            image.image_url,
+
+          storagePath:
+            image.storage_path,
+
+          isCover:
+            image.is_cover,
+
           isExisting: true,
         }),
       ),
@@ -96,28 +197,48 @@ export default async function EditAccommodationPage({
       <div className="mb-6">
         <Link
           href="/admin/accommodations"
-          className="inline-flex items-center gap-2 text-xs font-medium text-[#71766F]"
+          className="
+            inline-flex
+            items-center
+            gap-2
+            text-xs
+            font-medium
+            text-[#71766F]
+          "
         >
-          <ArrowLeft size={15} />
+          <ArrowLeft
+            size={15}
+          />
+
           Konaklamalara Dön
         </Link>
 
         <div className="mt-5">
-          <p className="text-xs text-[#A8754F]">Konaklama</p>
+          <p className="text-xs text-[#A8754F]">
+            Konaklama
+          </p>
 
           <h1 className="mt-1 text-2xl font-semibold text-[#263A2D]">
-            {accommodation.title}
+            {
+              accommodation.title
+            }
           </h1>
 
           <p className="mt-2 text-sm text-[#71756E]">
-            Konaklama bilgilerini ve fotoğraflarını düzenleyin.
+            Konaklama bilgilerini,
+            kapasite kurallarını ve
+            fotoğraflarını düzenleyin.
           </p>
         </div>
       </div>
 
       <EditAccommodationForm
-        id={Number(accommodation.id)}
-        initialValues={initialValues}
+        id={
+          accommodationId
+        }
+        initialValues={
+          initialValues
+        }
       />
     </section>
   );

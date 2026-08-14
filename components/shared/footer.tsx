@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   FiArrowUpRight,
   FiInstagram,
-  FiFacebook,
   FiMapPin,
   FiPhone,
   FiMail,
@@ -47,13 +46,14 @@ export default function Footer({
 
   return (
     <footer id="footer" className="w-full bg-[#263A2D] text-[#F5F1E8]">
-      <section className="border-b border-white/10 px-6 py-20 md:px-12 md:py-28 lg:px-16">
+      <section className="border-b border-white/10 px-6 py-16 md:px-12 md:py-20 lg:px-16">
+        {" "}
         <div className="mx-auto max-w-[1500px] text-center">
           <span className="block text-[9px] font-medium uppercase tracking-[0.35em] text-[#C59A6A]">
             {content?.footer_label || "ALTUNHAN FARM"}
           </span>
 
-          <h2 className="mx-auto mt-5 max-w-[800px] font-serif text-4xl leading-[1] md:text-5xl lg:text-7xl">
+          <h2 className="mx-auto mt-5 max-w-[800px] font-serif text-4xl leading-[1.05] md:text-5xl lg:text-6xl">
             {content?.footer_title || "Sizi Saros'un huzuruna bekliyoruz."}
           </h2>
 
@@ -107,6 +107,24 @@ export default function Footer({
 
                 <li>
                   <Link
+                    href="/#deneyim"
+                    className="text-xs text-white/65 transition-colors hover:text-white"
+                  >
+                    Deneyim
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    href="/#restoran"
+                    className="text-xs text-white/65 transition-colors hover:text-white"
+                  >
+                    Restoran
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
                     href="/rezervasyon"
                     className="text-xs text-white/65 transition-colors hover:text-white"
                   >
@@ -125,7 +143,7 @@ export default function Footer({
 
                 <li>
                   <Link
-                    href="/#footer"
+                    href="/#iletisim"
                     className="text-xs text-white/65 transition-colors hover:text-white"
                   >
                     İletişim
@@ -144,7 +162,11 @@ export default function Footer({
                   accommodations.map((accommodation) => (
                     <li key={accommodation.id}>
                       <Link
-                        href={`/konaklama/${accommodation.slug}`}
+                        href={
+                          accommodation.slug
+                            ? `/konaklama/${accommodation.slug}`
+                            : "/rezervasyon"
+                        }
                         className="text-xs text-white/65 transition-colors hover:text-white"
                       >
                         {accommodation.title}
@@ -242,7 +264,7 @@ export default function Footer({
               © 2026 Altunhan Farm. Tüm hakları saklıdır.
             </p>
 
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link
                 href="/kvkk"
                 className="text-[10px] text-white/40 transition-colors hover:text-white"

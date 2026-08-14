@@ -70,8 +70,8 @@ const statusConfig: Record<
       "border-[#E5D8BE] bg-[#F7F0E3] text-[#88662F]",
     title:
       "Ödeme Bekleniyor",
-    description:
-      "Rezervasyonunuz oluşturuldu. Ödemenizi yaptıktan sonra dekontunuzu aşağıdan yükleyebilirsiniz.",
+   description:
+  "Rezervasyonunuz oluşturuldu. Odanız 1 saat boyunca geçici olarak ayrılır. Bu süreden sonra dekont yüklenirse müsaitlik yeniden kontrol edilir.",
   },
 };
 

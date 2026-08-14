@@ -3,7 +3,9 @@
 import { useRouter } from "next/navigation";
 
 import { updateAccommodation } from "@/app/admin/accommodations/action";
+
 import { AccommodationForm } from "@/components/admin/accommodation-form";
+
 import { updateAccommodationImages } from "@/lib/supabase/upload-accommodation-images";
 
 import type {
@@ -30,20 +32,34 @@ export function EditAccommodationForm({
         {
           title:
             values.title,
+
           shortDescription:
             values.shortDescription,
+
           description:
             values.description,
+
           price:
             values.price,
-          capacity:
-            values.capacity,
+
+          maxAdults:
+            values.maxAdults,
+
+          maxChildren:
+            values.maxChildren,
+
+          maxTotalGuests:
+            values.maxTotalGuests,
+
           bedCount:
             values.bedCount,
+
           bathroomCount:
             values.bathroomCount,
+
           amenities:
             values.amenities,
+
           isActive:
             values.isActive,
         },
@@ -55,16 +71,12 @@ export function EditAccommodationForm({
       );
     }
 
-    await updateAccommodationImages(
-      {
-        accommodationId:
-          id,
-        images:
-          values.images,
-        deletedImages:
-          values.deletedImages,
-      },
-    );
+    await updateAccommodationImages({
+      accommodationId: id,
+      images: values.images,
+      deletedImages:
+        values.deletedImages,
+    });
 
     router.push(
       "/admin/accommodations",
