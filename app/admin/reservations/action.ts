@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 
-import {
-  requireAdmin,
-} from "@/lib/auth/admin";
+import { requireAdmin } from "@/lib/auth/admin";
+
+import { notifyReservationDecision } from "@/lib/notifications/reservation-emails";
 
 type AvailableReservationRoomRpc = {
   room_id: number | string;
@@ -56,6 +56,12 @@ export async function approveReservation(id: number) {
     };
   }
 
+  try {
+    await notifyReservationDecision(supabase, id, "confirmed");
+  } catch (notificationError) {
+    console.error("Rezervasyon onay maili gönderilemedi:", notificationError);
+  }
+
   if (!data?.length) {
     return {
       success: false,
@@ -90,6 +96,7 @@ export async function rejectReservation(id: number, reason: string) {
       message: "Red sebebi en fazla 500 karakter olabilir.",
     };
   }
+  
 
   const auth = await requireAdmin();
 
@@ -99,6 +106,20 @@ export async function rejectReservation(id: number, reason: string) {
       message: auth.message,
     };
   }
+
+  try {
+  await notifyReservationDecision(
+    auth.supabase,
+    id,
+    "rejected",
+    cleanReason,
+  );
+} catch (notificationError) {
+  console.error(
+    "Rezervasyon red maili gönderilemedi:",
+    notificationError,
+  );
+}
 
   const { supabase } = auth;
 
