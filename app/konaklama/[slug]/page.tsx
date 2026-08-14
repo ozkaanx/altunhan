@@ -73,15 +73,24 @@ export async function generateMetadata({
 
     description,
 
+    alternates: {
+      canonical: `/konaklama/${slug}`,
+    },
+
     openGraph: {
       title: accommodation.title,
+
       description,
+
       type: "website",
+
+      url: `/konaklama/${slug}`,
 
       images: coverImage?.image_url
         ? [
             {
               url: coverImage.image_url,
+
               alt: accommodation.title,
             },
           ]
@@ -205,7 +214,7 @@ export default async function AccommodationDetailPage({
 
   return (
     <>
-      <Header />
+      <Header settings={settings} />
 
       <Navbar />
 
@@ -284,7 +293,6 @@ export default async function AccommodationDetailPage({
                   <div className="mt-6 grid gap-3 sm:grid-cols-2">
                     {accommodation.amenities.map(
                       (amenity) => (
-                        console.log(amenity),
                         (
                           <div
                             key={amenity}

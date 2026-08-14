@@ -4,9 +4,8 @@ import type {
 
 export default function robots(): MetadataRoute.Robots {
   const siteUrl =
-    process.env
-      .NEXT_PUBLIC_SITE_URL ||
-    "http://localhost:3000";
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+    "https://altunhan-beta.vercel.app";
 
   return {
     rules: [
@@ -17,18 +16,17 @@ export default function robots(): MetadataRoute.Robots {
           "/",
           "/konaklama/",
           "/rezervasyon",
-          "/rezervasyon/takip",
         ],
 
         disallow: [
           "/admin/",
           "/auth/",
           "/protected/",
+          "/rezervasyon/takip",
         ],
       },
     ],
 
-    sitemap:
-      `${siteUrl}/sitemap.xml`,
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

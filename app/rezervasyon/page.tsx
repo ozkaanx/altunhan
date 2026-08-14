@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -7,6 +9,28 @@ import { createClient } from "@/lib/supabase/server";
 import type { PublicAccommodation } from "@/types/public-reservation";
 
 import type { SiteSettings } from "@/types/site-settings";
+
+export const metadata: Metadata = {
+  title: "Rezervasyon",
+
+  description:
+    "Altunhan Farm için konaklama seçeneklerini, uygun tarihleri ve rezervasyon bilgilerini görüntüleyin.",
+
+  alternates: {
+    canonical: "/rezervasyon",
+  },
+
+  openGraph: {
+    title: "Rezervasyon | Altunhan Farm",
+
+    description:
+      "Altunhan Farm için uygun tarihleri kontrol edin ve rezervasyon talebinizi oluşturun.",
+
+    url: "/rezervasyon",
+
+    type: "website",
+  },
+};
 
 type ReservationPageProps = {
   searchParams: Promise<{
@@ -46,19 +70,11 @@ export default async function ReservationPage({
   const { data: accommodations, error: accommodationsError } =
     accommodationsResult;
 
-  const { data: settings, error: settingsError } = settingsResult;
-  // const { data: accommodations, error: accommodationsError } =
-  //   accommodationsResult;
-
-  // const { data: settings, error: settingsError } = settingsResult;
+  const { data: settings  } = settingsResult;
 
   if (accommodationsError) {
     console.error("Konaklamalar alınamadı:", accommodationsError);
   }
-
-  // if (settingsError) {
-  //   console.error("Site ayarları alınamadı:", settingsError);
-  // }
 
   const publicAccommodations = (accommodations ?? []) as PublicAccommodation[];
 

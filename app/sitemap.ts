@@ -8,72 +8,41 @@ import {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl =
-    process.env
-      .NEXT_PUBLIC_SITE_URL ||
-    "http://localhost:3000";
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+    "https://altunhan-beta.vercel.app";
 
   const supabase =
     await createClient();
 
   const {
-    data:
-      accommodations,
-  } =
-    await supabase
-      .from(
-        "accommodations",
-      )
-      .select(`
-        slug,
-        updated_at
-      `)
-      .eq(
-        "is_active",
-        true,
-      );
+    data: accommodations,
+  } = await supabase
+    .from("accommodations")
+    .select(`
+      slug,
+      updated_at
+    `)
+    .eq("is_active", true);
 
   const staticPages: MetadataRoute.Sitemap =
     [
       {
-        url:
-          siteUrl,
-
-        lastModified:
-          new Date(),
+        url: siteUrl,
 
         changeFrequency:
           "weekly",
 
-        priority:
-          1,
+        priority: 1,
       },
 
       {
         url:
           `${siteUrl}/rezervasyon`,
 
-        lastModified:
-          new Date(),
-
         changeFrequency:
           "weekly",
 
-        priority:
-          0.9,
-      },
-
-      {
-        url:
-          `${siteUrl}/rezervasyon/takip`,
-
-        lastModified:
-          new Date(),
-
-        changeFrequency:
-          "monthly",
-
-        priority:
-          0.5,
+        priority: 0.9,
       },
     ];
 
@@ -83,17 +52,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       []
     )
       .filter(
-        (
-          item,
-        ) =>
+        (item) =>
           Boolean(
             item.slug,
           ),
       )
       .map(
-        (
-          item,
-        ) => ({
+        (item) => ({
           url:
             `${siteUrl}/konaklama/${item.slug}`,
 
@@ -102,7 +67,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
               ? new Date(
                   item.updated_at,
                 )
-              : new Date(),
+              : undefined,
 
           changeFrequency:
             "weekly" as const,

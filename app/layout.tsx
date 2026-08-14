@@ -4,20 +4,16 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000");
+  process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
+  "https://altunhan-beta.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
 
   title: {
-    default:
-      "Altunhan Farm | Saros'ta Doğayla İç İçe Konaklama",
+    default: "Altunhan Farm | Saros'ta Doğayla İç İçe Konaklama",
 
-    template:
-      "%s | Altunhan Farm",
+    template: "%s | Altunhan Farm",
   },
 
   description:
@@ -40,11 +36,9 @@ export const metadata: Metadata = {
     },
   ],
 
-  creator:
-    "Altunhan Farm",
+  creator: "Altunhan Farm",
 
-  publisher:
-    "Altunhan Farm",
+  publisher: "Altunhan Farm",
 
   alternates: {
     canonical: "/",
@@ -57,11 +51,9 @@ export const metadata: Metadata = {
 
     url: "/",
 
-    siteName:
-      "Altunhan Farm",
+    siteName: "Altunhan Farm",
 
-    title:
-      "Altunhan Farm | Saros'ta Doğayla İç İçe Konaklama",
+    title: "Altunhan Farm | Saros'ta Doğayla İç İçe Konaklama",
 
     description:
       "Saros Körfezi'nin kıyısında, doğayla iç içe sakin ve özel bir konaklama deneyimi.",
@@ -80,18 +72,14 @@ export const metadata: Metadata = {
   },
 
   twitter: {
-    card:
-      "summary_large_image",
+    card: "summary_large_image",
 
-    title:
-      "Altunhan Farm | Saros'ta Doğayla İç İçe Konaklama",
+    title: "Altunhan Farm | Saros'ta Doğayla İç İçe Konaklama",
 
     description:
       "Saros Körfezi'nin kıyısında, doğayla iç içe konaklama deneyimi.",
 
-    images: [
-      "/images/hero/altunhan-farm.jpg",
-    ],
+    images: ["/images/hero/altunhan-farm.jpg"],
   },
 
   robots: {
@@ -101,43 +89,31 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      "max-image-preview":
-        "large",
+      "max-image-preview": "large",
       "max-snippet": -1,
       "max-video-preview": -1,
     },
   },
 
-  category:
-    "travel",
+  category: "travel",
 };
 
-const geistSans =
-  Geist({
-    variable:
-      "--font-geist-sans",
+const geistSans = Geist({
+  variable: "--font-geist-sans",
 
-    display:
-      "swap",
+  display: "swap",
 
-    subsets: [
-      "latin",
-    ],
-  });
+  subsets: ["latin"],
+});
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children:
-    React.ReactNode;
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="tr">
-      <body
-        className={`${geistSans.className} antialiased`}
-      >
-        {children}
-      </body>
+      <body className={`${geistSans.className} antialiased`}>{children}</body>
     </html>
   );
 }

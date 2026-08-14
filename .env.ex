@@ -18,7 +18,7 @@ ADMIN_EMAILS=admin@example.com
 # SITE
 # ==========================================
 
-NEXT_PUBLIC_SITE_URL=https://example.com
+NEXT_PUBLIC_SITE_URL=https://altunhan-beta.vercel.app
 
 
 # ==========================================

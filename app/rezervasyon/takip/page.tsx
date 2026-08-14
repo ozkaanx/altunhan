@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -6,23 +8,31 @@ import { createClient } from "@/lib/supabase/server";
 
 import type { SiteSettings } from "@/types/site-settings";
 
+export const metadata: Metadata = {
+  title: "Rezervasyon Takip",
+
+  description:
+    "Altunhan Farm rezervasyon durumunuzu rezervasyon numaranız ve telefon bilgilerinizle kontrol edin.",
+
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    nosnippet: true,
+  },
+};
+
 export default async function ReservationTrackingPage() {
   const supabase = await createClient();
 
-  const {
-    data: settings,
-    error,
-  } = await supabase
+  const { data: settings, error } = await supabase
     .from("site_settings")
     .select("*")
     .eq("id", 1)
     .single();
 
   if (error) {
-    console.error(
-      "Site ayarları alınamadı:",
-      error,
-    );
+    console.error("Site ayarları alınamadı:", error);
   }
 
   return (
@@ -40,11 +50,7 @@ export default async function ReservationTrackingPage() {
       </header>
 
       <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-        <ReservationTracking
-          settings={
-            settings as SiteSettings | null
-          }
-        />
+        <ReservationTracking settings={settings as SiteSettings | null} />
       </section>
     </main>
   );
