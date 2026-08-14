@@ -11,16 +11,31 @@ import type {
 
 type ReservationTrackingRpcRow = {
   reservation_code: string;
+
   guest_name: string;
+
   accommodation_title: string;
+
   check_in: string;
+
   check_out: string;
+
   guest_count: number;
+
+  adult_count: number;
+
+  child_count: number;
+
   night_count: number;
+
   total_price: number;
+
   status: PublicReservationStatus;
+
   has_receipt: boolean;
+
   rejection_reason: string | null;
+
   cancellation_reason: string | null;
 };
 
@@ -57,7 +72,7 @@ export async function findReservation(
     data,
     error,
   } = await supabase.rpc(
-    "get_public_reservation_status",
+    "get_public_reservation_status_v2",
     {
       p_reservation_code:
         code,
@@ -114,9 +129,14 @@ export async function findReservation(
       checkOut:
         reservation.check_out,
 
-      guestCount:
+      adultCount:
         Number(
-          reservation.guest_count,
+          reservation.adult_count,
+        ),
+
+      childCount:
+        Number(
+          reservation.child_count,
         ),
 
       nightCount:

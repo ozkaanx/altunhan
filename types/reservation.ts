@@ -19,6 +19,8 @@ export type Reservation = {
   check_out: string;
 
   guest_count: number;
+  adult_count: number;
+  child_count: number;
 
   nightly_price: number;
   night_count: number;
@@ -39,11 +41,14 @@ export type Reservation = {
 
   created_at: string;
   updated_at: string;
+
   room_id: number | null;
+
   accommodations: {
     id: number;
     title: string;
   } | null;
+
   rooms: {
     id: number;
     room_name: string;

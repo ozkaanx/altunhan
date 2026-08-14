@@ -96,7 +96,6 @@ export async function rejectReservation(id: number, reason: string) {
       message: "Red sebebi en fazla 500 karakter olabilir.",
     };
   }
-  
 
   const auth = await requireAdmin();
 
@@ -108,18 +107,10 @@ export async function rejectReservation(id: number, reason: string) {
   }
 
   try {
-  await notifyReservationDecision(
-    auth.supabase,
-    id,
-    "rejected",
-    cleanReason,
-  );
-} catch (notificationError) {
-  console.error(
-    "Rezervasyon red maili gönderilemedi:",
-    notificationError,
-  );
-}
+    await notifyReservationDecision(auth.supabase, id, "rejected", cleanReason);
+  } catch (notificationError) {
+    console.error("Rezervasyon red maili gönderilemedi:", notificationError);
+  }
 
   const { supabase } = auth;
 
@@ -363,7 +354,9 @@ export type CreateAdminReservationInput = {
 
   checkOut: string;
 
-  guestCount: number;
+  adultCount: number;
+
+  childCount: number;
 
   guestName: string;
 
@@ -386,14 +379,27 @@ export async function createAdminReservation(
   if (!auth.success) {
     return {
       success: false as const,
-
       message: auth.message,
+    };
+  }
+
+  if (!Number.isInteger(values.adultCount) || values.adultCount < 1) {
+    return {
+      success: false as const,
+      message: "En az 1 yetişkin seçilmelidir.",
+    };
+  }
+
+  if (!Number.isInteger(values.childCount) || values.childCount < 0) {
+    return {
+      success: false as const,
+      message: "Çocuk sayısı geçersiz.",
     };
   }
 
   const { supabase } = auth;
 
-  const { data, error } = await supabase.rpc("create_admin_reservation", {
+  const { data, error } = await supabase.rpc("create_admin_reservation_v2", {
     p_accommodation_id: values.accommodationId,
 
     p_room_id: values.roomId,
@@ -402,19 +408,21 @@ export async function createAdminReservation(
 
     p_check_out: values.checkOut,
 
-    p_guest_count: values.guestCount,
+    p_adult_count: values.adultCount,
 
-    p_guest_name: values.guestName,
+    p_child_count: values.childCount,
 
-    p_guest_phone: values.guestPhone,
+    p_guest_name: values.guestName.trim(),
 
-    p_guest_email: values.guestEmail || null,
+    p_guest_phone: values.guestPhone.trim(),
+
+    p_guest_email: values.guestEmail.trim() || null,
 
     p_status: values.status,
 
     p_source: values.source,
 
-    p_admin_note: values.adminNote || null,
+    p_admin_note: values.adminNote.trim() || null,
   });
 
   if (error) {
@@ -422,7 +430,6 @@ export async function createAdminReservation(
 
     return {
       success: false as const,
-
       message: error.message,
     };
   }
@@ -432,17 +439,13 @@ export async function createAdminReservation(
   if (!reservation) {
     return {
       success: false as const,
-
       message: "Rezervasyon oluşturulamadı.",
     };
   }
 
   revalidatePath("/admin/reservations");
-
   revalidatePath("/admin/rooms");
-
   revalidatePath("/admin");
-
   revalidatePath("/rezervasyon");
 
   return {

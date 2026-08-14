@@ -16,7 +16,9 @@ export type ReservationTrackingResult = {
 
   checkOut: string;
 
-  guestCount: number;
+  adultCount: number;
+
+  childCount: number;
 
   nightCount: number;
 

@@ -1,11 +1,14 @@
 "use client";
 
 import {
+  Baby,
   BedDouble,
   CalendarDays,
   CheckCircle2,
   Loader2,
+  Minus,
   Phone,
+  Plus,
   Save,
   User,
   Users,
@@ -14,11 +17,12 @@ import {
 import {
   useMemo,
   useState,
+  type ElementType,
+  type FormEvent,
+  type ReactNode,
 } from "react";
 
-import {
-  useRouter,
-} from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import {
   createAdminReservation,
@@ -30,6 +34,10 @@ type Accommodation = {
   title: string;
   capacity: number;
   price: number;
+
+  max_adults: number;
+  max_children: number;
+  max_total_guests: number;
 };
 
 type AvailableRoom = {
@@ -57,105 +65,96 @@ function getTurkeyToday() {
   return new Intl.DateTimeFormat(
     "en-CA",
     {
-      timeZone:
-        "Europe/Istanbul",
-
-      year:
-        "numeric",
-
-      month:
-        "2-digit",
-
-      day:
-        "2-digit",
+      timeZone: "Europe/Istanbul",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     },
-  ).format(
-    new Date(),
+  ).format(new Date());
+}
+
+function getDefaultAdultCount(
+  accommodation:
+    | Accommodation
+    | null
+    | undefined,
+) {
+  if (!accommodation) {
+    return 1;
+  }
+
+  return Math.max(
+    1,
+    Math.min(
+      2,
+      accommodation.max_adults,
+      accommodation.max_total_guests,
+    ),
   );
 }
 
 export function AdminReservationForm({
   accommodations,
 }: AdminReservationFormProps) {
-  const router =
-    useRouter();
+  const router = useRouter();
+
+  const initialAccommodation =
+    accommodations[0] ?? null;
 
   const [
     accommodationId,
     setAccommodationId,
-  ] =
-    useState<number | null>(
-      accommodations[0]
-        ?.id ??
-        null,
+  ] = useState<number | null>(
+    initialAccommodation?.id ?? null,
+  );
+
+  const [checkIn, setCheckIn] =
+    useState("");
+
+  const [checkOut, setCheckOut] =
+    useState("");
+
+  const [adultCount, setAdultCount] =
+    useState(
+      getDefaultAdultCount(
+        initialAccommodation,
+      ),
     );
 
-  const [
-    checkIn,
-    setCheckIn,
-  ] = useState("");
+  const [childCount, setChildCount] =
+    useState(0);
 
-  const [
-    checkOut,
-    setCheckOut,
-  ] = useState("");
+  const [guestName, setGuestName] =
+    useState("");
 
-  const [
-    guestCount,
-    setGuestCount,
-  ] = useState(2);
+  const [guestPhone, setGuestPhone] =
+    useState("");
 
-  const [
-    guestName,
-    setGuestName,
-  ] = useState("");
+  const [guestEmail, setGuestEmail] =
+    useState("");
 
-  const [
-    guestPhone,
-    setGuestPhone,
-  ] = useState("");
-
-  const [
-    guestEmail,
-    setGuestEmail,
-  ] = useState("");
-
-  const [
-    status,
-    setStatus,
-  ] =
+  const [status, setStatus] =
     useState<ReservationStatus>(
       "confirmed",
     );
 
-  const [
-    source,
-    setSource,
-  ] =
+  const [source, setSource] =
     useState<ReservationSource>(
       "phone",
     );
 
-  const [
-    adminNote,
-    setAdminNote,
-  ] = useState("");
+  const [adminNote, setAdminNote] =
+    useState("");
 
   const [
     availableRooms,
     setAvailableRooms,
-  ] =
-    useState<
-      AvailableRoom[]
-    >([]);
+  ] = useState<AvailableRoom[]>([]);
 
   const [
     selectedRoomId,
     setSelectedRoomId,
-  ] =
-    useState<
-      number | null
-    >(null);
+  ] = useState<number | null>(null);
 
   const [
     isLoadingRooms,
@@ -167,142 +166,211 @@ export function AdminReservationForm({
     setIsSubmitting,
   ] = useState(false);
 
-  const [
-    error,
-    setError,
-  ] =
-    useState<
-      string | null
-    >(null);
+  const [error, setError] =
+    useState<string | null>(null);
 
-  const [
-    success,
-    setSuccess,
-  ] =
-    useState<
-      string | null
-    >(null);
+  const [success, setSuccess] =
+    useState<string | null>(null);
 
   const selectedAccommodation =
     useMemo(
       () =>
         accommodations.find(
-          (
-            accommodation,
-          ) =>
+          (accommodation) =>
             accommodation.id ===
             accommodationId,
-        ) ??
-        null,
+        ) ?? null,
       [
         accommodations,
         accommodationId,
       ],
     );
 
-  const nightCount =
-    useMemo(
-      () => {
-        if (
-          !checkIn ||
-          !checkOut ||
-          checkOut <= checkIn
-        ) {
-          return 0;
-        }
+  const totalGuestCount =
+    adultCount + childCount;
 
-        const start =
-          new Date(
-            `${checkIn}T00:00:00Z`,
-          );
+  const maxAdults =
+    selectedAccommodation
+      ?.max_adults ?? 1;
 
-        const end =
-          new Date(
-            `${checkOut}T00:00:00Z`,
-          );
+  const maxChildren =
+    selectedAccommodation
+      ?.max_children ?? 0;
 
-        const nights =
-          Math.round(
-            (
-              end.getTime() -
-              start.getTime()
-            ) /
-              (
-                1000 *
-                60 *
-                60 *
-                24
-              ),
-          );
+  const maxTotalGuests =
+    selectedAccommodation
+      ?.max_total_guests ?? 1;
 
-        return Math.max(
-          0,
-          nights,
-        );
-      },
-      [
-        checkIn,
-        checkOut,
-      ],
-    );
+  const canIncreaseAdult =
+    Boolean(selectedAccommodation) &&
+    adultCount < maxAdults &&
+    totalGuestCount <
+      maxTotalGuests;
+
+  const canIncreaseChild =
+    Boolean(selectedAccommodation) &&
+    childCount < maxChildren &&
+    totalGuestCount <
+      maxTotalGuests;
+
+  const nightCount = useMemo(
+    () => {
+      if (
+        !checkIn ||
+        !checkOut ||
+        checkOut <= checkIn
+      ) {
+        return 0;
+      }
+
+      const start = new Date(
+        `${checkIn}T00:00:00Z`,
+      );
+
+      const end = new Date(
+        `${checkOut}T00:00:00Z`,
+      );
+
+      const nights = Math.round(
+        (end.getTime() -
+          start.getTime()) /
+          (1000 *
+            60 *
+            60 *
+            24),
+      );
+
+      return Math.max(
+        0,
+        nights,
+      );
+    },
+    [checkIn, checkOut],
+  );
 
   const totalPrice =
     selectedAccommodation
       ? Number(
           selectedAccommodation.price,
-        ) *
-        nightCount
+        ) * nightCount
       : 0;
 
   const today =
     getTurkeyToday();
 
-  const handleAccommodationChange =
-    (
-      id: number,
-    ) => {
-      setAccommodationId(
-        id,
+  const handleAccommodationChange = (
+    id: number,
+  ) => {
+    setAccommodationId(id);
+
+    setAvailableRooms([]);
+    setSelectedRoomId(null);
+
+    const accommodation =
+      accommodations.find(
+        (item) =>
+          item.id === id,
       );
 
-      setAvailableRooms(
-        [],
-      );
-
-      setSelectedRoomId(
-        null,
-      );
-
-      const accommodation =
-        accommodations.find(
-          (
-            item,
-          ) =>
-            item.id ===
-            id,
-        );
-
-      if (
-        accommodation
-      ) {
-        setGuestCount(
+    if (accommodation) {
+      const nextAdultCount =
+        Math.max(
+          1,
           Math.min(
-            guestCount,
-            accommodation.capacity,
+            adultCount,
+            accommodation.max_adults,
+            accommodation.max_total_guests,
           ),
         );
-      }
 
-      setError(
-        null,
+      const remainingCapacity =
+        Math.max(
+          0,
+          accommodation.max_total_guests -
+            nextAdultCount,
+        );
+
+      const nextChildCount =
+        Math.min(
+          childCount,
+          accommodation.max_children,
+          remainingCapacity,
+        );
+
+      setAdultCount(
+        nextAdultCount,
       );
-    };
+
+      setChildCount(
+        nextChildCount,
+      );
+    }
+
+    setError(null);
+  };
+
+  const handleAdultCountChange = (
+    value: number,
+  ) => {
+    if (!selectedAccommodation) {
+      return;
+    }
+
+    const maximumAllowed =
+      Math.min(
+        selectedAccommodation.max_adults,
+        selectedAccommodation.max_total_guests -
+          childCount,
+      );
+
+    setAdultCount(
+      Math.max(
+        1,
+        Math.min(
+          value,
+          maximumAllowed,
+        ),
+      ),
+    );
+
+    setError(null);
+  };
+
+  const handleChildCountChange = (
+    value: number,
+  ) => {
+    if (!selectedAccommodation) {
+      return;
+    }
+
+    const maximumAllowed =
+      Math.min(
+        selectedAccommodation.max_children,
+        selectedAccommodation.max_total_guests -
+          adultCount,
+      );
+
+    setChildCount(
+      Math.max(
+        0,
+        Math.min(
+          value,
+          maximumAllowed,
+        ),
+      ),
+    );
+
+    setError(null);
+  };
+
+  const resetRooms = () => {
+    setAvailableRooms([]);
+    setSelectedRoomId(null);
+  };
 
   const handleLoadRooms =
     async () => {
-      if (
-        !accommodationId
-      ) {
+      if (!accommodationId) {
         setError(
           "Lütfen oda tipi seçin.",
         );
@@ -331,21 +399,9 @@ export function AdminReservationForm({
         return;
       }
 
-      setError(
-        null,
-      );
-
-      setSelectedRoomId(
-        null,
-      );
-
-      setAvailableRooms(
-        [],
-      );
-
-      setIsLoadingRooms(
-        true,
-      );
+      setError(null);
+      resetRooms();
+      setIsLoadingRooms(true);
 
       try {
         const result =
@@ -355,9 +411,7 @@ export function AdminReservationForm({
             checkOut,
           );
 
-        if (
-          !result.success
-        ) {
+        if (!result.success) {
           setError(
             result.message ??
               "Müsait odalar alınamadı.",
@@ -369,12 +423,8 @@ export function AdminReservationForm({
         setAvailableRooms(
           result.rooms,
         );
-      } catch (
-        error
-      ) {
-        console.error(
-          error,
-        );
+      } catch (error) {
+        console.error(error);
 
         setError(
           "Müsait odalar alınırken beklenmeyen bir hata oluştu.",
@@ -386,193 +436,197 @@ export function AdminReservationForm({
       }
     };
 
-  const handleSubmit =
-    async (
-      event:
-        React.FormEvent<HTMLFormElement>,
-    ) => {
-      event.preventDefault();
+  const handleSubmit = async (
+    event:
+      FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
 
+    setError(null);
+    setSuccess(null);
+
+    if (
+      !accommodationId ||
+      !selectedAccommodation
+    ) {
       setError(
-        null,
+        "Lütfen oda tipi seçin.",
       );
+
+      return;
+    }
+
+    if (
+      !checkIn ||
+      !checkOut
+    ) {
+      setError(
+        "Lütfen giriş ve çıkış tarihlerini seçin.",
+      );
+
+      return;
+    }
+
+    if (
+      checkOut <= checkIn
+    ) {
+      setError(
+        "Çıkış tarihi giriş tarihinden sonra olmalıdır.",
+      );
+
+      return;
+    }
+
+    if (
+      adultCount < 1
+    ) {
+      setError(
+        "En az 1 yetişkin seçilmelidir.",
+      );
+
+      return;
+    }
+
+    if (
+      adultCount >
+      selectedAccommodation.max_adults
+    ) {
+      setError(
+        `Bu oda tipinde en fazla ${selectedAccommodation.max_adults} yetişkin kalabilir.`,
+      );
+
+      return;
+    }
+
+    if (
+      childCount >
+      selectedAccommodation.max_children
+    ) {
+      setError(
+        `Bu oda tipinde en fazla ${selectedAccommodation.max_children} çocuk kalabilir.`,
+      );
+
+      return;
+    }
+
+    if (
+      totalGuestCount >
+      selectedAccommodation.max_total_guests
+    ) {
+      setError(
+        `Bu oda tipinin maksimum toplam kapasitesi ${selectedAccommodation.max_total_guests} kişidir.`,
+      );
+
+      return;
+    }
+
+    if (!guestName.trim()) {
+      setError(
+        "Misafir adı zorunludur.",
+      );
+
+      return;
+    }
+
+    if (!guestPhone.trim()) {
+      setError(
+        "Telefon numarası zorunludur.",
+      );
+
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const result =
+        await createAdminReservation(
+          {
+            accommodationId,
+
+            roomId:
+              selectedRoomId,
+
+            checkIn,
+
+            checkOut,
+
+            adultCount,
+
+            childCount,
+
+            guestName,
+
+            guestPhone,
+
+            guestEmail,
+
+            status,
+
+            source,
+
+            adminNote,
+          },
+        );
+
+      if (!result.success) {
+        setError(
+          result.message ??
+            "Rezervasyon oluşturulamadı.",
+        );
+
+        return;
+      }
 
       setSuccess(
-        null,
+        `Rezervasyon oluşturuldu: ${result.reservation.reservationCode}`,
       );
 
-      if (
-        !accommodationId
-      ) {
-        setError(
-          "Lütfen oda tipi seçin.",
-        );
+      window.setTimeout(
+        () => {
+          router.push(
+            "/admin/reservations",
+          );
 
-        return;
-      }
-
-      if (
-        !checkIn ||
-        !checkOut
-      ) {
-        setError(
-          "Lütfen giriş ve çıkış tarihlerini seçin.",
-        );
-
-        return;
-      }
-
-      if (
-        checkOut <= checkIn
-      ) {
-        setError(
-          "Çıkış tarihi giriş tarihinden sonra olmalıdır.",
-        );
-
-        return;
-      }
-
-      if (
-        !guestName.trim()
-      ) {
-        setError(
-          "Misafir adı zorunludur.",
-        );
-
-        return;
-      }
-
-      if (
-        !guestPhone.trim()
-      ) {
-        setError(
-          "Telefon numarası zorunludur.",
-        );
-
-        return;
-      }
-
-      if (
-        selectedAccommodation &&
-        guestCount >
-          selectedAccommodation.capacity
-      ) {
-        setError(
-          `Bu oda tipinin maksimum kapasitesi ${selectedAccommodation.capacity} kişidir.`,
-        );
-
-        return;
-      }
-
-      setIsSubmitting(
-        true,
+          router.refresh();
+        },
+        800,
       );
+    } catch (error) {
+      console.error(error);
 
-      try {
-        const result =
-          await createAdminReservation(
-            {
-              accommodationId,
-
-              roomId:
-                selectedRoomId,
-
-              checkIn,
-
-              checkOut,
-
-              guestCount,
-
-              guestName,
-
-              guestPhone,
-
-              guestEmail,
-
-              status,
-
-              source,
-
-              adminNote,
-            },
-          );
-
-        if (
-          !result.success
-        ) {
-          setError(
-            result.message ??
-              "Rezervasyon oluşturulamadı.",
-          );
-
-          return;
-        }
-
-        setSuccess(
-          `Rezervasyon oluşturuldu: ${result.reservation.reservationCode}`,
-        );
-
-        window.setTimeout(
-          () => {
-            router.push(
-              "/admin/reservations",
-            );
-
-            router.refresh();
-          },
-          800,
-        );
-      } catch (
-        error
-      ) {
-        console.error(
-          error,
-        );
-
-        setError(
-          "Rezervasyon oluşturulurken beklenmeyen bir hata oluştu.",
-        );
-      } finally {
-        setIsSubmitting(
-          false,
-        );
-      }
-    };
+      setError(
+        "Rezervasyon oluşturulurken beklenmeyen bir hata oluştu.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <form
-      onSubmit={
-        handleSubmit
-      }
+      onSubmit={handleSubmit}
       className="mt-7 space-y-5"
     >
       {/* KONAKLAMA */}
       <section className="border border-[#E3E0D8] bg-white">
         <SectionTitle
-          icon={
-            BedDouble
-          }
+          icon={BedDouble}
           title="Konaklama Bilgileri"
           description="Oda tipi, tarih ve fiziksel oda seçimi."
         />
 
         <div className="space-y-5 p-4 sm:p-5">
-          <Field
-            label="Oda Tipi"
-          >
+          <Field label="Oda Tipi">
             <select
               value={
                 accommodationId ??
                 ""
               }
-              onChange={(
-                event,
-              ) =>
+              onChange={(event) =>
                 handleAccommodationChange(
                   Number(
-                    event
-                      .target
-                      .value,
+                    event.target.value,
                   ),
                 )
               }
@@ -601,34 +655,45 @@ export function AdminReservationForm({
             </select>
           </Field>
 
+          {selectedAccommodation && (
+            <div className="flex flex-wrap gap-x-4 gap-y-1 bg-[#F7F5EF] px-4 py-3 text-[10px] text-[#747970]">
+              <span>
+                En fazla{" "}
+                <strong className="text-[#263A2D]">
+                  {maxAdults}
+                </strong>{" "}
+                yetişkin
+              </span>
+
+              <span>
+                <strong className="text-[#263A2D]">
+                  {maxChildren}
+                </strong>{" "}
+                çocuk
+              </span>
+
+              <span>
+                Toplam{" "}
+                <strong className="text-[#263A2D]">
+                  {maxTotalGuests}
+                </strong>{" "}
+                kişi
+              </span>
+            </div>
+          )}
+
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field
-              label="Giriş Tarihi"
-            >
+            <Field label="Giriş Tarihi">
               <input
                 type="date"
-                min={
-                  today
-                }
-                value={
-                  checkIn
-                }
-                onChange={(
-                  event,
-                ) => {
+                min={today}
+                value={checkIn}
+                onChange={(event) => {
                   setCheckIn(
-                    event
-                      .target
-                      .value,
+                    event.target.value,
                   );
 
-                  setAvailableRooms(
-                    [],
-                  );
-
-                  setSelectedRoomId(
-                    null,
-                  );
+                  resetRooms();
                 }}
                 className={
                   inputClass
@@ -636,34 +701,20 @@ export function AdminReservationForm({
               />
             </Field>
 
-            <Field
-              label="Çıkış Tarihi"
-            >
+            <Field label="Çıkış Tarihi">
               <input
                 type="date"
                 min={
                   checkIn ||
                   today
                 }
-                value={
-                  checkOut
-                }
-                onChange={(
-                  event,
-                ) => {
+                value={checkOut}
+                onChange={(event) => {
                   setCheckOut(
-                    event
-                      .target
-                      .value,
+                    event.target.value,
                   );
 
-                  setAvailableRooms(
-                    [],
-                  );
-
-                  setSelectedRoomId(
-                    null,
-                  );
+                  resetRooms();
                 }}
                 className={
                   inputClass
@@ -686,20 +737,17 @@ export function AdminReservationForm({
           >
             {isLoadingRooms ? (
               <Loader2
-                size={
-                  15
-                }
+                size={15}
                 className="animate-spin"
               />
             ) : (
               <CalendarDays
-                size={
-                  15
-                }
+                size={15}
               />
             )}
 
-            Müsait Odaları Kontrol Et
+            Müsait Odaları
+            Kontrol Et
           </button>
 
           {availableRooms.length >
@@ -714,12 +762,9 @@ export function AdminReservationForm({
                   selectedRoomId ??
                   ""
                 }
-                onChange={(
-                  event,
-                ) =>
+                onChange={(event) =>
                   setSelectedRoomId(
-                    event
-                      .target
+                    event.target
                       .value
                       ? Number(
                           event
@@ -738,9 +783,7 @@ export function AdminReservationForm({
                 </option>
 
                 {availableRooms.map(
-                  (
-                    room,
-                  ) => (
+                  (room) => (
                     <option
                       key={
                         room.id
@@ -761,7 +804,10 @@ export function AdminReservationForm({
               </select>
 
               <p className="mt-2 text-[10px] leading-5 text-[#969990]">
-                Oda seçmezseniz sistem uygun fiziksel odayı otomatik atar.
+                Oda seçmezseniz
+                sistem uygun
+                fiziksel odayı
+                otomatik atar.
               </p>
             </div>
           )}
@@ -800,27 +846,18 @@ export function AdminReservationForm({
       {/* MİSAFİR */}
       <section className="border border-[#E3E0D8] bg-white">
         <SectionTitle
-          icon={
-            User
-          }
+          icon={User}
           title="Misafir Bilgileri"
-          description="Telefonla veya mesaj üzerinden alınan müşteri bilgileri."
+          description="Müşteri ve konaklayacak kişi bilgileri."
         />
 
         <div className="space-y-5 p-4 sm:p-5">
-          <Field
-            label="Ad Soyad"
-          >
+          <Field label="Ad Soyad">
             <input
-              value={
-                guestName
-              }
-              onChange={(
-                event,
-              ) =>
+              value={guestName}
+              onChange={(event) =>
                 setGuestName(
-                  event.target
-                    .value,
+                  event.target.value,
                 )
               }
               placeholder="Misafir adı soyadı"
@@ -831,20 +868,15 @@ export function AdminReservationForm({
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field
-              label="Telefon"
-            >
+            <Field label="Telefon">
               <input
                 type="tel"
                 value={
                   guestPhone
                 }
-                onChange={(
-                  event,
-                ) =>
+                onChange={(event) =>
                   setGuestPhone(
-                    event
-                      .target
+                    event.target
                       .value,
                   )
                 }
@@ -855,20 +887,15 @@ export function AdminReservationForm({
               />
             </Field>
 
-            <Field
-              label="E-posta"
-            >
+            <Field label="E-posta">
               <input
                 type="email"
                 value={
                   guestEmail
                 }
-                onChange={(
-                  event,
-                ) =>
+                onChange={(event) =>
                   setGuestEmail(
-                    event
-                      .target
+                    event.target
                       .value,
                   )
                 }
@@ -880,93 +907,109 @@ export function AdminReservationForm({
             </Field>
           </div>
 
-          <Field
-            label="Misafir Sayısı"
-          >
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() =>
-                  setGuestCount(
-                    Math.max(
+          <div>
+            <p className="mb-3 text-xs font-medium text-[#40463F]">
+              Konaklayacak
+              Kişiler
+            </p>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <GuestCounter
+                icon={
+                  <User
+                    size={16}
+                  />
+                }
+                title="Yetişkin"
+                description={`En fazla ${maxAdults}`}
+                value={
+                  adultCount
+                }
+                decreaseDisabled={
+                  adultCount <=
+                  1
+                }
+                increaseDisabled={
+                  !canIncreaseAdult
+                }
+                onDecrease={() =>
+                  handleAdultCountChange(
+                    adultCount -
                       1,
-                      guestCount -
-                        1,
-                    ),
                   )
                 }
-                className="h-11 w-11 border border-[#DDD9D1] text-lg text-[#263A2D]"
-              >
-                −
-              </button>
-
-              <div className="flex h-11 min-w-[90px] items-center justify-center gap-2 border border-[#DDD9D1] bg-[#FAF9F6] px-4 text-sm font-semibold text-[#263A2D]">
-                <Users
-                  size={
-                    15
-                  }
-                />
-
-                {
-                  guestCount
-                }
-              </div>
-
-              <button
-                type="button"
-                onClick={() =>
-                  setGuestCount(
-                    Math.min(
-                      selectedAccommodation
-                        ?.capacity ??
-                        99,
-
-                      guestCount +
-                        1,
-                    ),
+                onIncrease={() =>
+                  handleAdultCountChange(
+                    adultCount +
+                      1,
                   )
                 }
-                className="h-11 w-11 border border-[#DDD9D1] text-lg text-[#263A2D]"
-              >
-                +
-              </button>
+              />
 
-              {selectedAccommodation && (
-                <span className="text-[10px] text-[#969990]">
-                  Maksimum{" "}
-                  {
-                    selectedAccommodation.capacity
-                  }{" "}
-                  kişi
-                </span>
-              )}
+              <GuestCounter
+                icon={
+                  <Baby
+                    size={16}
+                  />
+                }
+                title="Çocuk"
+                description={`En fazla ${maxChildren}`}
+                value={
+                  childCount
+                }
+                decreaseDisabled={
+                  childCount <=
+                  0
+                }
+                increaseDisabled={
+                  !canIncreaseChild
+                }
+                onDecrease={() =>
+                  handleChildCountChange(
+                    childCount -
+                      1,
+                  )
+                }
+                onIncrease={() =>
+                  handleChildCountChange(
+                    childCount +
+                      1,
+                  )
+                }
+              />
             </div>
-          </Field>
+
+            <div className="mt-3 flex items-center justify-between bg-[#F7F5EF] px-4 py-3">
+              <span className="flex items-center gap-2 text-[10px] text-[#81857F]">
+                <Users
+                  size={14}
+                />
+                Toplam misafir
+              </span>
+
+              <span className="text-xs font-semibold text-[#263A2D]">
+                {totalGuestCount}{" "}
+                kişi
+              </span>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* REZERVASYON */}
       <section className="border border-[#E3E0D8] bg-white">
         <SectionTitle
-          icon={
-            Phone
-          }
+          icon={Phone}
           title="Rezervasyon Bilgileri"
           description="Rezervasyonun geldiği kanal ve başlangıç durumu."
         />
 
         <div className="space-y-5 p-4 sm:p-5">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field
-              label="Rezervasyon Kaynağı"
-            >
+            <Field label="Rezervasyon Kaynağı">
               <select
-                value={
-                  source
-                }
-                onChange={(
-                  event,
-                ) =>
+                value={source}
+                onChange={(event) =>
                   setSource(
                     event.target
                       .value as ReservationSource,
@@ -985,7 +1028,8 @@ export function AdminReservationForm({
                 </option>
 
                 <option value="walk_in">
-                  Resepsiyon / Walk-in
+                  Resepsiyon /
+                  Walk-in
                 </option>
 
                 <option value="admin">
@@ -994,16 +1038,10 @@ export function AdminReservationForm({
               </select>
             </Field>
 
-            <Field
-              label="Rezervasyon Durumu"
-            >
+            <Field label="Rezervasyon Durumu">
               <select
-                value={
-                  status
-                }
-                onChange={(
-                  event,
-                ) =>
+                value={status}
+                onChange={(event) =>
                   setStatus(
                     event.target
                       .value as ReservationStatus,
@@ -1031,31 +1069,26 @@ export function AdminReservationForm({
           {status ===
             "pending_payment" && (
             <div className="border border-[#E3D5B8] bg-[#FAF5E9] p-3 text-xs leading-5 text-[#846B38]">
-              Ödeme bekleyen manuel rezervasyonlar da mevcut sistemde 1 saatlik oda tutma kuralına tabidir.
+              Ödeme bekleyen
+              manuel
+              rezervasyonlar da
+              mevcut sistemde 1
+              saatlik oda tutma
+              kuralına tabidir.
             </div>
           )}
 
-          <Field
-            label="Admin Notu"
-          >
+          <Field label="Admin Notu">
             <textarea
-              value={
-                adminNote
-              }
-              onChange={(
-                event,
-              ) =>
+              value={adminNote}
+              onChange={(event) =>
                 setAdminNote(
                   event.target
                     .value,
                 )
               }
-              rows={
-                4
-              }
-              maxLength={
-                500
-              }
+              rows={4}
+              maxLength={500}
               placeholder="Örn. Telefonla teyit edildi, girişte ödeme yapılacak..."
               className="w-full resize-none border border-[#DDD9D1] bg-[#FAF9F6] p-3 text-sm leading-6 text-[#263A2D] outline-none focus:border-[#263A2D]"
             />
@@ -1072,9 +1105,7 @@ export function AdminReservationForm({
       {success && (
         <div className="flex items-center gap-3 border border-[#CBDDC8] bg-[#EAF2E8] p-4 text-[#456044]">
           <CheckCircle2
-            size={
-              18
-            }
+            size={18}
           />
 
           <p className="text-xs font-medium">
@@ -1108,17 +1139,11 @@ export function AdminReservationForm({
         >
           {isSubmitting ? (
             <Loader2
-              size={
-                16
-              }
+              size={16}
               className="animate-spin"
             />
           ) : (
-            <Save
-              size={
-                16
-              }
-            />
+            <Save size={16} />
           )}
 
           {isSubmitting
@@ -1130,29 +1155,96 @@ export function AdminReservationForm({
   );
 }
 
+type GuestCounterProps = {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  value: number;
+  decreaseDisabled: boolean;
+  increaseDisabled: boolean;
+  onDecrease: () => void;
+  onIncrease: () => void;
+};
+
+function GuestCounter({
+  icon,
+  title,
+  description,
+  value,
+  decreaseDisabled,
+  increaseDisabled,
+  onDecrease,
+  onIncrease,
+}: GuestCounterProps) {
+  return (
+    <div className="flex items-center justify-between border border-[#E3E0D8] bg-[#FAF9F6] p-3">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-white text-[#A8754F]">
+          {icon}
+        </div>
+
+        <div>
+          <p className="text-xs font-medium text-[#40463F]">
+            {title}
+          </p>
+
+          <p className="mt-0.5 text-[9px] text-[#969990]">
+            {description}
+          </p>
+        </div>
+      </div>
+
+      <div className="ml-3 flex shrink-0 items-center border border-[#DDD9D1] bg-white">
+        <button
+          type="button"
+          aria-label={`${title} azalt`}
+          disabled={
+            decreaseDisabled
+          }
+          onClick={
+            onDecrease
+          }
+          className="flex h-9 w-9 items-center justify-center transition hover:bg-[#F1EFE9] disabled:cursor-not-allowed disabled:opacity-30"
+        >
+          <Minus size={13} />
+        </button>
+
+        <span className="flex h-9 w-9 items-center justify-center border-x border-[#DDD9D1] text-sm font-semibold text-[#263A2D]">
+          {value}
+        </span>
+
+        <button
+          type="button"
+          aria-label={`${title} artır`}
+          disabled={
+            increaseDisabled
+          }
+          onClick={
+            onIncrease
+          }
+          className="flex h-9 w-9 items-center justify-center transition hover:bg-[#F1EFE9] disabled:cursor-not-allowed disabled:opacity-30"
+        >
+          <Plus size={13} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function SectionTitle({
   icon: Icon,
   title,
   description,
 }: {
-  icon:
-    React.ElementType;
-
-  title:
-    string;
-
-  description:
-    string;
+  icon: ElementType;
+  title: string;
+  description: string;
 }) {
   return (
     <div className="border-b border-[#EEEAE3] px-4 py-4 sm:px-5">
       <div className="flex items-center gap-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#F1EFE9] text-[#A8754F]">
-          <Icon
-            size={
-              17
-            }
-          />
+          <Icon size={17} />
         </div>
 
         <div>
@@ -1173,11 +1265,8 @@ function Field({
   label,
   children,
 }: {
-  label:
-    string;
-
-  children:
-    React.ReactNode;
+  label: string;
+  children: ReactNode;
 }) {
   return (
     <div>
@@ -1194,11 +1283,8 @@ function SummaryItem({
   label,
   value,
 }: {
-  label:
-    string;
-
-  value:
-    string;
+  label: string;
+  value: string;
 }) {
   return (
     <div>
