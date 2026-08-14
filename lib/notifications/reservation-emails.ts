@@ -1,10 +1,6 @@
-import type {
-  SupabaseClient,
-} from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import {
-  sendEmail,
-} from "@/lib/notifications/email";
+import { sendEmail } from "@/lib/notifications/email";
 
 type ReceiptNotificationContext = {
   reservation_code: string;
@@ -13,14 +9,13 @@ type ReceiptNotificationContext = {
   accommodation_title: string;
   check_in: string;
   check_out: string;
-  guest_count: number;
+  adult_count: number;
+  child_count: number;
   night_count: number;
   total_price: number;
 };
 
-type ReservationDecision =
-  | "confirmed"
-  | "rejected";
+type ReservationDecision = "confirmed" | "rejected";
 
 type ReservationDecisionRow = {
   id: number;
@@ -30,18 +25,13 @@ type ReservationDecisionRow = {
   guest_email: string | null;
   check_in: string;
   check_out: string;
-  guest_count: number;
+  adult_count: number;
+  child_count: number;
   night_count: number;
   total_price: number;
 };
 
-function escapeHtml(
-  value:
-    | string
-    | number
-    | null
-    | undefined,
-) {
+function escapeHtml(value: string | number | null | undefined) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -50,37 +40,30 @@ function escapeHtml(
     .replaceAll("'", "&#039;");
 }
 
-function formatMoney(
-  value: number,
-) {
-  return new Intl.NumberFormat(
-    "tr-TR",
-    {
-      style: "currency",
-      currency: "TRY",
-      maximumFractionDigits: 0,
-    },
-  ).format(value);
+function formatMoney(value: number) {
+  return new Intl.NumberFormat("tr-TR", {
+    style: "currency",
+    currency: "TRY",
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
-function formatDate(
-  value: string,
-) {
-  const [
-    year,
-    month,
-    day,
-  ] = value.split("-");
+function formatDate(value: string) {
+  const [year, month, day] = value.split("-");
 
-  if (
-    !year ||
-    !month ||
-    !day
-  ) {
+  if (!year || !month || !day) {
     return value;
   }
 
   return `${day}.${month}.${year}`;
+}
+
+function formatGuestSummary(adultCount: number, childCount: number) {
+  if (childCount > 0) {
+    return `${adultCount} yetişkin · ${childCount} çocuk`;
+  }
+
+  return `${adultCount} yetişkin`;
 }
 
 function createEmailLayout({
@@ -217,14 +200,17 @@ function reservationDetailsHtml({
   accommodationTitle,
   checkIn,
   checkOut,
-  guestCount,
+  adultCount,
+  childCount,
+
   totalPrice,
 }: {
   reservationCode: string;
   accommodationTitle: string;
   checkIn: string;
   checkOut: string;
-  guestCount: number;
+  adultCount: number;
+  childCount: number;
   totalPrice: number;
 }) {
   return `
@@ -259,9 +245,7 @@ function reservationDetailsHtml({
               color:#263a2d;
             "
           >
-            ${escapeHtml(
-              reservationCode,
-            )}
+            ${escapeHtml(reservationCode)}
           </div>
         </td>
       </tr>
@@ -274,9 +258,7 @@ function reservationDetailsHtml({
           "
         >
           <strong>Konaklama:</strong>
-          ${escapeHtml(
-            accommodationTitle,
-          )}
+          ${escapeHtml(accommodationTitle)}
         </td>
       </tr>
 
@@ -288,16 +270,12 @@ function reservationDetailsHtml({
           "
         >
           <strong>Giriş:</strong>
-          ${escapeHtml(
-            formatDate(checkIn),
-          )}
+          ${escapeHtml(formatDate(checkIn))}
 
           &nbsp;&nbsp;
 
           <strong>Çıkış:</strong>
-          ${escapeHtml(
-            formatDate(checkOut),
-          )}
+          ${escapeHtml(formatDate(checkOut))}
         </td>
       </tr>
 
@@ -308,10 +286,8 @@ function reservationDetailsHtml({
             border-top:1px solid #e4e1d9;
           "
         >
-          <strong>Misafir:</strong>
-          ${escapeHtml(
-            guestCount,
-          )} kişi
+       <strong>Misafir:</strong>
+${escapeHtml(formatGuestSummary(adultCount, childCount))}
         </td>
       </tr>
 
@@ -323,11 +299,7 @@ function reservationDetailsHtml({
           "
         >
           <strong>Toplam:</strong>
-          ${escapeHtml(
-            formatMoney(
-              totalPrice,
-            ),
-          )}
+          ${escapeHtml(formatMoney(totalPrice))}
         </td>
       </tr>
     </table>
@@ -345,95 +317,62 @@ export async function notifyReceiptSubmitted(
   reservationCode: string,
   storagePath: string,
 ) {
-  const {
-    data,
-    error,
-  } = await supabase.rpc(
-    "get_receipt_notification_context",
+  const { data, error } = await supabase.rpc(
+    "get_receipt_notification_context_v2",
     {
-      p_reservation_code:
-        reservationCode,
+      p_reservation_code: reservationCode,
 
-      p_storage_path:
-        storagePath,
+      p_storage_path: storagePath,
     },
   );
 
   if (error) {
-    console.error(
-      "Dekont bildirim bilgisi alınamadı:",
-      error,
-    );
+    console.error("Dekont bildirim bilgisi alınamadı:", error);
 
     return;
   }
 
-  const reservation =
-    (
-      data as
-        | ReceiptNotificationContext[]
-        | null
-    )?.[0];
+  const reservation = (data as ReceiptNotificationContext[] | null)?.[0];
 
   if (!reservation) {
-    console.error(
-      "Dekont bildirimi için rezervasyon bulunamadı.",
-    );
+    console.error("Dekont bildirimi için rezervasyon bulunamadı.");
 
     return;
   }
 
-  const details =
-    reservationDetailsHtml({
-      reservationCode:
-        reservation.reservation_code,
+  const details = reservationDetailsHtml({
+    reservationCode: reservation.reservation_code,
 
-      accommodationTitle:
-        reservation.accommodation_title,
+    accommodationTitle: reservation.accommodation_title,
 
-      checkIn:
-        reservation.check_in,
+    checkIn: reservation.check_in,
 
-      checkOut:
-        reservation.check_out,
+    checkOut: reservation.check_out,
 
-      guestCount:
-        Number(
-          reservation.guest_count,
-        ),
+    adultCount: Number(reservation.adult_count),
+    childCount: Number(reservation.child_count),
 
-      totalPrice:
-        Number(
-          reservation.total_price,
-        ),
-    });
+    totalPrice: Number(reservation.total_price),
+  });
 
   /*
    * MÜŞTERİ MAILİ
    */
 
-  if (
-    reservation.guest_email?.trim()
-  ) {
+  if (reservation.guest_email?.trim()) {
     await sendEmail({
-      to:
-        reservation.guest_email,
+      to: reservation.guest_email,
 
-      subject:
-        `Dekontunuz Alındı • ${reservation.reservation_code}`,
+      subject: `Dekontunuz Alındı • ${reservation.reservation_code}`,
 
-      idempotencyKey:
-        `receipt-received/${reservation.reservation_code}`,
+      idempotencyKey: `receipt-received/${reservation.reservation_code}`,
 
-      html:
-        createEmailLayout({
-          title:
-            "Dekontunuz Alındı",
+      html: createEmailLayout({
+        title: "Dekontunuz Alındı",
 
-          description:
-            `${reservation.guest_name}, ödeme dekontunuz başarıyla tarafımıza ulaştı. Rezervasyonunuz yönetici onayına gönderildi.`,
+        description: `${reservation.guest_name}, ödeme dekontunuz başarıyla tarafımıza ulaştı. Rezervasyonunuz yönetici onayına gönderildi.`,
 
-          content: `
+        content: `
             ${details}
 
             <div
@@ -451,10 +390,9 @@ export async function notifyReceiptSubmitted(
               ayrıca bilgilendirme yapılacaktır.
             </div>
           `,
-        }),
+      }),
 
-      text:
-        `Dekontunuz alındı. Rezervasyon No: ${reservation.reservation_code}. Rezervasyonunuz yönetici onayına gönderildi.`,
+      text: `Dekontunuz alındı. Rezervasyon No: ${reservation.reservation_code}. Rezervasyonunuz yönetici onayına gönderildi.`,
     });
   }
 
@@ -462,34 +400,25 @@ export async function notifyReceiptSubmitted(
    * ADMIN MAILI
    */
 
-  const adminEmail =
-    process.env
-      .ADMIN_NOTIFICATION_EMAIL
-      ?.trim();
+  const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL?.trim();
 
   if (adminEmail) {
     await sendEmail({
       to: adminEmail,
 
-      subject:
-        `Yeni Dekont • ${reservation.reservation_code}`,
+      subject: `Yeni Dekont • ${reservation.reservation_code}`,
 
-      idempotencyKey:
-        `admin-receipt/${reservation.reservation_code}`,
+      idempotencyKey: `admin-receipt/${reservation.reservation_code}`,
 
-      html:
-        createEmailLayout({
-          title:
-            "Yeni Dekont Yüklendi",
+      html: createEmailLayout({
+        title: "Yeni Dekont Yüklendi",
 
-          description:
-            `${reservation.guest_name} adlı misafirin rezervasyonu onay bekliyor.`,
+        description: `${reservation.guest_name} adlı misafirin rezervasyonu onay bekliyor.`,
 
-          content: details,
-        }),
+        content: details,
+      }),
 
-      text:
-        `Yeni dekont yüklendi. ${reservation.reservation_code} numaralı rezervasyon onay bekliyor.`,
+      text: `Yeni dekont yüklendi. ${reservation.reservation_code} numaralı rezervasyon onay bekliyor.`,
     });
   }
 }
@@ -506,13 +435,8 @@ export async function notifyReservationDecision(
   decision: ReservationDecision,
   reason?: string,
 ) {
-  const {
-    data: reservation,
-    error,
-  } = await supabase
-    .from(
-      "reservations",
-    )
+  const { data: reservation, error } = await supabase
+    .from("reservations")
     .select(
       `
         id,
@@ -522,128 +446,71 @@ export async function notifyReservationDecision(
         guest_email,
         check_in,
         check_out,
-        guest_count,
-        night_count,
+       adult_count,
+child_count,
+night_count,
         total_price
       `,
     )
-    .eq(
-      "id",
-      reservationId,
-    )
+    .eq("id", reservationId)
     .maybeSingle();
 
-  if (
-    error ||
-    !reservation
-  ) {
-    console.error(
-      "Rezervasyon mail bilgisi alınamadı:",
-      error,
-    );
+  if (error || !reservation) {
+    console.error("Rezervasyon mail bilgisi alınamadı:", error);
 
     return;
   }
 
-  const typedReservation =
-    reservation as ReservationDecisionRow;
+  const typedReservation = reservation as ReservationDecisionRow;
 
-  if (
-    !typedReservation
-      .guest_email
-      ?.trim()
-  ) {
-    console.info(
-      "Rezervasyon bildirimi atlandı: müşteri e-posta adresi yok.",
-    );
+  if (!typedReservation.guest_email?.trim()) {
+    console.info("Rezervasyon bildirimi atlandı: müşteri e-posta adresi yok.");
 
     return;
   }
 
-  const {
-    data: accommodation,
-    error:
-      accommodationError,
-  } = await supabase
-    .from(
-      "accommodations",
-    )
-    .select(
-      "title",
-    )
-    .eq(
-      "id",
-      typedReservation
-        .accommodation_id,
-    )
+  const { data: accommodation, error: accommodationError } = await supabase
+    .from("accommodations")
+    .select("title")
+    .eq("id", typedReservation.accommodation_id)
     .maybeSingle();
 
-  if (
-    accommodationError ||
-    !accommodation
-  ) {
-    console.error(
-      "Konaklama bilgisi alınamadı:",
-      accommodationError,
-    );
+  if (accommodationError || !accommodation) {
+    console.error("Konaklama bilgisi alınamadı:", accommodationError);
 
     return;
   }
 
-  const details =
-    reservationDetailsHtml({
-      reservationCode:
-        typedReservation
-          .reservation_code,
+  const details = reservationDetailsHtml({
+    reservationCode: typedReservation.reservation_code,
 
-      accommodationTitle:
-        accommodation.title,
+    accommodationTitle: accommodation.title,
 
-      checkIn:
-        typedReservation
-          .check_in,
+    checkIn: typedReservation.check_in,
 
-      checkOut:
-        typedReservation
-          .check_out,
+    checkOut: typedReservation.check_out,
 
-      guestCount:
-        Number(
-          typedReservation
-            .guest_count,
-        ),
+    adultCount: Number(reservation.adult_count),
 
-      totalPrice:
-        Number(
-          typedReservation
-            .total_price,
-        ),
-    });
+    childCount: Number(reservation.child_count),
 
-  if (
-    decision ===
-    "confirmed"
-  ) {
+    totalPrice: Number(typedReservation.total_price),
+  });
+
+  if (decision === "confirmed") {
     await sendEmail({
-      to:
-        typedReservation
-          .guest_email,
+      to: typedReservation.guest_email,
 
-      subject:
-        `Rezervasyonunuz Onaylandı • ${typedReservation.reservation_code}`,
+      subject: `Rezervasyonunuz Onaylandı • ${typedReservation.reservation_code}`,
 
-      idempotencyKey:
-        `reservation-confirmed/${typedReservation.reservation_code}`,
+      idempotencyKey: `reservation-confirmed/${typedReservation.reservation_code}`,
 
-      html:
-        createEmailLayout({
-          title:
-            "Rezervasyonunuz Onaylandı",
+      html: createEmailLayout({
+        title: "Rezervasyonunuz Onaylandı",
 
-          description:
-            `${typedReservation.guest_name}, ödemeniz kontrol edildi ve rezervasyonunuz onaylandı.`,
+        description: `${typedReservation.guest_name}, ödemeniz kontrol edildi ve rezervasyonunuz onaylandı.`,
 
-          content: `
+        content: `
             ${details}
 
             <div
@@ -662,35 +529,27 @@ export async function notifyReservationDecision(
               için sabırsızlanıyoruz.
             </div>
           `,
-        }),
+      }),
 
-      text:
-        `Rezervasyonunuz onaylandı. Rezervasyon No: ${typedReservation.reservation_code}.`,
+      text: `Rezervasyonunuz onaylandı. Rezervasyon No: ${typedReservation.reservation_code}.`,
     });
 
     return;
   }
 
   await sendEmail({
-    to:
-      typedReservation
-        .guest_email,
+    to: typedReservation.guest_email,
 
-    subject:
-      `Rezervasyonunuz Hakkında • ${typedReservation.reservation_code}`,
+    subject: `Rezervasyonunuz Hakkında • ${typedReservation.reservation_code}`,
 
-    idempotencyKey:
-      `reservation-rejected/${typedReservation.reservation_code}`,
+    idempotencyKey: `reservation-rejected/${typedReservation.reservation_code}`,
 
-    html:
-      createEmailLayout({
-        title:
-          "Rezervasyonunuz Onaylanamadı",
+    html: createEmailLayout({
+      title: "Rezervasyonunuz Onaylanamadı",
 
-        description:
-          `${typedReservation.guest_name}, rezervasyonunuz yapılan kontrol sonucunda onaylanamadı.`,
+      description: `${typedReservation.guest_name}, rezervasyonunuz yapılan kontrol sonucunda onaylanamadı.`,
 
-        content: `
+      content: `
           ${details}
 
           <div
@@ -710,16 +569,12 @@ export async function notifyReservationDecision(
                 margin-top:8px;
               "
             >
-              ${escapeHtml(
-                reason ||
-                  "Rezervasyon onaylanamadı.",
-              )}
+              ${escapeHtml(reason || "Rezervasyon onaylanamadı.")}
             </div>
           </div>
         `,
-      }),
+    }),
 
-    text:
-      `Rezervasyonunuz onaylanamadı. Rezervasyon No: ${typedReservation.reservation_code}. Sebep: ${reason || "Rezervasyon onaylanamadı."}`,
+    text: `Rezervasyonunuz onaylanamadı. Rezervasyon No: ${typedReservation.reservation_code}. Sebep: ${reason || "Rezervasyon onaylanamadı."}`,
   });
 }

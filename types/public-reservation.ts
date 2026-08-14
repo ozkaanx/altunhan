@@ -5,13 +5,20 @@ export type PublicAccommodation = {
   price: number;
   capacity: number;
   slug: string;
+
+  max_adults: number;
+  max_children: number;
+  max_total_guests: number;
 };
 
 export type ReservationCreateInput = {
   accommodationId: number;
+
   checkIn: string;
   checkOut: string;
-  guestCount: number;
+
+  adultCount: number;
+  childCount: number;
 
   guestName: string;
   guestPhone: string;

@@ -47,6 +47,32 @@ export async function createPublicReservation(
     };
   }
 
+  if (
+    !Number.isInteger(
+      values.adultCount,
+    ) ||
+    values.adultCount < 1
+  ) {
+    return {
+      success: false,
+      message:
+        "En az 1 yetişkin seçilmelidir.",
+    };
+  }
+
+  if (
+    !Number.isInteger(
+      values.childCount,
+    ) ||
+    values.childCount < 0
+  ) {
+    return {
+      success: false,
+      message:
+        "Çocuk sayısı geçersiz.",
+    };
+  }
+
   const emailPattern =
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -69,7 +95,7 @@ export async function createPublicReservation(
     data,
     error,
   } = await supabase.rpc(
-    "create_public_reservation",
+    "create_public_reservation_v2",
     {
       p_accommodation_id:
         values.accommodationId,
@@ -80,8 +106,11 @@ export async function createPublicReservation(
       p_check_out:
         values.checkOut,
 
-      p_guest_count:
-        values.guestCount,
+      p_adult_count:
+        values.adultCount,
+
+      p_child_count:
+        values.childCount,
 
       p_guest_name:
         guestName,
@@ -127,10 +156,9 @@ export async function createPublicReservation(
     success: true,
 
     reservation: {
-      id:
-        Number(
-          reservation.reservation_id,
-        ),
+      id: Number(
+        reservation.reservation_id,
+      ),
 
       reservationCode:
         reservation.reservation_code,

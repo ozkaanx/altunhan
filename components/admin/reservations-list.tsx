@@ -431,7 +431,10 @@ export function ReservationsList({
                     <p className="text-[10px] text-[#969990]">Misafir</p>
 
                     <p className="mt-1 text-xs font-medium text-[#4C524B]">
-                      {reservation.guest_count} kişi
+                      {reservation.adult_count} yetişkin
+                      {reservation.child_count > 0
+                        ? ` · ${reservation.child_count} çocuk`
+                        : ""}
                     </p>
                   </div>
                 </div>

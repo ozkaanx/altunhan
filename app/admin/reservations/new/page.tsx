@@ -1,52 +1,34 @@
 import Link from "next/link";
 
-import {
-  ArrowLeft,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
-import {
-  AdminReservationForm,
-} from "@/components/admin/admin-reservation-form";
+import { AdminReservationForm } from "@/components/admin/admin-reservation-form";
 
-import {
-  createClient,
-} from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function NewReservationPage() {
-  const supabase =
-    await createClient();
+  const supabase = await createClient();
 
   const {
-    data:
-      accommodations,
-    error:
-      accommodationsError,
-  } =
-    await supabase
-      .from(
-        "accommodations",
-      )
-      .select(`
-        id,
-        title,
-        capacity,
-        price
-      `)
-      .eq(
-        "is_active",
-        true,
-      )
-      .order(
-        "id",
-        {
-          ascending:
-            true,
-        },
-      );
+    data: accommodations,
+    error: accommodationsError,
+  } = await supabase
+    .from("accommodations")
+    .select(`
+      id,
+      title,
+      capacity,
+      price,
+      max_adults,
+      max_children,
+      max_total_guests
+    `)
+    .eq("is_active", true)
+    .order("id", {
+      ascending: true,
+    });
 
-  if (
-    accommodationsError
-  ) {
+  if (accommodationsError) {
     console.error(
       "Konaklamalar alınamadı:",
       accommodationsError,
@@ -81,16 +63,13 @@ export default async function NewReservationPage() {
         </h1>
 
         <p className="mt-2 text-sm leading-6 text-[#71756E]">
-          Telefon, WhatsApp veya resepsiyon üzerinden
-          gelen rezervasyonları buradan oluşturabilirsiniz.
+          Telefon, WhatsApp veya resepsiyon üzerinden gelen
+          rezervasyonları buradan oluşturabilirsiniz.
         </p>
       </div>
 
       <AdminReservationForm
-        accommodations={
-          accommodations ??
-          []
-        }
+        accommodations={accommodations ?? []}
       />
     </section>
   );

@@ -133,7 +133,11 @@ export function TrackingResult({
             <InfoCard
               icon={Users}
               label="Misafir"
-              value={`${reservation.guestCount} kişi`}
+              value={
+                reservation.childCount > 0
+                  ? `${reservation.adultCount} yetişkin · ${reservation.childCount} çocuk`
+                  : `${reservation.adultCount} yetişkin`
+              }
             />
 
             <InfoCard

@@ -363,7 +363,11 @@ export function ReservationDetailDrawer({
 
               <MiniInfo
                 label="Misafir"
-                value={`${reservation.guest_count} kişi`}
+                value={
+                  reservation.child_count > 0
+                    ? `${reservation.adult_count} yetişkin · ${reservation.child_count} çocuk`
+                    : `${reservation.adult_count} yetişkin`
+                }
               />
             </div>
           </section>

@@ -25,7 +25,9 @@ type DashboardReservation = {
 
   check_out: string;
 
-  guest_count: number;
+  adult_count: number;
+
+  child_count: number;
 
   total_price: number;
 
@@ -113,6 +115,14 @@ function formatMoney(value: number) {
   return Number(value).toLocaleString("tr-TR");
 }
 
+function formatGuestSummary(adultCount: number, childCount: number) {
+  if (childCount > 0) {
+    return `${adultCount} yetişkin · ${childCount} çocuk`;
+  }
+
+  return `${adultCount} yetişkin`;
+}
+
 export default async function AdminPage() {
   const supabase = await createClient();
 
@@ -182,7 +192,8 @@ export default async function AdminPage() {
             guest_name,
             check_in,
             check_out,
-            guest_count,
+           adult_count,
+            child_count,
             total_price,
             status,
             created_at,
@@ -207,7 +218,8 @@ export default async function AdminPage() {
             guest_name,
             check_in,
             check_out,
-            guest_count,
+            adult_count,
+child_count,
             total_price,
             status,
             created_at,
@@ -252,7 +264,8 @@ export default async function AdminPage() {
           guest_name,
           check_in,
           check_out,
-          guest_count,
+          adult_count,
+child_count,
           total_price,
           status,
           created_at,
@@ -440,7 +453,10 @@ export default async function AdminPage() {
 
                     <p className="mt-1 truncate text-[10px] text-white/50">
                       {reservation.accommodations?.[0]?.title ?? "Konaklama"} ·{" "}
-                      {reservation.guest_count} kişi
+                      {formatGuestSummary(
+                        reservation.adult_count,
+                        reservation.child_count,
+                      )}
                     </p>
                   </div>
 
@@ -527,7 +543,10 @@ export default async function AdminPage() {
 
                     <DashboardDetail
                       label="Misafir"
-                      value={`${reservation.guest_count} kişi`}
+                      value={formatGuestSummary(
+                        reservation.adult_count,
+                        reservation.child_count,
+                      )}
                     />
                   </div>
                 </Link>

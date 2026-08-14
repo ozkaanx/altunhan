@@ -1,211 +1,589 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import {
+  useMemo,
+  useState,
+} from "react";
 
-import { createPublicReservation } from "@/app/rezervasyon/action";
+import {
+  createPublicReservation,
+} from "@/app/rezervasyon/action";
 
 import {
   calculateNightCount,
   reservationOverlapsRange,
 } from "@/lib/reservation/date-utils";
 
-import { useReservationAvailability } from "@/hooks/reservation/use-reservation-availability";
+import {
+  useReservationAvailability,
+} from "@/hooks/reservation/use-reservation-availability";
 
-import type { PublicAccommodation } from "@/types/public-reservation";
+import type {
+  PublicAccommodation,
+} from "@/types/public-reservation";
 
-import type { CreatedReservation } from "@/types/reservation-ui";
+import type {
+  CreatedReservation,
+} from "@/types/reservation-ui";
 
-import { calculateReservationTotal } from "@/lib/reservation/reservation-utils";
+import {
+  calculateReservationTotal,
+} from "@/lib/reservation/reservation-utils";
 
 type UseReservationFormParams = {
-  accommodations: PublicAccommodation[];
-  initialAccommodationId?: number | null;
+  accommodations:
+    PublicAccommodation[];
+
+  initialAccommodationId?:
+    | number
+    | null;
 };
+
+function getDefaultAdultCount(
+  accommodation:
+    | PublicAccommodation
+    | null,
+) {
+  if (!accommodation) {
+    return 1;
+  }
+
+  return Math.max(
+    1,
+    Math.min(
+      2,
+      accommodation.max_adults,
+      accommodation.max_total_guests,
+    ),
+  );
+}
 
 export function useReservationForm({
   accommodations,
   initialAccommodationId,
 }: UseReservationFormParams) {
   const initialAccommodation =
-    accommodations.find((item) => item.id === initialAccommodationId) ??
+    accommodations.find(
+      (item) =>
+        item.id ===
+        initialAccommodationId,
+    ) ??
     accommodations[0] ??
     null;
 
-  const [accommodationId, setAccommodationId] = useState<number | null>(
-    initialAccommodation?.id ?? null,
+  const [
+    accommodationId,
+    setAccommodationId,
+  ] = useState<
+    number | null
+  >(
+    initialAccommodation?.id ??
+      null,
   );
 
-  const [checkIn, setCheckIn] = useState("");
+  const [
+    checkIn,
+    setCheckIn,
+  ] =
+    useState("");
 
-  const [checkOut, setCheckOut] = useState("");
+  const [
+    checkOut,
+    setCheckOut,
+  ] =
+    useState("");
 
-  const [guestCount, setGuestCount] = useState(
-    Math.min(2, initialAccommodation?.capacity ?? 2),
+  const [
+    adultCount,
+    setAdultCount,
+  ] = useState(
+    getDefaultAdultCount(
+      initialAccommodation,
+    ),
   );
 
-  const [guestName, setGuestName] = useState("");
+  const [
+    childCount,
+    setChildCount,
+  ] =
+    useState(0);
 
-  const [guestPhone, setGuestPhone] = useState("");
+  const [
+    guestName,
+    setGuestName,
+  ] =
+    useState("");
 
-  const [guestEmail, setGuestEmail] = useState("");
+  const [
+    guestPhone,
+    setGuestPhone,
+  ] =
+    useState("");
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [
+    guestEmail,
+    setGuestEmail,
+  ] =
+    useState("");
 
-  const [error, setError] = useState<string | null>(null);
+  const [
+    isSubmitting,
+    setIsSubmitting,
+  ] =
+    useState(false);
 
-  const [createdReservation, setCreatedReservation] =
-    useState<CreatedReservation | null>(null);
+  const [
+    error,
+    setError,
+  ] =
+    useState<
+      string | null
+    >(null);
 
-  const selectedAccommodation = useMemo(
-    () => accommodations.find((item) => item.id === accommodationId),
-    [accommodations, accommodationId],
-  );
+  const [
+    createdReservation,
+    setCreatedReservation,
+  ] =
+    useState<
+      CreatedReservation | null
+    >(null);
 
-  const { busyRanges, isLoadingAvailability, availabilityError } =
-    useReservationAvailability(accommodationId);
-
-  const estimatedNightCount = useMemo(
-    () => calculateNightCount(checkIn, checkOut),
-    [checkIn, checkOut],
-  );
-
-  const estimatedTotal = useMemo(
-    () =>
-      calculateReservationTotal(
-        selectedAccommodation?.price ?? 0,
-        estimatedNightCount,
-      ),
-    [selectedAccommodation, estimatedNightCount],
-  );
-
-  const dateError = useMemo(() => {
-    if (!checkIn || !checkOut) {
-      return null;
-    }
-
-    if (checkOut <= checkIn) {
-      return "Çıkış tarihi giriş tarihinden sonra olmalıdır.";
-    }
-
-    const overlappingRange = busyRanges.find((range) =>
-      reservationOverlapsRange(checkIn, checkOut, range),
+  const selectedAccommodation =
+    useMemo(
+      () =>
+        accommodations.find(
+          (item) =>
+            item.id ===
+            accommodationId,
+        ),
+      [
+        accommodations,
+        accommodationId,
+      ],
     );
 
-    if (overlappingRange) {
-      return "Seçtiğiniz tarih aralığında müsait oda bulunmuyor.";
-    }
+  const guestCount =
+    adultCount +
+    childCount;
 
-    return null;
-  }, [checkIn, checkOut, busyRanges]);
+  const {
+    busyRanges,
+    isLoadingAvailability,
+    availabilityError,
+  } =
+    useReservationAvailability(
+      accommodationId,
+    );
 
-  const handleAccommodationChange = (accommodation: PublicAccommodation) => {
-    setAccommodationId(accommodation.id);
-
-    setCheckIn("");
-    setCheckOut("");
-
-    setError(null);
-
-    setGuestCount(Math.min(guestCount, accommodation.capacity));
-  };
-
-  const handleCheckInChange = (value: string) => {
-    setCheckIn(value);
-    setError(null);
-
-    if (checkOut && value >= checkOut) {
-      setCheckOut("");
-    }
-  };
-
-  const handleCheckOutChange = (value: string) => {
-    setCheckOut(value);
-    setError(null);
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    setError(null);
-
-    if (!accommodationId) {
-      setError("Lütfen bir konaklama seçin.");
-
-      return;
-    }
-
-    if (!checkIn || !checkOut) {
-      setError("Lütfen giriş ve çıkış tarihlerini seçin.");
-
-      return;
-    }
-
-    if (dateError) {
-      setError(dateError);
-
-      return;
-    }
-
-    if (!guestName.trim() || !guestPhone.trim()) {
-      setError("Lütfen ad soyad ve telefon bilgilerinizi girin.");
-
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const result = await createPublicReservation({
-        accommodationId,
+  const estimatedNightCount =
+    useMemo(
+      () =>
+        calculateNightCount(
+          checkIn,
+          checkOut,
+        ),
+      [
         checkIn,
         checkOut,
-        guestCount,
+      ],
+    );
 
-        guestName: guestName.trim(),
+  const estimatedTotal =
+    useMemo(
+      () =>
+        calculateReservationTotal(
+          selectedAccommodation
+            ?.price ?? 0,
 
-        guestPhone: guestPhone.trim(),
+          estimatedNightCount,
+        ),
+      [
+        selectedAccommodation,
+        estimatedNightCount,
+      ],
+    );
 
-        guestEmail: guestEmail.trim(),
-      });
+  const dateError =
+    useMemo(() => {
+      if (
+        !checkIn ||
+        !checkOut
+      ) {
+        return null;
+      }
 
-      if (!result.success) {
-        setError(result.message);
+      if (
+        checkOut <= checkIn
+      ) {
+        return "Çıkış tarihi giriş tarihinden sonra olmalıdır.";
+      }
+
+      const overlappingRange =
+        busyRanges.find(
+          (range) =>
+            reservationOverlapsRange(
+              checkIn,
+              checkOut,
+              range,
+            ),
+        );
+
+      if (
+        overlappingRange
+      ) {
+        return "Seçtiğiniz tarih aralığında müsait oda bulunmuyor.";
+      }
+
+      return null;
+    }, [
+      checkIn,
+      checkOut,
+      busyRanges,
+    ]);
+
+  const handleAccommodationChange =
+    (
+      accommodation:
+        PublicAccommodation,
+    ) => {
+      setAccommodationId(
+        accommodation.id,
+      );
+
+      setCheckIn("");
+      setCheckOut("");
+
+      setError(null);
+
+      const nextAdultCount =
+        Math.max(
+          1,
+          Math.min(
+            adultCount,
+            accommodation.max_adults,
+            accommodation.max_total_guests,
+          ),
+        );
+
+      const remainingCapacity =
+        Math.max(
+          0,
+          accommodation.max_total_guests -
+            nextAdultCount,
+        );
+
+      const nextChildCount =
+        Math.min(
+          childCount,
+          accommodation.max_children,
+          remainingCapacity,
+        );
+
+      setAdultCount(
+        nextAdultCount,
+      );
+
+      setChildCount(
+        nextChildCount,
+      );
+    };
+
+  const handleAdultCountChange =
+    (
+      value: number,
+    ) => {
+      if (
+        !selectedAccommodation
+      ) {
+        return;
+      }
+
+      const maxAllowed =
+        Math.min(
+          selectedAccommodation.max_adults,
+
+          selectedAccommodation
+            .max_total_guests -
+            childCount,
+        );
+
+      const nextValue =
+        Math.max(
+          1,
+          Math.min(
+            value,
+            maxAllowed,
+          ),
+        );
+
+      setAdultCount(
+        nextValue,
+      );
+
+      setError(null);
+    };
+
+  const handleChildCountChange =
+    (
+      value: number,
+    ) => {
+      if (
+        !selectedAccommodation
+      ) {
+        return;
+      }
+
+      const maxAllowed =
+        Math.min(
+          selectedAccommodation.max_children,
+
+          selectedAccommodation
+            .max_total_guests -
+            adultCount,
+        );
+
+      const nextValue =
+        Math.max(
+          0,
+          Math.min(
+            value,
+            maxAllowed,
+          ),
+        );
+
+      setChildCount(
+        nextValue,
+      );
+
+      setError(null);
+    };
+
+  const handleCheckInChange =
+    (
+      value: string,
+    ) => {
+      setCheckIn(value);
+
+      setError(null);
+
+      if (
+        checkOut &&
+        value >= checkOut
+      ) {
+        setCheckOut("");
+      }
+    };
+
+  const handleCheckOutChange =
+    (
+      value: string,
+    ) => {
+      setCheckOut(value);
+
+      setError(null);
+    };
+
+  const handleSubmit =
+    async (
+      event:
+        React.FormEvent<HTMLFormElement>,
+    ) => {
+      event.preventDefault();
+
+      setError(null);
+
+      if (
+        !accommodationId ||
+        !selectedAccommodation
+      ) {
+        setError(
+          "Lütfen bir konaklama seçin.",
+        );
 
         return;
       }
 
-      const reservationData: CreatedReservation = {
-        id: result.reservation.id,
+      if (
+        !checkIn ||
+        !checkOut
+      ) {
+        setError(
+          "Lütfen giriş ve çıkış tarihlerini seçin.",
+        );
 
-        reservationCode: result.reservation.reservationCode,
+        return;
+      }
 
-        accommodationTitle: result.reservation.accommodationTitle,
+      if (dateError) {
+        setError(
+          dateError,
+        );
 
-        checkIn: result.reservation.checkIn,
+        return;
+      }
 
-        checkOut: result.reservation.checkOut,
+      if (
+        adultCount < 1
+      ) {
+        setError(
+          "En az 1 yetişkin seçilmelidir.",
+        );
 
-        nightCount: result.reservation.nightCount,
+        return;
+      }
 
-        totalPrice: result.reservation.totalPrice,
-      };
+      if (
+        adultCount >
+        selectedAccommodation.max_adults
+      ) {
+        setError(
+          `Bu konaklamada en fazla ${selectedAccommodation.max_adults} yetişkin kalabilir.`,
+        );
 
-      setCreatedReservation(reservationData);
+        return;
+      }
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    } catch (error) {
-      console.error("Rezervasyon oluşturulamadı:", error);
+      if (
+        childCount >
+        selectedAccommodation.max_children
+      ) {
+        setError(
+          `Bu konaklamada en fazla ${selectedAccommodation.max_children} çocuk kalabilir.`,
+        );
 
-      setError(
-        error instanceof Error ? error.message : "Rezervasyon oluşturulamadı.",
+        return;
+      }
+
+      if (
+        guestCount >
+        selectedAccommodation.max_total_guests
+      ) {
+        setError(
+          `Bu konaklamanın maksimum toplam kapasitesi ${selectedAccommodation.max_total_guests} kişidir.`,
+        );
+
+        return;
+      }
+
+      if (
+        !guestName.trim() ||
+        !guestPhone.trim() ||
+        !guestEmail.trim()
+      ) {
+        setError(
+          "Lütfen ad soyad, telefon ve e-posta bilgilerinizi girin.",
+        );
+
+        return;
+      }
+
+      setIsSubmitting(
+        true,
       );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+
+      try {
+        const result =
+          await createPublicReservation(
+            {
+              accommodationId,
+
+              checkIn,
+              checkOut,
+
+              adultCount,
+              childCount,
+
+              guestName:
+                guestName.trim(),
+
+              guestPhone:
+                guestPhone.trim(),
+
+              guestEmail:
+                guestEmail.trim(),
+            },
+          );
+
+        if (
+          !result.success
+        ) {
+          setError(
+            result.message,
+          );
+
+          return;
+        }
+
+        const reservationData:
+          CreatedReservation =
+          {
+            id:
+              result
+                .reservation
+                .id,
+
+            reservationCode:
+              result
+                .reservation
+                .reservationCode,
+
+            accommodationTitle:
+              result
+                .reservation
+                .accommodationTitle,
+
+            checkIn:
+              result
+                .reservation
+                .checkIn,
+
+            checkOut:
+              result
+                .reservation
+                .checkOut,
+
+            nightCount:
+              result
+                .reservation
+                .nightCount,
+
+            totalPrice:
+              result
+                .reservation
+                .totalPrice,
+          };
+
+        setCreatedReservation(
+          reservationData,
+        );
+
+        window.scrollTo(
+          {
+            top: 0,
+            behavior:
+              "smooth",
+          },
+        );
+      } catch (
+        error
+      ) {
+        console.error(
+          "Rezervasyon oluşturulamadı:",
+          error,
+        );
+
+        setError(
+          error instanceof
+          Error
+            ? error.message
+            : "Rezervasyon oluşturulamadı.",
+        );
+      } finally {
+        setIsSubmitting(
+          false,
+        );
+      }
+    };
 
   return {
     // Reservation
@@ -219,8 +597,11 @@ export function useReservationForm({
     busyRanges,
     dateError,
 
-    // Guest
+    // Guests
+    adultCount,
+    childCount,
     guestCount,
+
     guestName,
     guestPhone,
     guestEmail,
@@ -237,12 +618,16 @@ export function useReservationForm({
 
     // Handlers
     handleAccommodationChange,
+
     handleCheckInChange,
     handleCheckOutChange,
+
+    handleAdultCountChange,
+    handleChildCountChange,
+
     handleSubmit,
 
     // Simple setters
-    setGuestCount,
     setGuestName,
     setGuestPhone,
     setGuestEmail,

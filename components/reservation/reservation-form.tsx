@@ -18,7 +18,9 @@ import type { SiteSettings } from "@/types/site-settings";
 
 type ReservationFormProps = {
   accommodations: PublicAccommodation[];
+
   settings: SiteSettings | null;
+
   initialAccommodationId?: number | null;
 };
 
@@ -37,7 +39,9 @@ export function ReservationForm({
     busyRanges,
     dateError,
 
-    guestCount,
+    adultCount,
+    childCount,
+
     guestName,
     guestPhone,
     guestEmail,
@@ -51,11 +55,15 @@ export function ReservationForm({
     availabilityError,
 
     handleAccommodationChange,
+
     handleCheckInChange,
     handleCheckOutChange,
+
+    handleAdultCountChange,
+    handleChildCountChange,
+
     handleSubmit,
 
-    setGuestCount,
     setGuestName,
     setGuestPhone,
     setGuestEmail,
@@ -86,7 +94,8 @@ export function ReservationForm({
           <DateGuestStep
             checkIn={checkIn}
             checkOut={checkOut}
-            guestCount={guestCount}
+            adultCount={adultCount}
+            childCount={childCount}
             selectedAccommodation={selectedAccommodation}
             busyRanges={busyRanges}
             isLoadingAvailability={isLoadingAvailability}
@@ -94,7 +103,8 @@ export function ReservationForm({
             dateError={dateError}
             onCheckInChange={handleCheckInChange}
             onCheckOutChange={handleCheckOutChange}
-            onGuestCountChange={setGuestCount}
+            onAdultCountChange={handleAdultCountChange}
+            onChildCountChange={handleChildCountChange}
           />
 
           <ContactStep
@@ -111,7 +121,8 @@ export function ReservationForm({
           selectedAccommodation={selectedAccommodation}
           checkIn={checkIn}
           checkOut={checkOut}
-          guestCount={guestCount}
+          adultCount={adultCount}
+          childCount={childCount}
           estimatedNightCount={estimatedNightCount}
           estimatedTotal={estimatedTotal}
           dateError={dateError}
