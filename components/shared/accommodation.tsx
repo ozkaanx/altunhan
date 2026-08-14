@@ -6,10 +6,12 @@ import { FiArrowRight } from "react-icons/fi";
 import { LuBedDouble, LuUsers } from "react-icons/lu";
 
 import type { HomeAccommodation } from "@/app/page";
+
 import type { HomepageContent } from "@/types/homepage-content";
 
 type AccommodationProps = {
   accommodations: HomeAccommodation[];
+
   content: HomepageContent | null;
 };
 
@@ -40,120 +42,381 @@ export default function Accommodation({
   return (
     <section
       id="konaklama"
-      className="w-full bg-[#F5F1E8] px-6 py-20 md:px-12 md:py-24 lg:px-16"
+      className="
+        w-full
+        bg-[#F5F1E8]
+        px-5
+        py-16
+        sm:px-6
+        sm:py-20
+        md:px-12
+        md:py-24
+        lg:px-16
+      "
     >
       <div className="mx-auto max-w-[1500px]">
-        <div className="mb-12 text-center md:mb-14">
-          <span className="mb-4 block text-[9px] font-medium uppercase tracking-[0.3em] text-[#A8754F]">
+        <div className="mb-10 text-center md:mb-14"> 
+          <span
+            className="
+              mb-4
+              block
+              text-[9px]
+              font-medium
+              uppercase
+              tracking-[0.3em]
+              text-[#A8754F]
+            "
+          >
             {content?.accommodation_label || "KONAKLAMA"}
           </span>
 
-          <h2 className="font-serif text-4xl leading-none text-[#263A2D] md:text-5xl lg:text-6xl">
+          <h2
+            className="
+              font-serif
+              text-[34px]
+              leading-[1.05]
+              text-[#263A2D]
+              sm:text-4xl
+              md:text-5xl
+              lg:text-6xl
+            "
+          >
             {content?.accommodation_title || "Konakla. Yavaşla. Hisset."}
           </h2>
 
-          <p className="mx-auto mt-5 max-w-[560px] text-xs leading-6 text-[#6E746C] md:text-sm">
+          <p
+            className="
+              mx-auto
+              mt-5
+              max-w-[560px]
+              text-xs
+              leading-6
+              text-[#6E746C]
+              md:text-sm
+            "
+          >
             {content?.accommodation_description ||
               "Doğanın içinde, sade ve huzurlu konaklama seçeneklerimizi keşfedin."}
           </p>
         </div>
 
+        {/* ===================== */}
+        {/* BOŞ DURUM */}
+        {/* ===================== */}
+
         {accommodations.length === 0 ? (
-          <div className="border border-[#DDD8CF] bg-white/40 px-6 py-12 text-center">
+          <div
+            className="
+              border
+              border-[#DDD8CF]
+              bg-white/40
+              px-6
+              py-12
+              text-center
+            "
+          >
             <LuBedDouble
               size={30}
-              className="mx-auto text-[#A8754F]"
               strokeWidth={1}
+              className="mx-auto text-[#A8754F]"
             />
 
-            <p className="mt-4 text-sm font-semibold text-[#263A2D]">
+            <p
+              className="
+                mt-4
+                text-sm
+                font-semibold
+                text-[#263A2D]
+              "
+            >
               Şu anda aktif konaklama bulunmuyor.
             </p>
           </div>
         ) : (
           <div
-            className={`grid gap-10 md:gap-6 lg:gap-8 ${
-              accommodations.length === 1
-                ? "mx-auto max-w-[430px] grid-cols-1"
-                : accommodations.length === 2
-                  ? "mx-auto max-w-[900px] md:grid-cols-2"
-                  : accommodations.length === 3
-                    ? "md:grid-cols-3"
-                    : "md:grid-cols-2 xl:grid-cols-4"
-            }`}
+            className={`
+              grid
+              items-stretch
+              gap-6
+
+              ${
+                accommodations.length === 1
+                  ? "mx-auto max-w-[430px] grid-cols-1"
+                  : accommodations.length === 2
+                    ? "mx-auto max-w-[900px] md:grid-cols-2"
+                    : accommodations.length === 3
+                      ? "md:grid-cols-3"
+                      : "md:grid-cols-2 xl:grid-cols-4"
+              }
+            `}
           >
             {accommodations.map((item) => {
               const image = getCoverImage(item);
 
+              const href = item.slug
+                ? `/konaklama/${item.slug}`
+                : "/rezervasyon";
+
               return (
-                <article key={item.id} className="group relative pb-24">
-                  {/* görsel vs... */}
-                  <Link href={`/konaklama/${item.slug}`} className="block">
-                    <div className="relative aspect-[1.15/1] overflow-hidden bg-[#E8E2D7] md:aspect-[1.05/1]">
-                      {image ? (
-                        <Image
-                          src={image}
-                          alt={item.title}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                <article
+                  key={item.id}
+                  className="
+                      group
+                      flex
+                      h-full
+                      min-w-0
+                      flex-col
+                      overflow-hidden
+                      border
+                      border-[#DDD8CC]
+                      bg-[#FAF8F2]
+                      transition-all
+                      duration-500
+                      hover:-translate-y-1
+                      hover:shadow-[0_18px_45px_rgba(38,58,45,0.10)]
+                    "
+                >
+                  {/* ================= */}
+                  {/* FOTOĞRAF */}
+                  {/* ================= */}
+
+                  <Link
+                    href={href}
+                    className="
+                        relative
+                        block
+                        aspect-[4/3]
+                        overflow-hidden
+                        bg-[#E8E2D7]
+                      "
+                  >
+                    {image ? (
+                      <Image
+                        src={image}
+                        alt={item.title}
+                        fill
+                        sizes="
+                            (max-width: 768px) 100vw,
+                            (max-width: 1280px) 50vw,
+                            25vw
+                          "
+                        className="
+                            object-cover
+                            transition-transform
+                            duration-700
+                            ease-out
+                            group-hover:scale-105
+                          "
+                      />
+                    ) : (
+                      <div
+                        className="
+                            flex
+                            h-full
+                            w-full
+                            items-center
+                            justify-center
+                          "
+                      >
+                        <LuBedDouble
+                          size={42}
+                          strokeWidth={1}
+                          className="text-[#AAA398]"
                         />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center">
-                          <LuBedDouble
-                            size={42}
-                            strokeWidth={1}
-                            className="text-[#AAA398]"
-                          />
-                        </div>
-                      )}
-
-                      <div className="absolute inset-0 bg-black/5 transition-colors duration-500 group-hover:bg-black/10" />
-
-                      <div className="absolute bottom-4 right-4 bg-white/90 px-3 py-2 backdrop-blur">
-                        <p className="text-[8px] uppercase tracking-[0.12em] text-[#8C9089]">
-                          Gecelik
-                        </p>
-
-                        <p className="mt-0.5 text-sm font-semibold text-[#263A2D]">
-                          {Number(item.price).toLocaleString("tr-TR")} TL
-                        </p>
                       </div>
+                    )}
+
+                    {/* Fotoğraf karartma */}
+
+                    <div
+                      className="
+                          absolute
+                          inset-0
+                          bg-gradient-to-t
+                          from-black/15
+                          via-transparent
+                          to-transparent
+                          transition-colors
+                          duration-500
+                        "
+                    />
+
+                    {/* Fiyat */}
+
+                    <div
+                      className="
+                          absolute
+                          bottom-4
+                          right-4
+                          bg-white/95
+                          px-3
+                          py-2
+                          shadow-sm
+                          backdrop-blur-sm
+                        "
+                    >
+                      <p
+                        className="
+                            text-[8px]
+                            font-medium
+                            uppercase
+                            tracking-[0.14em]
+                            text-[#8C9089]
+                          "
+                      >
+                        Gecelik
+                      </p>
+
+                      <p
+                        className="
+                            mt-0.5
+                            whitespace-nowrap
+                            text-sm
+                            font-semibold
+                            text-[#263A2D]
+                          "
+                      >
+                        {Number(item.price).toLocaleString("tr-TR")} TL
+                      </p>
                     </div>
                   </Link>
-                  <div className="absolute left-[-1px] top-[-1px] flex h-12 w-12 items-center justify-center rounded-full bg-[#526048] text-white md:h-14 md:w-14">
-                    <LuBedDouble
-                      strokeWidth={1.2}
-                      className="h-5 w-5 md:h-6 md:w-6"
-                    />
-                  </div>
-                  <div className="absolute bottom-0 left-5 right-5 bg-[#F5F1E8] px-6 py-6 shadow-[0_5px_25px_rgba(38,58,45,0.06)] transition-transform duration-500 group-hover:-translate-y-1 md:left-6 md:right-6">
-                    <h3 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#263A2D]">
-                      {item.title}
-                    </h3>
 
-                    <p className="mt-3 line-clamp-2 min-h-[36px] text-[11px] leading-[1.6] text-[#60655E]">
+                  {/* ================= */}
+                  {/* İÇERİK */}
+                  {/* ================= */}
+
+                  <div
+                    className="
+                        flex
+                        flex-1
+                        flex-col
+                        p-5
+                        sm:p-6
+                      "
+                  >
+                    <div
+                      className="
+                          flex
+                          items-start
+                          justify-between
+                          gap-4
+                        "
+                    >
+                      <div className="min-w-0">
+                        <p
+                          className="
+                              text-[8px]
+                              font-semibold
+                              uppercase
+                              tracking-[0.22em]
+                              text-[#A8754F]
+                            "
+                        >
+                          Altunhan Farm
+                        </p>
+
+                        <h3
+                          className="
+                              mt-2
+                              font-serif
+                              text-[22px]
+                              leading-tight
+                              text-[#263A2D]
+                            "
+                        >
+                          {item.title}
+                        </h3>
+                      </div>
+
+                      <div
+                        className="
+                            flex
+                            h-10
+                            w-10
+                            shrink-0
+                            items-center
+                            justify-center
+                            border
+                            border-[#DDD8CC]
+                            text-[#526048]
+                          "
+                      >
+                        <LuBedDouble size={18} strokeWidth={1.2} />
+                      </div>
+                    </div>
+
+                    <p
+                      className="
+                          mt-4
+                          line-clamp-2
+                          min-h-[42px]
+                          text-[11px]
+                          leading-[1.8]
+                          text-[#666B64]
+                        "
+                    >
                       {item.short_description ||
                         "Altunhan Farm'da doğayla iç içe huzurlu bir konaklama deneyimi."}
                     </p>
 
-                    <div className="mt-4 flex items-center justify-between gap-3 border-t border-[#DED9D0] pt-4">
-                      <div className="flex items-center gap-2 text-[#737971]">
-                        <LuUsers size={14} strokeWidth={1.4} />
+                    {/* Alt bilgi */}
 
-                        <span className="text-[9px] font-medium">
+                    <div
+                      className="
+                          mt-auto
+                          flex
+                          items-center
+                          justify-between
+                          gap-3
+                          border-t
+                          border-[#DED9D0]
+                          pt-5
+                        "
+                    >
+                      <div
+                        className="
+                            flex
+                            items-center
+                            gap-2
+                            text-[#737971]
+                          "
+                      >
+                        <LuUsers size={15} strokeWidth={1.4} />
+
+                        <span
+                          className="
+                              whitespace-nowrap
+                              text-[10px]
+                              font-medium
+                            "
+                        >
                           Maks. {item.capacity} kişi
                         </span>
                       </div>
 
                       <Link
-                        href={`/konaklama/${item.slug}`}
-                        className="group/link inline-flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-[#263A2D]"
+                        href={href}
+                        className="
+                            group/link
+                            inline-flex
+                            shrink-0
+                            items-center
+                            gap-2
+                            text-[9px]
+                            font-semibold
+                            uppercase
+                            tracking-[0.14em]
+                            text-[#263A2D]
+                          "
                       >
-                        Detayları Gör
+                        Detay
                         <FiArrowRight
                           size={12}
-                          className="transition-transform duration-300 group-hover/link:translate-x-1"
+                          className="
+                              transition-transform
+                              duration-300
+                              group-hover/link:translate-x-1
+                            "
                         />
                       </Link>
                     </div>
@@ -164,11 +427,32 @@ export default function Accommodation({
           </div>
         )}
 
+        {/* ===================== */}
+        {/* REZERVASYON CTA */}
+        {/* ===================== */}
+
         {accommodations.length > 0 && (
-          <div className="mt-12 text-center md:mt-14">
+          <div className="mt-10 text-center md:mt-14">
             <Link
               href="/rezervasyon"
-              className="inline-flex h-11 items-center justify-center gap-3 border border-[#263A2D] px-6 text-[9px] font-semibold uppercase tracking-[0.18em] text-[#263A2D] transition-colors hover:bg-[#263A2D] hover:text-white"
+              className="
+                inline-flex
+                h-12
+                items-center
+                justify-center
+                gap-3
+                border
+                border-[#263A2D]
+                px-7
+                text-[9px]
+                font-semibold
+                uppercase
+                tracking-[0.18em]
+                text-[#263A2D]
+                transition-colors
+                hover:bg-[#263A2D]
+                hover:text-white
+              "
             >
               Rezervasyon Yap
               <FiArrowRight size={13} />

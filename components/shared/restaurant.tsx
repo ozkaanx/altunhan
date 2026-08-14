@@ -29,65 +29,270 @@ export default function Restaurant() {
   return (
     <section
       id="restoran"
-      className="w-full border-y border-[#DDD8CC] bg-[#FAF8F2]"
+      className="
+        w-full
+        border-y
+        border-[#DDD8CC]
+        bg-[#FAF8F2]
+      "
     >
-      <div className="mx-auto max-w-[1500px] px-5 py-14 sm:px-6 sm:py-16 md:px-12 md:py-20 lg:px-16 lg:py-24">
-        <div className="grid gap-7 md:gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end lg:gap-12 xl:gap-16">
-          {/* SOL */}
-          <div className="min-w-0">
-            <span className="block text-[8px] font-semibold uppercase tracking-[0.28em] text-[#A8754F] sm:text-[9px]">
+      <div
+        className="
+          mx-auto
+          max-w-[1500px]
+          px-5
+          py-16
+          sm:px-6
+          sm:py-20
+          md:px-12
+          md:py-24
+          lg:px-16
+        "
+      >
+        {/* ===================== */}
+        {/* BAŞLIK */}
+        {/* ===================== */}
+
+        <div
+          className="
+            mb-10
+            grid
+            gap-5
+            md:mb-12
+            lg:grid-cols-[1fr_0.8fr]
+            lg:items-end
+          "
+        >
+          <div>
+            <span
+              className="
+                block
+                text-[9px]
+                font-semibold
+                uppercase
+                tracking-[0.3em]
+                text-[#A8754F]
+              "
+            >
               Restoran
             </span>
 
-            <h2 className="mt-3 max-w-[680px] font-serif text-[28px] leading-[1.08] text-[#263A2D] sm:text-3xl md:text-4xl lg:text-[42px] xl:text-[46px]">
+            <h2
+              className="
+                mt-4
+                max-w-[720px]
+                font-serif
+                text-[34px]
+                leading-[1.05]
+                text-[#263A2D]
+                sm:text-4xl
+                md:text-5xl
+                lg:text-[54px]
+              "
+            >
               Soframızda deniz, çiftlik ve mevsim var.
             </h2>
+          </div>
 
-            <p className="mt-4 max-w-[580px] text-[11px] leading-5 text-[#646A63] sm:text-xs sm:leading-6 md:text-sm">
-              Günün taze ürünleri, denizden gelen lezzetler ve uzun sofralar...
-            </p>
+          <p
+            className="
+              max-w-[520px]
+              text-xs
+              leading-6
+              text-[#646A63]
+              md:text-sm
+              lg:ml-auto
+              lg:text-right
+            "
+          >
+            Günün taze ürünleri, denizden gelen lezzetler ve uzun sofralar...
+          </p>
+        </div>
 
-            <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden bg-[#E8E2D7] border rounded-xl sm:mt-7 sm:aspect-[16/8] lg:aspect-[16/8.2]">
-              <Image
-                src="/images/restaurant/restaurant1.jpg"
-                alt="Altunhan Farm restoran ve sofra"
-                fill
-                sizes="(max-width: 1024px) 100vw, 55vw"
-                className="object-cover"
-              />
+        {/* ===================== */}
+        {/* ANA ALAN */}
+        {/* ===================== */}
 
-              <div className="absolute inset-0 bg-black/[0.03]" />
+        <div
+          className="
+    grid
+    gap-6
+    lg:grid-cols-[1.3fr_0.7fr]
+    lg:gap-8
+  "
+        >
+          <div
+            className="
+              relative
+              aspect-[4/3]
+              min-h-0
+              overflow-hidden
+              bg-[#E8E2D7]
+              sm:aspect-[16/10]
+              lg:aspect-auto
+              lg:min-h-[560px]
+            "
+          >
+            <Image
+              src="/images/restaurant/restaurant1.jpg"
+              alt="Altunhan Farm restoran ve sofra"
+              fill
+              sizes="
+                (max-width: 1024px) 100vw,
+                65vw
+              "
+              className="
+                object-cover
+                transition-transform
+                duration-1000
+                hover:scale-[1.02]
+              "
+            />
+
+            <div
+              className="
+                absolute
+                inset-0
+                bg-gradient-to-t
+                from-black/35
+                via-transparent
+                to-transparent
+              "
+            />
+
+            {/* Fotoğraf alt yazısı */}
+
+            <div
+              className="
+                absolute
+                bottom-5
+                left-5
+                right-5
+                text-white
+                sm:bottom-7
+                sm:left-7
+                sm:right-7
+              "
+            >
+              <p
+                className="
+                  text-[9px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.24em]
+                  text-white/75
+                "
+              >
+                Altunhan Farm
+              </p>
+
+              <p
+                className="
+                  mt-2
+                  max-w-[500px]
+                  font-serif
+                  text-2xl
+                  leading-tight
+                  sm:text-3xl
+                "
+              >
+                İyi yemek, güzel bir günün en güzel parçası.
+              </p>
             </div>
           </div>
 
-          {/* SAĞ */}
-          <div className="overflow-hidden border border-[#DDD8CC] bg-[#F8F5EE]">
+          {/* ================= */}
+          {/* ÖZELLİKLER */}
+          {/* ================= */}
+
+          <div
+            className="
+              grid
+              sm:grid-cols-2
+              lg:grid-cols-1
+            "
+          >
             {restaurantItems.map((item, index) => {
               const Icon = item.icon;
 
               return (
                 <div
                   key={item.title}
-                  className={`flex min-h-[76px] items-center gap-4 px-4 py-4 sm:min-h-[86px] sm:gap-5 sm:px-5 sm:py-5 md:px-6 ${
-                    index !== restaurantItems.length - 1
-                      ? "border-b border-[#DDD8CC]"
-                      : ""
-                  }`}
+                  className={`
+                      group
+                      flex
+                      min-h-[130px]
+                      items-center
+                      gap-5
+                      px-5
+                      py-6
+                      transition-colors
+                      duration-300
+                      hover:bg-[#EEE9DE]
+                      sm:px-6
+                      lg:min-h-0
+                      lg:flex-1
+                      lg:px-8
+
+                      ${
+                        index < restaurantItems.length - 1
+                          ? "border-b border-[#DDD8CC]"
+                          : ""
+                      }
+
+                      ${index % 2 === 0 ? "sm:border-r lg:border-r-0" : ""}
+
+                      ${index < 2 ? "sm:border-b" : "sm:border-b-0"}
+
+                      ${
+                        index < restaurantItems.length - 1
+                          ? "lg:border-b"
+                          : "lg:border-b-0"
+                      }
+                    `}
                 >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center text-[#A8754F] sm:h-10 sm:w-10">
-                    <Icon
-                      size={24}
-                      strokeWidth={1.25}
-                      className="sm:h-7 sm:w-7"
-                    />
+                  <div
+                    className="
+                        flex
+                        h-12
+                        w-12
+                        shrink-0
+                        items-center
+                        justify-center
+                        border
+                        border-[#CFC8BB]
+                        text-[#A8754F]
+                        transition-colors
+                        duration-300
+                        group-hover:border-[#A8754F]
+                      "
+                  >
+                    <Icon size={23} strokeWidth={1.2} />
                   </div>
 
                   <div className="min-w-0">
-                    <h3 className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#263A2D] sm:text-[10px]">
+                    <h3
+                      className="
+                          text-[10px]
+                          font-semibold
+                          uppercase
+                          tracking-[0.18em]
+                          text-[#263A2D]
+                        "
+                    >
                       {item.title}
                     </h3>
 
-                    <p className="mt-1 text-[10px] leading-[1.6] text-[#666B64] sm:text-[11px] md:text-xs">
+                    <p
+                      className="
+                          mt-2
+                          max-w-[280px]
+                          text-[11px]
+                          leading-[1.7]
+                          text-[#666B64]
+                          sm:text-xs
+                        "
+                    >
                       {item.description}
                     </p>
                   </div>

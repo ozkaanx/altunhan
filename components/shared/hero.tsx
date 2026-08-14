@@ -24,7 +24,8 @@ export default function Hero({ content, settings }: HeroProps) {
   const address = settings?.address?.trim() || "Adilhan Köyü, Keşan / Edirne";
 
   return (
-    <section className="relative h-[calc(100vh-128px)] min-h-[600px] w-full overflow-hidden">
+    <section className="relative h-[calc(100svh-112px)] min-h-[560px] w-full overflow-hidden md:h-[calc(100svh-128px)] md:min-h-[600px]">
+      {" "}
       <Image
         src={settings?.hero_image_url || "/images/hero/altunhan-farm.jpg"}
         alt="Altunhan Farm - Saros Körfezi"
@@ -33,11 +34,8 @@ export default function Hero({ content, settings }: HeroProps) {
         sizes="100vw"
         className="object-cover object-center"
       />
-
       <div className="absolute inset-0 bg-black/35" />
-
       <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
-
       <div className="relative z-10 mx-auto flex h-full max-w-[1600px] items-center px-6 md:px-12 lg:px-16">
         <div className="max-w-[650px] text-white">
           <p className="mb-5 text-[11px] font-medium uppercase tracking-[0.3em] text-white/80">
@@ -53,7 +51,7 @@ export default function Hero({ content, settings }: HeroProps) {
             {description}
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center gap-4">
+          <div className="mt-9 grid max-w-[360px] gap-3 sm:flex sm:max-w-none sm:flex-wrap sm:items-center sm:gap-4">
             <Link
               href="/#konaklama"
               className="group inline-flex h-12 items-center gap-3 border border-white bg-white px-7 text-[11px] font-semibold uppercase tracking-[0.15em] text-[#263A2D] transition-all duration-300 hover:bg-transparent hover:text-white"
@@ -71,7 +69,6 @@ export default function Hero({ content, settings }: HeroProps) {
           </div>
         </div>
       </div>
-
       <div className="absolute bottom-8 left-6 z-10 flex items-center gap-2 text-white/90 md:left-12 lg:left-16">
         <CiLocationOn className="text-xl" />
 
@@ -79,7 +76,6 @@ export default function Hero({ content, settings }: HeroProps) {
           {address}
         </span>
       </div>
-
       <div className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-3 text-white/80 md:flex">
         <span className="text-[9px] uppercase tracking-[0.3em]">
           Aşağı Kaydır

@@ -1,28 +1,17 @@
-import {
-  CiLocationOn,
-  CiPhone,
-} from "react-icons/ci";
+import { CiLocationOn, CiPhone } from "react-icons/ci";
 
-import type {
-  SiteSettings,
-} from "@/types/site-settings";
+import type { SiteSettings } from "@/types/site-settings";
 
 type HeaderProps = {
   settings: SiteSettings | null;
 };
 
-export const Header = ({
-  settings,
-}: HeaderProps) => {
-  const phone =
-    settings?.phone?.trim() || "";
+export const Header = ({ settings }: HeaderProps) => {
+  const phone = settings?.phone?.trim() || "";
 
-  const address =
-    settings?.address?.trim() || "";
+  const address = settings?.address?.trim() || "";
 
-  const hasContactInfo =
-    Boolean(phone) ||
-    Boolean(address);
+  const hasContactInfo = Boolean(phone) || Boolean(address);
 
   return (
     <header className="w-full bg-header px-4 py-2 text-white sm:px-6 md:px-12 lg:px-16">
@@ -32,7 +21,7 @@ export const Header = ({
           items-center
           ${
             hasContactInfo
-              ? "justify-center md:justify-between"
+              ? "justify-center lg:justify-between"
               : "justify-center"
           }
         `}
@@ -41,9 +30,7 @@ export const Header = ({
           <CiLocationOn className="shrink-0" />
 
           <p className="text-center text-[10px] leading-4 sm:text-xs md:text-left">
-            Saros&apos;un kıyısında,
-            doğanın içinde huzurlu
-            bir kaçış.
+            Saros&apos;un kıyısında, doğanın içinde huzurlu bir kaçış.
           </p>
         </div>
 
@@ -53,25 +40,18 @@ export const Header = ({
               <div className="flex items-center gap-2">
                 <CiLocationOn />
 
-                <span className="text-xs">
-                  {address}
-                </span>
+                <span className="text-xs">{address}</span>
               </div>
             )}
 
             {phone && (
               <a
-                href={`tel:${phone.replace(
-                  /\s/g,
-                  "",
-                )}`}
+                href={`tel:${phone.replace(/\s/g, "")}`}
                 className="flex items-center gap-2 transition-opacity hover:opacity-80"
               >
                 <CiPhone />
 
-                <span className="text-xs">
-                  {phone}
-                </span>
+                <span className="text-xs">{phone}</span>
               </a>
             )}
           </div>

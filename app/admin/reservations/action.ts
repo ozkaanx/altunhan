@@ -21,11 +21,18 @@ type AvailableRoomRpc = {
 };
 
 export async function approveReservation(id: number) {
+  if (!Number.isInteger(id) || id < 1) {
+    return {
+      success: false as const,
+      message: "Geçersiz rezervasyon.",
+    };
+  }
+
   const auth = await requireAdmin();
 
   if (!auth.success) {
     return {
-      success: false,
+      success: false as const,
       message: auth.message,
     };
   }
@@ -51,24 +58,33 @@ export async function approveReservation(id: number) {
     console.error("Rezervasyon onaylanamadı:", error);
 
     return {
-      success: false,
+      success: false as const,
       message: error.message,
     };
   }
 
+  /*
+   * Kritik:
+   * Önce gerçekten transition
+   * gerçekleşti mi kontrol ediyoruz.
+   */
+  if (!data?.length) {
+    return {
+      success: false as const,
+      message: "Rezervasyon bulunamadı veya artık onay beklemiyor.",
+    };
+  }
+
+  /*
+   * Mail yalnızca başarılı
+   * status değişiminden sonra.
+   */
   try {
     await notifyReservationDecision(supabase, id, "confirmed");
   } catch (notificationError) {
     console.error("Rezervasyon onay maili gönderilemedi:", notificationError);
   }
 
-  if (!data?.length) {
-    return {
-      success: false,
-      message: "Rezervasyon bulunamadı veya artık onay beklemiyor.",
-    };
-  }
-
   revalidatePath("/admin/reservations");
 
   revalidatePath("/admin");
@@ -76,83 +92,147 @@ export async function approveReservation(id: number) {
   revalidatePath("/rezervasyon/takip");
 
   return {
-    success: true,
+    success: true as const,
   };
 }
 
-export async function rejectReservation(id: number, reason: string) {
-  const cleanReason = reason.trim();
-
-  if (cleanReason.length < 5) {
+export async function rejectReservation(
+  id: number,
+  reason: string,
+) {
+  if (
+    !Number.isInteger(id) ||
+    id < 1
+  ) {
     return {
-      success: false,
-      message: "Lütfen en az 5 karakterlik bir red sebebi yazın.",
+      success: false as const,
+      message:
+        "Geçersiz rezervasyon.",
     };
   }
 
-  if (cleanReason.length > 500) {
+  const cleanReason =
+    reason.trim();
+
+  if (
+    cleanReason.length < 5
+  ) {
     return {
-      success: false,
-      message: "Red sebebi en fazla 500 karakter olabilir.",
+      success: false as const,
+      message:
+        "Lütfen en az 5 karakterlik bir red sebebi yazın.",
     };
   }
 
-  const auth = await requireAdmin();
+  if (
+    cleanReason.length >
+    500
+  ) {
+    return {
+      success: false as const,
+      message:
+        "Red sebebi en fazla 500 karakter olabilir.",
+    };
+  }
+
+  const auth =
+    await requireAdmin();
 
   if (!auth.success) {
     return {
-      success: false,
+      success: false as const,
       message: auth.message,
     };
   }
 
-  try {
-    await notifyReservationDecision(auth.supabase, id, "rejected", cleanReason);
-  } catch (notificationError) {
-    console.error("Rezervasyon red maili gönderilemedi:", notificationError);
-  }
-
   const { supabase } = auth;
 
-  const { data, error } = await supabase
+  /*
+   * Önce DB durumunu değiştir.
+   */
+  const {
+    data,
+    error,
+  } = await supabase
     .from("reservations")
     .update({
-      status: "rejected",
+      status:
+        "rejected",
 
-      rejection_reason: cleanReason,
+      rejection_reason:
+        cleanReason,
 
-      cancellation_reason: null,
+      cancellation_reason:
+        null,
 
-      updated_at: new Date().toISOString(),
+      updated_at:
+        new Date().toISOString(),
     })
     .eq("id", id)
-    .eq("status", "pending_approval")
+    .eq(
+      "status",
+      "pending_approval",
+    )
     .select("id");
 
   if (error) {
-    console.error("Rezervasyon reddedilemedi:", error);
+    console.error(
+      "Rezervasyon reddedilemedi:",
+      error,
+    );
 
     return {
-      success: false,
+      success: false as const,
       message: error.message,
     };
   }
 
+  /*
+   * Transition olmadıysa
+   * kesinlikle mail gönderme.
+   */
   if (!data?.length) {
     return {
-      success: false,
-      message: "Rezervasyon bulunamadı veya artık onay beklemiyor.",
+      success: false as const,
+      message:
+        "Rezervasyon bulunamadı veya artık onay beklemiyor.",
     };
   }
 
-  revalidatePath("/admin/reservations");
+  /*
+   * DB başarılı olduktan sonra
+   * müşteriyi bilgilendir.
+   */
+  try {
+    await notifyReservationDecision(
+      supabase,
+      id,
+      "rejected",
+      cleanReason,
+    );
+  } catch (
+    notificationError
+  ) {
+    console.error(
+      "Rezervasyon red maili gönderilemedi:",
+      notificationError,
+    );
+  }
 
-  revalidatePath("/admin");
+  revalidatePath(
+    "/admin/reservations",
+  );
 
-  revalidatePath("/rezervasyon/takip");
+  revalidatePath(
+    "/admin",
+  );
+
+  revalidatePath(
+    "/rezervasyon/takip",
+  );
 
   return {
-    success: true,
+    success: true as const,
   };
 }
 

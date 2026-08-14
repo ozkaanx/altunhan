@@ -2,16 +2,22 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/admin";
 
 type AccommodationInput = {
   title: string;
   shortDescription: string;
   description: string;
+
   price: number;
-  capacity: number;
+
+  maxAdults: number;
+  maxChildren: number;
+  maxTotalGuests: number;
+
   bedCount: number;
   bathroomCount: number;
+
   amenities: string[];
   isActive: boolean;
 };
@@ -29,23 +35,119 @@ function createSlug(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export async function createAccommodation(values: AccommodationInput) {
-  const supabase = await createClient();
+function validateAccommodationInput(values: AccommodationInput) {
+  const title = values.title.trim();
 
-  const slug = createSlug(values.title);
+  if (!title) {
+    return "Konaklama adı zorunludur.";
+  }
+
+  if (!Number.isFinite(values.price) || values.price < 0) {
+    return "Gecelik fiyat geçerli olmalıdır.";
+  }
+
+  if (!Number.isInteger(values.maxAdults) || values.maxAdults < 1) {
+    return "Maksimum yetişkin sayısı en az 1 olmalıdır.";
+  }
+
+  if (!Number.isInteger(values.maxChildren) || values.maxChildren < 0) {
+    return "Maksimum çocuk sayısı 0 veya daha büyük olmalıdır.";
+  }
+
+  if (!Number.isInteger(values.maxTotalGuests) || values.maxTotalGuests < 1) {
+    return "Maksimum toplam misafir sayısı en az 1 olmalıdır.";
+  }
+
+  if (values.maxAdults > values.maxTotalGuests) {
+    return "Maksimum yetişkin sayısı toplam kapasiteden büyük olamaz.";
+  }
+
+  if (values.maxChildren > values.maxTotalGuests) {
+    return "Maksimum çocuk sayısı toplam kapasiteden büyük olamaz.";
+  }
+
+  if (!Number.isInteger(values.bedCount) || values.bedCount < 1) {
+    return "Yatak sayısı en az 1 olmalıdır.";
+  }
+
+  if (!Number.isInteger(values.bathroomCount) || values.bathroomCount < 1) {
+    return "Banyo sayısı en az 1 olmalıdır.";
+  }
+
+  return null;
+}
+
+function revalidateAccommodationPaths(id: number, slug: string) {
+  revalidatePath("/");
+  revalidatePath("/rezervasyon");
+  revalidatePath("/admin/accommodations");
+  revalidatePath(`/admin/accommodations/${id}`);
+  revalidatePath(`/konaklama/${slug}`);
+}
+
+export async function createAccommodation(values: AccommodationInput) {
+  const admin = await requireAdmin();
+
+  if (!admin.success) {
+    return {
+      success: false as const,
+      message: admin.message,
+    };
+  }
+
+  const validationError = validateAccommodationInput(values);
+
+  if (validationError) {
+    return {
+      success: false as const,
+      message: validationError,
+    };
+  }
+
+  const { supabase } = admin;
+
+  const title = values.title.trim();
+
+  const slug = createSlug(title);
+
+  if (!slug) {
+    return {
+      success: false as const,
+      message: "Konaklama adı geçerli bir URL oluşturmak için uygun değil.",
+    };
+  }
 
   const { data, error } = await supabase
     .from("accommodations")
     .insert({
-      title: values.title,
+      title,
       slug,
-      short_description: values.shortDescription || null,
-      description: values.description || null,
+
+      short_description: values.shortDescription.trim() || null,
+
+      description: values.description.trim() || null,
+
       price: values.price,
-      capacity: values.capacity,
+
+      /*
+       * Legacy capacity alanını
+       * yeni toplam kapasiteyle
+       * senkron tutuyoruz.
+       */
+      capacity: values.maxTotalGuests,
+
+      max_adults: values.maxAdults,
+
+      max_children: values.maxChildren,
+
+      max_total_guests: values.maxTotalGuests,
+
       bed_count: values.bedCount,
+
       bathroom_count: values.bathroomCount,
+
       amenities: values.amenities,
+
       is_active: values.isActive,
     })
     .select("id")
@@ -60,7 +162,7 @@ export async function createAccommodation(values: AccommodationInput) {
     };
   }
 
-  revalidatePath("/admin/accommodations");
+  revalidateAccommodationPaths(Number(data.id), slug);
 
   return {
     success: true as const,
@@ -72,47 +174,96 @@ export async function updateAccommodation(
   id: number,
   values: AccommodationInput,
 ) {
-  const supabase = await createClient();
+  const admin = await requireAdmin();
 
-  const slug = createSlug(values.title);
+  if (!admin.success) {
+    return {
+      success: false as const,
+      message: admin.message,
+    };
+  }
+
+  if (!Number.isInteger(id) || id < 1) {
+    return {
+      success: false as const,
+      message: "Geçersiz konaklama kaydı.",
+    };
+  }
+
+  const validationError = validateAccommodationInput(values);
+
+  if (validationError) {
+    return {
+      success: false as const,
+      message: validationError,
+    };
+  }
+
+  const { supabase } = admin;
+
+  const title = values.title.trim();
+
+  const slug = createSlug(title);
+
+  if (!slug) {
+    return {
+      success: false as const,
+      message: "Konaklama adı geçerli bir URL oluşturmak için uygun değil.",
+    };
+  }
 
   const { data, error } = await supabase
     .from("accommodations")
     .update({
-      title: values.title,
+      title,
       slug,
-      short_description: values.shortDescription || null,
-      description: values.description || null,
+
+      short_description: values.shortDescription.trim() || null,
+
+      description: values.description.trim() || null,
+
       price: values.price,
-      capacity: values.capacity,
+
+      capacity: values.maxTotalGuests,
+
+      max_adults: values.maxAdults,
+
+      max_children: values.maxChildren,
+
+      max_total_guests: values.maxTotalGuests,
+
       bed_count: values.bedCount,
+
       bathroom_count: values.bathroomCount,
+
       amenities: values.amenities,
+
       is_active: values.isActive,
+
       updated_at: new Date().toISOString(),
     })
     .eq("id", id)
     .select("id");
 
   if (error) {
+    console.error("Konaklama güncellenemedi:", error);
+
     return {
-      success: false,
+      success: false as const,
       message: error.message,
     };
   }
 
   if (!data?.length) {
     return {
-      success: false,
+      success: false as const,
       message: "Kayıt güncellenemedi. UPDATE yetkisini kontrol edin.",
     };
   }
 
-  revalidatePath("/admin/accommodations");
-
-  revalidatePath(`/admin/accommodations/${id}`);
+  revalidateAccommodationPaths(id, slug);
 
   return {
-    success: true,
+    success: true as const,
   };
 }
