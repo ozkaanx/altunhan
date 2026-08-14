@@ -35,6 +35,9 @@ export async function sendEmail({
   const from =
     process.env.RESEND_FROM_EMAIL?.trim();
 
+  const replyTo =
+    process.env.RESEND_REPLY_TO_EMAIL?.trim();
+
   /*
    * Domain / Resend henüz hazır değilse
    * rezervasyon akışını kesinlikle bozma.
@@ -110,6 +113,13 @@ export async function sendEmail({
           ...(text
             ? {
                 text,
+              }
+            : {}),
+
+          ...(replyTo
+            ? {
+                reply_to:
+                  replyTo,
               }
             : {}),
         }),
