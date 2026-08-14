@@ -1,10 +1,19 @@
 "use client";
 
-import { CheckCircle2, Clock3, Eye, Search, XCircle, Plus } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  Eye,
+  Plus,
+  Search,
+  XCircle,
+} from "lucide-react";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   approveReservation,
@@ -18,6 +27,20 @@ import type { Reservation, ReservationStatus } from "@/types/reservation";
 
 type ReservationsListProps = {
   reservations: Reservation[];
+
+  currentPage: number;
+
+  totalPages: number;
+
+  totalCount: number;
+
+  pendingCount: number;
+
+  activeStatus: ReservationStatus | "all";
+
+  initialSearch: string;
+
+  pageSize: number;
 };
 
 const statusLabels: Record<ReservationStatus, string> = {
@@ -34,15 +57,10 @@ const statusLabels: Record<ReservationStatus, string> = {
 
 const filters: Array<ReservationStatus | "all"> = [
   "all",
-
   "pending_approval",
-
   "pending_payment",
-
   "confirmed",
-
   "rejected",
-
   "cancelled",
 ];
 
@@ -68,9 +86,7 @@ function getStatusClass(status: ReservationStatus) {
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("tr-TR", {
     day: "numeric",
-
     month: "short",
-
     year: "numeric",
   }).format(new Date(`${value}T00:00:00`));
 }
@@ -87,43 +103,119 @@ function StatusIcon({ status }: { status: ReservationStatus }) {
   return <Clock3 size={14} />;
 }
 
-export function ReservationsList({ reservations }: ReservationsListProps) {
+function getVisiblePages(currentPage: number, totalPages: number) {
+  if (totalPages <= 5) {
+    return Array.from(
+      {
+        length: totalPages,
+      },
+      (_, index) => index + 1,
+    );
+  }
+
+  if (currentPage <= 3) {
+    return [1, 2, 3, 4, totalPages];
+  }
+
+  if (currentPage >= totalPages - 2) {
+    return [1, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+
+  return [1, currentPage - 1, currentPage, currentPage + 1, totalPages];
+}
+
+export function ReservationsList({
+  reservations,
+  currentPage,
+  totalPages,
+  totalCount,
+  pendingCount,
+  activeStatus,
+  initialSearch,
+  pageSize,
+}: ReservationsListProps) {
   const router = useRouter();
 
-  const [search, setSearch] = useState("");
+  const pathname = usePathname();
 
-  const [activeFilter, setActiveFilter] = useState<ReservationStatus | "all">(
-    "all",
-  );
+  const searchParams = useSearchParams();
+
+  const [search, setSearch] = useState(initialSearch);
 
   const [selectedReservation, setSelectedReservation] =
     useState<Reservation | null>(null);
 
-  const filteredReservations = useMemo(() => {
-    const searchValue = search.trim().toLocaleLowerCase("tr");
+  useEffect(() => {
+    setSearch(initialSearch);
+  }, [initialSearch]);
 
-    return reservations.filter((reservation) => {
-      const matchesSearch =
-        !searchValue ||
-        reservation.guest_name.toLocaleLowerCase("tr").includes(searchValue) ||
-        reservation.reservation_code
-          .toLocaleLowerCase("tr")
-          .includes(searchValue) ||
-        reservation.guest_phone.includes(searchValue) ||
-        reservation.accommodations?.title
-          ?.toLocaleLowerCase("tr")
-          .includes(searchValue);
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      const value = search.trim();
 
-      const matchesFilter =
-        activeFilter === "all" || reservation.status === activeFilter;
+      if (value === initialSearch) {
+        return;
+      }
 
-      return matchesSearch && matchesFilter;
+      const params = new URLSearchParams(searchParams.toString());
+
+      params.delete("page");
+
+      if (value) {
+        params.set("search", value);
+      } else {
+        params.delete("search");
+      }
+
+      const query = params.toString();
+
+      router.replace(query ? `${pathname}?${query}` : pathname, {
+        scroll: false,
+      });
+    }, 400);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [search, initialSearch, pathname, router, searchParams]);
+
+  const changeFilter = (filter: ReservationStatus | "all") => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    params.delete("page");
+
+    if (filter === "all") {
+      params.delete("status");
+    } else {
+      params.set("status", filter);
+    }
+
+    const query = params.toString();
+
+    router.push(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
     });
-  }, [reservations, search, activeFilter]);
+  };
 
-  const pendingCount = reservations.filter(
-    (reservation) => reservation.status === "pending_approval",
-  ).length;
+  const changePage = (page: number) => {
+    if (page < 1 || page > totalPages || page === currentPage) {
+      return;
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (page === 1) {
+      params.delete("page");
+    } else {
+      params.set("page", String(page));
+    }
+
+    const query = params.toString();
+
+    router.push(query ? `${pathname}?${query}` : pathname, {
+      scroll: true,
+    });
+  };
 
   const handleApprove = async (reservation: Reservation) => {
     const result = await approveReservation(reservation.id);
@@ -141,11 +233,7 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
     };
   };
 
-  const handleReject = async (
-    reservation: Reservation,
-
-    reason: string,
-  ) => {
+  const handleReject = async (reservation: Reservation, reason: string) => {
     const result = await rejectReservation(reservation.id, reason);
 
     if (!result.success) {
@@ -161,11 +249,7 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
     };
   };
 
-  const handleCancel = async (
-    reservation: Reservation,
-
-    reason: string,
-  ) => {
+  const handleCancel = async (reservation: Reservation, reason: string) => {
     const result = await cancelReservation(reservation.id, reason);
 
     if (!result.success) {
@@ -180,6 +264,12 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
       success: true,
     };
   };
+
+  const firstItem = totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+
+  const lastItem = Math.min(currentPage * pageSize, totalCount);
+
+  const visiblePages = getVisiblePages(currentPage, totalPages);
 
   return (
     <>
@@ -217,7 +307,7 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
         </div>
 
         <div className="mt-6 space-y-4">
-          <div className="relative">
+          <div className="relative max-w-[420px]">
             <Search
               size={16}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-[#92968E]"
@@ -226,8 +316,8 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Misafir, telefon veya rezervasyon kodu ara..."
-              className="h-11 w-full min-w-0 border border-[#DDD9D1] bg-white pl-10 pr-4 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:max-w-[420px] sm:text-sm"
+              placeholder="Misafir, telefon, e-posta veya rezervasyon kodu ara..."
+              className="h-11 w-full min-w-0 border border-[#DDD9D1] bg-white pl-10 pr-4 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:text-sm"
             />
           </div>
 
@@ -236,9 +326,9 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
               <button
                 key={filter}
                 type="button"
-                onClick={() => setActiveFilter(filter)}
+                onClick={() => changeFilter(filter)}
                 className={`shrink-0 border px-3 py-2 text-[11px] font-medium ${
-                  activeFilter === filter
+                  activeStatus === filter
                     ? "border-[#263A2D] bg-[#263A2D] text-white"
                     : "border-[#DDD9D1] bg-white text-[#6D726B]"
                 }`}
@@ -249,20 +339,34 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
           </div>
         </div>
 
-        {filteredReservations.length === 0 && (
+        <div className="mt-5 flex flex-col gap-1 text-xs text-[#858A83] sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            Toplam{" "}
+            <span className="font-semibold text-[#263A2D]">{totalCount}</span>{" "}
+            rezervasyon
+          </p>
+
+          {totalCount > 0 && (
+            <p>
+              {firstItem}–{lastItem} arası gösteriliyor
+            </p>
+          )}
+        </div>
+
+        {reservations.length === 0 && (
           <div className="mt-5 border border-[#E3E0D8] bg-white px-5 py-16 text-center">
             <p className="text-sm font-semibold text-[#263A2D]">
               Rezervasyon bulunamadı
             </p>
 
             <p className="mt-1 text-xs text-[#969990]">
-              Filtreye uygun rezervasyon yok.
+              Arama veya filtreye uygun rezervasyon bulunmuyor.
             </p>
           </div>
         )}
 
         <div className="mt-5 space-y-3 md:hidden">
-          {filteredReservations.map((reservation) => (
+          {reservations.map((reservation) => (
             <article
               key={reservation.id}
               className="border border-[#E3E0D8] bg-white p-4"
@@ -283,7 +387,7 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
                 </div>
 
                 <span
-                  className={`flex shrink-0 items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-medium ${getStatusClass(
+                  className={`flex w-fit shrink-0 items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-medium ${getStatusClass(
                     reservation.status,
                   )}`}
                 >
@@ -333,7 +437,7 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
                 </div>
               </div>
 
-              <div className="flex h-10 w-full items-center justify-center gap-2 bg-[#263A2D] px-4 text-xs font-medium text-white sm:w-auto">
+              <div className="mt-4 flex items-center justify-between gap-4">
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.1em] text-[#969990]">
                     Toplam
@@ -347,7 +451,7 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
                 <button
                   type="button"
                   onClick={() => setSelectedReservation(reservation)}
-                  className="flex h-10 items-center gap-2 bg-[#263A2D] px-4 text-xs font-medium text-white"
+                  className="flex h-10 shrink-0 items-center gap-2 bg-[#263A2D] px-4 text-xs font-medium text-white"
                 >
                   <Eye size={15} />
                   Görüntüle
@@ -357,7 +461,7 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
           ))}
         </div>
 
-        {filteredReservations.length > 0 && (
+        {reservations.length > 0 && (
           <div className="mt-6 hidden overflow-x-auto border border-[#E3E0D8] bg-white md:block">
             <table className="w-full min-w-[1000px]">
               <thead>
@@ -379,7 +483,7 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
               </thead>
 
               <tbody>
-                {filteredReservations.map((reservation) => (
+                {reservations.map((reservation) => (
                   <tr
                     key={reservation.id}
                     className="border-b border-[#F0EDE7] last:border-0"
@@ -439,6 +543,68 @@ export function ReservationsList({ reservations }: ReservationsListProps) {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="mt-6 flex flex-col gap-3 border-t border-[#E3E0D8] pt-5 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-[#8B8E87]">
+              Sayfa{" "}
+              <span className="font-semibold text-[#263A2D]">
+                {currentPage}
+              </span>{" "}
+              / {totalPages}
+            </p>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                disabled={currentPage === 1}
+                onClick={() => changePage(currentPage - 1)}
+                className="flex h-9 items-center gap-1 border border-[#DDD9D1] bg-white px-3 text-xs text-[#263A2D] disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <ChevronLeft size={14} />
+
+                <span className="hidden sm:inline">Önceki</span>
+              </button>
+
+              {visiblePages.map((page, index) => {
+                const previous = visiblePages[index - 1];
+
+                const showDots = previous && page - previous > 1;
+
+                return (
+                  <div key={page} className="flex items-center gap-1.5">
+                    {showDots && (
+                      <span className="px-1 text-xs text-[#969990]">…</span>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => changePage(page)}
+                      className={`flex h-9 min-w-9 items-center justify-center border px-2 text-xs font-medium ${
+                        page === currentPage
+                          ? "border-[#263A2D] bg-[#263A2D] text-white"
+                          : "border-[#DDD9D1] bg-white text-[#263A2D]"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  </div>
+                );
+              })}
+
+              <button
+                type="button"
+                disabled={currentPage === totalPages}
+                onClick={() => changePage(currentPage + 1)}
+                className="flex h-9 items-center gap-1 border border-[#DDD9D1] bg-white px-3 text-xs text-[#263A2D] disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <span className="hidden sm:inline">Sonraki</span>
+
+                <ChevronRight size={14} />
+              </button>
+            </div>
           </div>
         )}
       </section>
