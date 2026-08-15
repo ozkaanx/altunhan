@@ -1,54 +1,116 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { createClient } from "@/lib/supabase/client";
 
 import type { AccommodationImageValue, DeletedAccommodationImage } from "@/types/accommodation";
+
+const STORAGE_BUCKET = "accommodations";
+
+const ALLOWED_IMAGE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "gif", "avif"]);
+
+type NewAccommodationImage = AccommodationImageValue & {
+  file: File;
+};
+
+function hasFile(image: AccommodationImageValue): image is NewAccommodationImage {
+  return Boolean(image.file);
+}
+
+function getImageExtension(file: File) {
+  const extension = file.name.split(".").pop()?.toLowerCase();
+
+  if (!file.type.startsWith("image/") || !extension || !ALLOWED_IMAGE_EXTENSIONS.has(extension)) {
+    throw new Error("Desteklenmeyen görsel formatı.");
+  }
+
+  return extension === "jpeg" ? "jpg" : extension;
+}
+
+async function uploadAccommodationImage({
+  supabase,
+  accommodationId,
+  image,
+  sortOrder,
+}: {
+  supabase: SupabaseClient;
+  accommodationId: number;
+  image: NewAccommodationImage;
+  sortOrder: number;
+}) {
+  const extension = getImageExtension(image.file);
+
+  const storagePath = `${accommodationId}/${crypto.randomUUID()}.${extension}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .upload(storagePath, image.file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+  if (uploadError) {
+    throw new Error(`Fotoğraf yüklenemedi: ${uploadError.message}`);
+  }
+
+  const { data: publicUrlData } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(storagePath);
+
+  const { error: insertError } = await supabase.from("accommodation_images").insert({
+    accommodation_id: accommodationId,
+    image_url: publicUrlData.publicUrl,
+    storage_path: storagePath,
+    sort_order: sortOrder,
+    is_cover: image.isCover,
+  });
+
+  if (!insertError) {
+    return;
+  }
+
+  const { error: cleanupError } = await supabase.storage.from(STORAGE_BUCKET).remove([storagePath]);
+
+  if (cleanupError) {
+    console.error("Yüklenen fakat kaydedilemeyen görsel temizlenemedi:", cleanupError);
+  }
+
+  throw new Error(insertError.message);
+}
+
+async function deleteAccommodationImage(
+  supabase: SupabaseClient,
+  image: DeletedAccommodationImage,
+) {
+  const { error: deleteError } = await supabase
+    .from("accommodation_images")
+    .delete()
+    .eq("id", image.id);
+
+  if (deleteError) {
+    throw new Error(deleteError.message);
+  }
+
+  const { error: storageError } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .remove([image.storagePath]);
+
+  if (storageError) {
+    console.error("Silinen görselin Storage dosyası temizlenemedi:", storageError);
+  }
+}
 
 export async function uploadAccommodationImages(
   accommodationId: number,
   images: AccommodationImageValue[],
 ) {
   const supabase = createClient();
+  const newImages = images.filter(hasFile);
 
-  const newImages = images.filter(
-    (
+  for (const [index, image] of newImages.entries()) {
+    await uploadAccommodationImage({
+      supabase,
+      accommodationId,
       image,
-    ): image is AccommodationImageValue & {
-      file: File;
-    } => Boolean(image.file),
-  );
-
-  for (let index = 0; index < newImages.length; index++) {
-    const image = newImages[index];
-
-    const extension = image.file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-
-    const storagePath = `${accommodationId}/${crypto.randomUUID()}.${extension}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("accommodations")
-      .upload(storagePath, image.file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
-
-    if (uploadError) {
-      throw new Error(`Fotoğraf yüklenemedi: ${uploadError.message}`);
-    }
-
-    const { data } = supabase.storage.from("accommodations").getPublicUrl(storagePath);
-
-    const { error } = await supabase.from("accommodation_images").insert({
-      accommodation_id: accommodationId,
-      image_url: data.publicUrl,
-      storage_path: storagePath,
-      sort_order: index,
-      is_cover: image.isCover,
+      sortOrder: index,
     });
-
-    if (error) {
-      await supabase.storage.from("accommodations").remove([storagePath]);
-
-      throw new Error(error.message);
-    }
   }
 }
 
@@ -66,29 +128,12 @@ export async function updateAccommodationImages({
   const supabase = createClient();
 
   for (const image of deletedImages) {
-    const { error: storageError } = await supabase.storage
-      .from("accommodations")
-      .remove([image.storagePath]);
-
-    if (storageError) {
-      throw new Error(storageError.message);
-    }
-
-    const { error: deleteError } = await supabase
-      .from("accommodation_images")
-      .delete()
-      .eq("id", image.id);
-
-    if (deleteError) {
-      throw new Error(deleteError.message);
-    }
+    await deleteAccommodationImage(supabase, image);
   }
 
   const existingImages = images.filter((image) => image.isExisting && !image.file);
 
-  for (let index = 0; index < existingImages.length; index++) {
-    const image = existingImages[index];
-
+  for (const [index, image] of existingImages.entries()) {
     const { error } = await supabase
       .from("accommodation_images")
       .update({
@@ -102,41 +147,14 @@ export async function updateAccommodationImages({
     }
   }
 
-  const newImages = images.filter(
-    (
+  const newImages = images.filter(hasFile);
+
+  for (const [index, image] of newImages.entries()) {
+    await uploadAccommodationImage({
+      supabase,
+      accommodationId,
       image,
-    ): image is AccommodationImageValue & {
-      file: File;
-    } => Boolean(image.file),
-  );
-
-  for (let index = 0; index < newImages.length; index++) {
-    const image = newImages[index];
-
-    const extension = image.file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-
-    const storagePath = `${accommodationId}/${crypto.randomUUID()}.${extension}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("accommodations")
-      .upload(storagePath, image.file);
-
-    if (uploadError) {
-      throw new Error(uploadError.message);
-    }
-
-    const { data } = supabase.storage.from("accommodations").getPublicUrl(storagePath);
-
-    const { error } = await supabase.from("accommodation_images").insert({
-      accommodation_id: accommodationId,
-      image_url: data.publicUrl,
-      storage_path: storagePath,
-      sort_order: existingImages.length + index,
-      is_cover: image.isCover,
+      sortOrder: existingImages.length + index,
     });
-
-    if (error) {
-      throw new Error(error.message);
-    }
   }
 }
