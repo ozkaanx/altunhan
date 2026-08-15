@@ -36,6 +36,10 @@ export async function generateMetadata({
     };
   }
 
+  const images = sortAccommodationImages(accommodation.accommodation_images);
+
+  const coverImage = images[0];
+
   const description =
     accommodation.short_description ||
     `${accommodation.title} - Altunhan Farm, Saros'ta doğayla iç içe konaklama.`;
@@ -54,10 +58,10 @@ export async function generateMetadata({
       type: "website",
       url: `/konaklama/${slug}`,
 
-      images: accommodation.accommodation_images?.find((image) => image.is_cover)
+      images: coverImage?.image_url
         ? [
             {
-              url: accommodation.accommodation_images.find((image) => image.is_cover)?.url ?? "",
+              url: coverImage.image_url,
               alt: accommodation.title,
             },
           ]
@@ -66,7 +70,9 @@ export async function generateMetadata({
   };
 }
 
-export default async function AccommodationDetailPage({ params }: AccommodationDetailPageProps) {
+export default async function AccommodationDetailPage({
+  params,
+}: AccommodationDetailPageProps) {
   const { slug } = await params;
 
   const { accommodation, settings, accommodations, homepageContent } =
@@ -89,14 +95,21 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
       <main className="bg-[#F5F1E8] pb-[88px] lg:pb-0">
         <AccommodationDetailHero title={accommodation.title} images={images} />
 
-        <AccommodationOverview accommodation={accommodation} reservationHref={reservationHref} />
+        <AccommodationOverview
+          accommodation={accommodation}
+          reservationHref={reservationHref}
+        />
 
         <AccommodationDetailsSection accommodation={accommodation} />
 
         <AccommodationReservationCta reservationHref={reservationHref} />
       </main>
 
-      <Footer settings={settings} accommodations={accommodations} content={homepageContent} />
+      <Footer
+        settings={settings}
+        accommodations={accommodations}
+        content={homepageContent}
+      />
     </>
   );
 }
