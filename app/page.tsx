@@ -13,21 +13,7 @@ import type { Review } from "@/types/review";
 import type { HomepageContent } from "@/types/homepage-content";
 import Restaurant from "@/components/shared/restaurant";
 
-export type HomeAccommodation = {
-  id: number;
-  title: string;
-  slug: string | null;
-  short_description: string | null;
-  price: number;
-  capacity: number;
-
-  accommodation_images: Array<{
-    id: number;
-    image_url: string;
-    sort_order: number;
-    is_cover: boolean;
-  }>;
-};
+import type { HomeAccommodation } from "@/types/home-accommodation";
 
 export default async function Home() {
   const supabase = await createClient();
