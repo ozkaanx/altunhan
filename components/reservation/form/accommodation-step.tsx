@@ -2,7 +2,9 @@
 
 import { SectionTitle } from "@/components/shared/sectionTitle";
 
-import { formatReservationPrice } from "@/lib/reservation/reservation-utils";
+
+
+import { formatPrice } from "@/lib/formatters/price";
 
 import type { PublicAccommodation } from "@/types/public-reservation";
 
@@ -56,7 +58,7 @@ export function AccommodationStep({
                     <p className="text-[9px] uppercase tracking-[0.1em] text-[#969990]">Gecelik</p>
 
                     <p className="mt-1 text-base font-semibold text-[#263A2D]">
-                      {formatReservationPrice(Number(accommodation.price))}
+                      {formatPrice(Number(accommodation.price))}
                     </p>
                   </div>
 

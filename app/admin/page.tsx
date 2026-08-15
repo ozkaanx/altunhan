@@ -17,6 +17,8 @@ import { createClient } from "@/lib/supabase/server";
 
 import { getReservationStatusLabel } from "@/lib/reservation/status-utils";
 
+import { formatPrice } from "@/lib/formatters/price";
+
 type DashboardReservation = {
   id: number;
 
@@ -85,9 +87,7 @@ function formatShortDate(value: string) {
   }).format(new Date(`${value}T00:00:00+03:00`));
 }
 
-function formatMoney(value: number) {
-  return Number(value).toLocaleString("tr-TR");
-}
+
 
 function formatGuestSummary(adultCount: number, childCount: number) {
   if (childCount > 0) {
@@ -323,7 +323,7 @@ child_count,
     {
       title: "Bu Ay Gelir",
 
-      value: `${formatMoney(monthlyRevenue)} TL`,
+      value: formatPrice(monthlyRevenue),
 
       description: "Onaylı rezervasyon",
 
@@ -621,7 +621,7 @@ child_count,
                     </p>
 
                     <p className="text-sm font-semibold text-[#263A2D]">
-                      {formatMoney(reservation.total_price)} TL
+                      {formatPrice(reservation.total_price)}
                     </p>
                   </div>
                 </Link>
@@ -667,7 +667,7 @@ child_count,
                       </td>
 
                       <td className="px-5 py-4 text-xs font-semibold text-[#263A2D]">
-                        {formatMoney(reservation.total_price)} TL
+                        {formatPrice(reservation.total_price)}
                       </td>
 
                       <td className="px-5 py-4">

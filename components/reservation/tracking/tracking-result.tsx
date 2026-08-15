@@ -6,7 +6,8 @@ import { useTrackingReceiptUpload } from "@/hooks/reservation/use-tracking-recei
 
 import { formatReservationDate } from "@/lib/reservation/date-utils";
 
-import { formatReservationPrice } from "@/lib/reservation/reservation-utils";
+
+import { formatPrice } from "@/lib/formatters/price";
 
 import type { SiteSettings } from "@/types/site-settings";
 
@@ -128,7 +129,7 @@ export function TrackingResult({
             <InfoCard
               icon={Phone}
               label="Toplam"
-              value={formatReservationPrice(reservation.totalPrice)}
+              value={formatPrice(reservation.totalPrice)}
             />
           </div>
 

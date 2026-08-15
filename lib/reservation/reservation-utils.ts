@@ -11,10 +11,6 @@ export function calculateReservationTotal(nightlyPrice: number, nightCount: numb
   return Math.max(0, nightlyPrice * nightCount);
 }
 
-export function formatReservationPrice(price: number) {
-  return `${price.toLocaleString("tr-TR")} TL`;
-}
-
 export function formatFileSize(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 }

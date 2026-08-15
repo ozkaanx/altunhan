@@ -24,6 +24,8 @@ import {
 
 import type { Reservation } from "@/types/reservation";
 
+import { formatPrice } from "@/lib/formatters/price";
+
 type AvailableRoom = {
   id: number;
   roomName: string;
@@ -353,7 +355,7 @@ export function ReservationDetailDrawer({
             </p>
 
             <p className="mt-3 text-2xl font-semibold text-[#263A2D]">
-              {Number(reservation.total_price).toLocaleString("tr-TR")} TL
+              {formatPrice(reservation.total_price)}
             </p>
 
             {reservation.receipt_storage_path && (

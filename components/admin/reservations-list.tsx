@@ -27,6 +27,8 @@ import { formatReservationDate } from "@/lib/reservation/date-utils";
 import type { Reservation, ReservationStatus } from "@/types/reservation";
 import { getReservationStatusLabel } from "@/lib/reservation/status-utils";
 
+import { formatPrice } from "@/lib/formatters/price";
+
 type ReservationsListProps = {
   reservations: Reservation[];
 
@@ -408,7 +410,7 @@ export function ReservationsList({
                   <p className="text-[10px] uppercase tracking-[0.1em] text-[#969990]">Toplam</p>
 
                   <p className="mt-1 text-xl font-semibold text-[#263A2D]">
-                    {Number(reservation.total_price).toLocaleString("tr-TR")} TL
+                    {formatPrice(Number(reservation.total_price))}
                   </p>
                 </div>
 
@@ -472,7 +474,7 @@ export function ReservationsList({
                     </td>
 
                     <td className="px-5 py-4 text-xs font-semibold text-[#263A2D]">
-                      {Number(reservation.total_price).toLocaleString("tr-TR")} TL
+                      {formatPrice(Number(reservation.total_price))}
                     </td>
 
                     <td className="px-5 py-4">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BedDouble, Eye, Plus, Search, Users } from "lucide-react";
 
 import type { Accommodation } from "@/types/accommodation";
+import { formatPrice } from "@/lib/formatters/price";
 
 type AccommodationsListProps = {
   accommodations: Accommodation[];
@@ -155,7 +156,7 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
                   <p className="text-[10px] uppercase tracking-[0.1em] text-[#969990]">Gecelik</p>
 
                   <p className="mt-1 text-xl font-semibold text-[#263A2D]">
-                    {Number(item.price).toLocaleString("tr-TR")} TL
+                    {formatPrice(Number(item.price))}
                   </p>
                 </div>
 

@@ -9,6 +9,8 @@ import type { HomeAccommodation } from "@/app/page";
 
 import type { HomepageContent } from "@/types/homepage-content";
 
+import { formatPrice } from "@/lib/formatters/price";
+
 type AccommodationProps = {
   accommodations: HomeAccommodation[];
 
@@ -251,7 +253,7 @@ export default function Accommodation({ accommodations, content }: Accommodation
                             text-[#263A2D]
                           "
                       >
-                        {Number(item.price).toLocaleString("tr-TR")} TL
+                        {formatPrice(Number(item.price))}
                       </p>
                     </div>
                   </Link>
