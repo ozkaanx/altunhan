@@ -1,28 +1,18 @@
 "use client";
 
-import {
-  TrackingResult,
-} from "@/components/reservation/tracking/tracking-result.tsx";
+import { TrackingResult } from "@/components/reservation/tracking/tracking-result";
 
-import {
-  TrackingSearchForm,
-} from "@/components/reservation/tracking/searchForm";
+import { TrackingSearchForm } from "@/components/reservation/tracking/searchForm";
 
-import {
-  useReservationTracking,
-} from "@/hooks/reservation/use-reservation-tracking";
+import { useReservationTracking } from "@/hooks/reservation/use-reservation-tracking";
 
-import type {
-  SiteSettings,
-} from "@/types/site-settings";
+import type { SiteSettings } from "@/types/site-settings";
 
 type ReservationTrackingProps = {
   settings: SiteSettings | null;
 };
 
-export function ReservationTracking({
-  settings,
-}: ReservationTrackingProps) {
+export function ReservationTracking({ settings }: ReservationTrackingProps) {
   const {
     reservationCode,
     phone,

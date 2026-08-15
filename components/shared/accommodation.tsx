@@ -35,10 +35,7 @@ function getCoverImage(accommodation: HomeAccommodation) {
   return firstImage?.image_url ?? null;
 }
 
-export default function Accommodation({
-  accommodations,
-  content,
-}: AccommodationProps) {
+export default function Accommodation({ accommodations, content }: AccommodationProps) {
   return (
     <section
       id="konaklama"
@@ -111,11 +108,7 @@ export default function Accommodation({
               text-center
             "
           >
-            <LuBedDouble
-              size={30}
-              strokeWidth={1}
-              className="mx-auto text-[#A8754F]"
-            />
+            <LuBedDouble size={30} strokeWidth={1} className="mx-auto text-[#A8754F]" />
 
             <p
               className="
@@ -149,9 +142,7 @@ export default function Accommodation({
             {accommodations.map((item) => {
               const image = getCoverImage(item);
 
-              const href = item.slug
-                ? `/konaklama/${item.slug}`
-                : "/rezervasyon";
+              const href = item.slug ? `/konaklama/${item.slug}` : "/rezervasyon";
 
               return (
                 <article
@@ -210,11 +201,7 @@ export default function Accommodation({
                             justify-center
                           "
                       >
-                        <LuBedDouble
-                          size={42}
-                          strokeWidth={1}
-                          className="text-[#AAA398]"
-                        />
+                        <LuBedDouble size={42} strokeWidth={1} className="text-[#AAA398]" />
                       </div>
                     )}
 

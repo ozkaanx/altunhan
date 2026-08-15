@@ -43,9 +43,7 @@ export function AccommodationStep({
                     : "border-[#E1DED7] bg-white hover:border-[#B9B5AD]"
                 }`}
               >
-                <p className="text-sm font-semibold text-[#263A2D]">
-                  {accommodation.title}
-                </p>
+                <p className="text-sm font-semibold text-[#263A2D]">{accommodation.title}</p>
 
                 {accommodation.short_description && (
                   <p className="mt-2 line-clamp-2 text-[11px] leading-5 text-[#81857F]">
@@ -55,9 +53,7 @@ export function AccommodationStep({
 
                 <div className="mt-4 flex items-end justify-between gap-4">
                   <div>
-                    <p className="text-[9px] uppercase tracking-[0.1em] text-[#969990]">
-                      Gecelik
-                    </p>
+                    <p className="text-[9px] uppercase tracking-[0.1em] text-[#969990]">Gecelik</p>
 
                     <p className="mt-1 text-base font-semibold text-[#263A2D]">
                       {formatReservationPrice(Number(accommodation.price))}

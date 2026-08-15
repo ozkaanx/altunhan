@@ -1,7 +1,4 @@
-import {
-  ArrowLeft,
-  Home,
-} from "lucide-react";
+import { ArrowLeft, Home } from "lucide-react";
 
 import Link from "next/link";
 
@@ -9,17 +6,13 @@ export default function NotFound() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F4F2ED] px-4">
       <div className="w-full max-w-[560px] text-center">
-        <p className="font-serif text-8xl text-[#D7C9B7]">
-          404
-        </p>
+        <p className="font-serif text-8xl text-[#D7C9B7]">404</p>
 
         <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#A8754F]">
           Altunhan Farm
         </p>
 
-        <h1 className="mt-2 font-serif text-4xl text-[#263A2D]">
-          Sayfa bulunamadı
-        </h1>
+        <h1 className="mt-2 font-serif text-4xl text-[#263A2D]">Sayfa bulunamadı</h1>
 
         <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-[#747972]">
           Aradığınız sayfa kaldırılmış, taşınmış veya hiç oluşturulmamış olabilir.

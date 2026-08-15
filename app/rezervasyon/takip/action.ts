@@ -1,7 +1,3 @@
-export {
-  findReservation,
-} from "./actions/status";
+export { findReservation } from "./actions/status";
 
-export {
-  submitTrackedReceipt,
-} from "./actions/receipt";
+export { submitTrackedReceipt } from "./actions/receipt";

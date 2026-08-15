@@ -1,13 +1,9 @@
 "use server";
 
-import {
-  createClient,
-} from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
-import type {
-  PublicReservationStatus,
-  ReservationTrackingResponse,
-} from "@/types/reservation-tracking";
+import type { ReservationStatus } from "@/types/reservation";
+import type { ReservationTrackingResponse } from "@/types/reservation-tracking";
 
 type ReservationTrackingRpcRow = {
   reservation_code: string;
@@ -30,7 +26,7 @@ type ReservationTrackingRpcRow = {
 
   total_price: number;
 
-  status: PublicReservationStatus;
+  status: ReservationStatus;
 
   has_receipt: boolean;
 
@@ -43,70 +39,47 @@ export async function findReservation(
   reservationCode: string,
   phone: string,
 ): Promise<ReservationTrackingResponse> {
-  const code =
-    reservationCode.trim();
+  const code = reservationCode.trim();
 
-  const normalizedPhone =
-    phone.trim();
+  const normalizedPhone = phone.trim();
 
   if (!code) {
     return {
       success: false,
-      message:
-        "Rezervasyon numaranızı girin.",
+      message: "Rezervasyon numaranızı girin.",
     };
   }
 
   if (!normalizedPhone) {
     return {
       success: false,
-      message:
-        "Telefon numaranızı girin.",
+      message: "Telefon numaranızı girin.",
     };
   }
 
-  const supabase =
-    await createClient();
+  const supabase = await createClient();
 
-  const {
-    data,
-    error,
-  } = await supabase.rpc(
-    "get_public_reservation_status_v2",
-    {
-      p_reservation_code:
-        code,
+  const { data, error } = await supabase.rpc("get_public_reservation_status_v2", {
+    p_reservation_code: code,
 
-      p_guest_phone:
-        normalizedPhone,
-    },
-  );
+    p_guest_phone: normalizedPhone,
+  });
 
   if (error) {
-    console.error(
-      "Rezervasyon sorgulanamadı:",
-      error,
-    );
+    console.error("Rezervasyon sorgulanamadı:", error);
 
     return {
       success: false,
-      message:
-        "Rezervasyon sorgulanırken bir hata oluştu.",
+      message: "Rezervasyon sorgulanırken bir hata oluştu.",
     };
   }
 
-  const reservation =
-    (
-      data as
-        | ReservationTrackingRpcRow[]
-        | null
-    )?.[0];
+  const reservation = (data as ReservationTrackingRpcRow[] | null)?.[0];
 
   if (!reservation) {
     return {
       success: false,
-      message:
-        "Bu rezervasyon numarası ve telefon bilgisiyle eşleşen bir rezervasyon bulunamadı.",
+      message: "Bu rezervasyon numarası ve telefon bilgisiyle eşleşen bir rezervasyon bulunamadı.",
     };
   }
 
@@ -114,52 +87,31 @@ export async function findReservation(
     success: true,
 
     reservation: {
-      reservationCode:
-        reservation.reservation_code,
+      reservationCode: reservation.reservation_code,
 
-      guestName:
-        reservation.guest_name,
+      guestName: reservation.guest_name,
 
-      accommodationTitle:
-        reservation.accommodation_title,
+      accommodationTitle: reservation.accommodation_title,
 
-      checkIn:
-        reservation.check_in,
+      checkIn: reservation.check_in,
 
-      checkOut:
-        reservation.check_out,
+      checkOut: reservation.check_out,
 
-      adultCount:
-        Number(
-          reservation.adult_count,
-        ),
+      adultCount: Number(reservation.adult_count),
 
-      childCount:
-        Number(
-          reservation.child_count,
-        ),
+      childCount: Number(reservation.child_count),
 
-      nightCount:
-        Number(
-          reservation.night_count,
-        ),
+      nightCount: Number(reservation.night_count),
 
-      totalPrice:
-        Number(
-          reservation.total_price,
-        ),
+      totalPrice: Number(reservation.total_price),
 
-      status:
-        reservation.status,
+      status: reservation.status,
 
-      hasReceipt:
-        reservation.has_receipt,
+      hasReceipt: reservation.has_receipt,
 
-      rejectionReason:
-        reservation.rejection_reason,
+      rejectionReason: reservation.rejection_reason,
 
-      cancellationReason:
-        reservation.cancellation_reason,
+      cancellationReason: reservation.cancellation_reason,
     },
   };
 }

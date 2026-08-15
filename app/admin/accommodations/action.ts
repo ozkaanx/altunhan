@@ -170,10 +170,7 @@ export async function createAccommodation(values: AccommodationInput) {
   };
 }
 
-export async function updateAccommodation(
-  id: number,
-  values: AccommodationInput,
-) {
+export async function updateAccommodation(id: number, values: AccommodationInput) {
   const admin = await requireAdmin();
 
   if (!admin.success) {

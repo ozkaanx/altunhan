@@ -17,8 +17,7 @@ export function useReservationTracking() {
 
   const [phone, setPhone] = useState("");
 
-  const [reservation, setReservation] =
-    useState<ReservationTrackingResult | null>(null);
+  const [reservation, setReservation] = useState<ReservationTrackingResult | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,14 +26,6 @@ export function useReservationTracking() {
   const trackedReservationCode = reservation?.reservationCode;
 
   const reservationStatus = reservation?.status;
-
-  useEffect(() => {
-    if (!codeFromUrl) {
-      return;
-    }
-
-    setReservationCode(codeFromUrl);
-  }, [codeFromUrl]);
 
   useEffect(() => {
     if (!trackedReservationCode || !reservationStatus || !phone.trim()) {

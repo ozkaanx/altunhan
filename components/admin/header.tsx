@@ -23,9 +23,7 @@ export function AdminHeader() {
           </button>
 
           <div className="min-w-0">
-            <p className="truncate text-[10px] text-[#8B8E87] sm:text-xs">
-              Altunhan Farm
-            </p>
+            <p className="truncate text-[10px] text-[#8B8E87] sm:text-xs">Altunhan Farm</p>
 
             <h1 className="truncate text-xs font-semibold text-[#263A2D] sm:text-sm">
               Yönetim Paneli
@@ -72,10 +70,7 @@ export function AdminHeader() {
         </div>
       </header>
 
-      <AdminMobileSidebar
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-      />
+      <AdminMobileSidebar open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
     </>
   );
 }

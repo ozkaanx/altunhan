@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  AlertTriangle,
-  ArrowLeft,
-  RefreshCw,
-} from "lucide-react";
+import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react";
 
 import Link from "next/link";
 
@@ -28,9 +24,7 @@ export default function ReservationError({
           Rezervasyon
         </p>
 
-        <h1 className="mt-2 font-serif text-3xl text-[#263A2D]">
-          Bir sorun oluştu
-        </h1>
+        <h1 className="mt-2 font-serif text-3xl text-[#263A2D]">Bir sorun oluştu</h1>
 
         <p className="mt-3 text-sm leading-6 text-[#747972]">
           Rezervasyon sayfası yüklenirken beklenmeyen bir hata oluştu.

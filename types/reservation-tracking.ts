@@ -1,9 +1,4 @@
-export type PublicReservationStatus =
-  | "pending_payment"
-  | "pending_approval"
-  | "confirmed"
-  | "rejected"
-  | "cancelled";
+import type { ReservationStatus } from "@/types/reservation";
 
 export type ReservationTrackingResult = {
   reservationCode: string;
@@ -24,7 +19,7 @@ export type ReservationTrackingResult = {
 
   totalPrice: number;
 
-  status: PublicReservationStatus;
+  status: ReservationStatus;
 
   hasReceipt: boolean;
 

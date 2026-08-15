@@ -12,7 +12,6 @@ export default function NewAccommodationPage() {
           className="inline-flex items-center gap-2 text-xs font-medium text-[#71766F] transition-colors hover:text-[#263A2D]"
         >
           <ArrowLeft size={15} />
-
           Konaklamalara Dön
         </Link>
 
@@ -21,8 +20,7 @@ export default function NewAccommodationPage() {
         </h1>
 
         <p className="mt-2 text-sm text-[#71756E]">
-          Web sitesinde gösterilecek yeni bir konaklama
-          seçeneği oluşturun.
+          Web sitesinde gösterilecek yeni bir konaklama seçeneği oluşturun.
         </p>
       </div>
 

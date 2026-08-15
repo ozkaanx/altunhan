@@ -3,12 +3,7 @@
 import Link from "next/link";
 import { useRef } from "react";
 
-import {
-  FiArrowRight,
-  FiChevronLeft,
-  FiChevronRight,
-  FiMapPin,
-} from "react-icons/fi";
+import { FiArrowRight, FiChevronLeft, FiChevronRight, FiMapPin } from "react-icons/fi";
 
 import type { HomepageContent } from "@/types/homepage-content";
 import type { Review } from "@/types/review";
@@ -20,11 +15,7 @@ type LocationReviewsProps = {
   content: HomepageContent | null;
 };
 
-export default function LocationReviews({
-  settings,
-  reviews,
-  content,
-}: LocationReviewsProps) {
+export default function LocationReviews({ settings, reviews, content }: LocationReviewsProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
 
   const scrollSlider = (direction: "prev" | "next") => {
@@ -41,10 +32,7 @@ export default function LocationReviews({
     const gap = 16;
 
     sliderRef.current.scrollBy({
-      left:
-        direction === "next"
-          ? firstCard.offsetWidth + gap
-          : -(firstCard.offsetWidth + gap),
+      left: direction === "next" ? firstCard.offsetWidth + gap : -(firstCard.offsetWidth + gap),
 
       behavior: "smooth",
     });
@@ -56,9 +44,7 @@ export default function LocationReviews({
     address,
   )}`;
 
-  const mapsEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(
-    address,
-  )}&output=embed`;
+  const mapsEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
 
   return (
     <section
@@ -238,17 +224,11 @@ md:text-[38px]
                     sm:flex
                   "
                 >
-                  <SliderButton
-                    label="Önceki yorum"
-                    onClick={() => scrollSlider("prev")}
-                  >
+                  <SliderButton label="Önceki yorum" onClick={() => scrollSlider("prev")}>
                     <FiChevronLeft size={18} />
                   </SliderButton>
 
-                  <SliderButton
-                    label="Sonraki yorum"
-                    onClick={() => scrollSlider("next")}
-                  >
+                  <SliderButton label="Sonraki yorum" onClick={() => scrollSlider("next")}>
                     <FiChevronRight size={18} />
                   </SliderButton>
                 </div>
@@ -489,17 +469,11 @@ lg:min-h-[340px]
                         gap-2
                       "
                     >
-                      <SliderButton
-                        label="Önceki yorum"
-                        onClick={() => scrollSlider("prev")}
-                      >
+                      <SliderButton label="Önceki yorum" onClick={() => scrollSlider("prev")}>
                         <FiChevronLeft size={18} />
                       </SliderButton>
 
-                      <SliderButton
-                        label="Sonraki yorum"
-                        onClick={() => scrollSlider("next")}
-                      >
+                      <SliderButton label="Sonraki yorum" onClick={() => scrollSlider("next")}>
                         <FiChevronRight size={18} />
                       </SliderButton>
                     </div>

@@ -32,16 +32,12 @@ export type HomeAccommodation = {
 export default async function Home() {
   const supabase = await createClient();
 
-  const [
-    accommodationsResult,
-    settingsResult,
-    reviewsResult,
-    homepageContentResult,
-  ] = await Promise.all([
-    supabase
-      .from("accommodations")
-      .select(
-        `
+  const [accommodationsResult, settingsResult, reviewsResult, homepageContentResult] =
+    await Promise.all([
+      supabase
+        .from("accommodations")
+        .select(
+          `
         id,
         title,
         slug,
@@ -55,37 +51,35 @@ export default async function Home() {
           is_cover
         )
       `,
-      )
-      .eq("is_active", true)
-      .order("created_at", {
-        ascending: true,
-      }),
+        )
+        .eq("is_active", true)
+        .order("created_at", {
+          ascending: true,
+        }),
 
-    supabase.from("site_settings").select("*").eq("id", 1).single(),
+      supabase.from("site_settings").select("*").eq("id", 1).single(),
 
-    supabase
-      .from("reviews")
-      .select("*")
-      .eq("is_active", true)
-      .order("sort_order", {
-        ascending: true,
-      })
-      .order("created_at", {
-        ascending: false,
-      }),
+      supabase
+        .from("reviews")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", {
+          ascending: true,
+        })
+        .order("created_at", {
+          ascending: false,
+        }),
 
-    supabase.from("homepage_content").select("*").eq("id", 1).single(),
-  ]);
+      supabase.from("homepage_content").select("*").eq("id", 1).single(),
+    ]);
 
-  const { data: accommodations, error: accommodationsError } =
-    accommodationsResult;
+  const { data: accommodations, error: accommodationsError } = accommodationsResult;
 
   const { data: settings, error: settingsError } = settingsResult;
 
   const { data: reviews, error: reviewsError } = reviewsResult;
 
-  const { data: homepageContent, error: homepageContentError } =
-    homepageContentResult;
+  const { data: homepageContent, error: homepageContentError } = homepageContentResult;
 
   if (accommodationsError) {
     console.error("Ana sayfa konaklamaları alınamadı:", accommodationsError);

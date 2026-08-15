@@ -1,19 +1,10 @@
-import {
-  redirect,
-} from "next/navigation";
+import { redirect } from "next/navigation";
 
-import {
-  createClient,
-} from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
-import {
-  ReservationsList,
-} from "@/components/admin/reservations-list";
+import { ReservationsList } from "@/components/admin/reservations-list";
 
-import type {
-  Reservation,
-  ReservationStatus,
-} from "@/types/reservation";
+import type { Reservation, ReservationStatus } from "@/types/reservation";
 
 const PAGE_SIZE = 20;
 
@@ -36,46 +27,25 @@ type ReservationsPageProps = {
 function parsePage(value?: string) {
   const parsed = Number(value);
 
-  if (
-    !Number.isInteger(parsed) ||
-    parsed < 1
-  ) {
+  if (!Number.isInteger(parsed) || parsed < 1) {
     return 1;
   }
 
   return parsed;
 }
 
-function parseStatus(
-  value?: string,
-): ReservationStatus | "all" {
-  if (
-    value &&
-    allowedStatuses.includes(
-      value as ReservationStatus,
-    )
-  ) {
+function parseStatus(value?: string): ReservationStatus | "all" {
+  if (value && allowedStatuses.includes(value as ReservationStatus)) {
     return value as ReservationStatus;
   }
 
   return "all";
 }
 
-function sanitizeSearch(
-  value?: string,
-) {
+function sanitizeSearch(value?: string) {
   return (
-    value
-      ?.trim()
-      .replace(
-        /[,()]/g,
-        " ",
-      )
-      .replace(
-        /\s+/g,
-        " ",
-      )
-      .slice(0, 100) ?? ""
+    value?.trim().replace(/[,()]/g, " ").replace(/\s+/g, " ").slice(0, 100) ??
+    ""
   );
 }
 
@@ -85,79 +55,47 @@ function createPageUrl({
   search,
 }: {
   page: number;
-  status:
-    | ReservationStatus
-    | "all";
+  status: ReservationStatus | "all";
   search: string;
 }) {
-  const params =
-    new URLSearchParams();
+  const params = new URLSearchParams();
 
   if (page > 1) {
-    params.set(
-      "page",
-      String(page),
-    );
+    params.set("page", String(page));
   }
 
   if (status !== "all") {
-    params.set(
-      "status",
-      status,
-    );
+    params.set("status", status);
   }
 
   if (search) {
-    params.set(
-      "search",
-      search,
-    );
+    params.set("search", search);
   }
 
-  const query =
-    params.toString();
+  const query = params.toString();
 
-  return query
-    ? `/admin/reservations?${query}`
-    : "/admin/reservations";
+  return query ? `/admin/reservations?${query}` : "/admin/reservations";
 }
 
 export default async function ReservationsPage({
   searchParams,
 }: ReservationsPageProps) {
-  const params =
-    await searchParams;
+  const params = await searchParams;
 
-  const currentPage =
-    parsePage(params.page);
+  const currentPage = parsePage(params.page);
 
-  const activeStatus =
-    parseStatus(
-      params.status,
-    );
+  const activeStatus = parseStatus(params.status);
 
-  const search =
-    sanitizeSearch(
-      params.search,
-    );
+  const search = sanitizeSearch(params.search);
 
-  const from =
-    (currentPage - 1) *
-    PAGE_SIZE;
+  const from = (currentPage - 1) * PAGE_SIZE;
 
-  const to =
-    from +
-    PAGE_SIZE -
-    1;
+  const to = from + PAGE_SIZE - 1;
 
-  const supabase =
-    await createClient();
+  const supabase = await createClient();
 
-  let reservationsQuery =
-    supabase
-      .from("reservations")
-      .select(
-        `
+  let reservationsQuery = supabase.from("reservations").select(
+    `
           *,
           accommodations (
             id,
@@ -169,117 +107,73 @@ export default async function ReservationsPage({
             room_number
           )
         `,
-        {
-          count: "exact",
-        },
-      );
+    {
+      count: "exact",
+    },
+  );
 
-  if (
-    activeStatus !== "all"
-  ) {
-    reservationsQuery =
-      reservationsQuery.eq(
-        "status",
-        activeStatus,
-      );
+  if (activeStatus !== "all") {
+    reservationsQuery = reservationsQuery.eq("status", activeStatus);
   }
 
   if (search) {
-    reservationsQuery =
-      reservationsQuery.or(
-        [
-          `reservation_code.ilike.%${search}%`,
-          `guest_name.ilike.%${search}%`,
-          `guest_phone.ilike.%${search}%`,
-          `guest_email.ilike.%${search}%`,
-        ].join(","),
-      );
+    reservationsQuery = reservationsQuery.or(
+      [
+        `reservation_code.ilike.%${search}%`,
+        `guest_name.ilike.%${search}%`,
+        `guest_phone.ilike.%${search}%`,
+        `guest_email.ilike.%${search}%`,
+      ].join(","),
+    );
   }
 
-  const [
-    reservationsResult,
-    pendingResult,
-  ] = await Promise.all([
+  const [reservationsResult, pendingResult] = await Promise.all([
     reservationsQuery
-      .order(
-        "created_at",
-        {
-          ascending: false,
-        },
-      )
+      .order("created_at", {
+        ascending: false,
+      })
       .range(from, to),
 
     supabase
       .from("reservations")
-      .select(
-        "id",
-        {
-          count: "exact",
-          head: true,
-        },
-      )
-      .eq(
-        "status",
-        "pending_approval",
-      ),
+      .select("id", {
+        count: "exact",
+        head: true,
+      })
+      .eq("status", "pending_approval"),
   ]);
 
-  const {
-    data,
-    error,
-    count,
-  } =
-    reservationsResult;
+  const { data, error, count } = reservationsResult;
 
   if (error) {
-    console.error(
-      "Rezervasyonlar alınamadı:",
-      error,
-    );
+    console.error("Rezervasyonlar alınamadı:", error);
 
     return (
       <section>
         <div className="border border-[#E7D6D1] bg-[#F8EEEA] px-5 py-14 text-center">
           <h2 className="text-sm font-semibold text-[#8A5147]">
-            Rezervasyonlar
-            yüklenemedi
+            Rezervasyonlar yüklenemedi
           </h2>
 
           <p className="mt-2 text-xs text-[#9B746D]">
-            Veriler alınırken
-            bir hata oluştu.
+            Veriler alınırken bir hata oluştu.
           </p>
         </div>
       </section>
     );
   }
 
-  const totalCount =
-    count ?? 0;
+  const totalCount = count ?? 0;
 
-  const pendingCount =
-    pendingResult.count ?? 0;
+  const pendingCount = pendingResult.count ?? 0;
 
-  const totalPages =
-    Math.max(
-      1,
-      Math.ceil(
-        totalCount /
-          PAGE_SIZE,
-      ),
-    );
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
-  if (
-    currentPage >
-      totalPages &&
-    totalCount > 0
-  ) {
+  if (currentPage > totalPages && totalCount > 0) {
     redirect(
       createPageUrl({
-        page:
-          totalPages,
-        status:
-          activeStatus,
+        page: totalPages,
+        status: activeStatus,
         search,
       }),
     );
@@ -287,31 +181,15 @@ export default async function ReservationsPage({
 
   return (
     <ReservationsList
-      reservations={
-        (data ??
-          []) as Reservation[]
-      }
-      currentPage={
-        currentPage
-      }
-      totalPages={
-        totalPages
-      }
-      totalCount={
-        totalCount
-      }
-      pendingCount={
-        pendingCount
-      }
-      activeStatus={
-        activeStatus
-      }
-      initialSearch={
-        search
-      }
-      pageSize={
-        PAGE_SIZE
-      }
+      key={search}
+      reservations={(data ?? []) as Reservation[]}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalCount={totalCount}
+      pendingCount={pendingCount}
+      activeStatus={activeStatus}
+      initialSearch={search}
+      pageSize={PAGE_SIZE}
     />
   );
 }

@@ -2,12 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  ChevronRight,
-  ExternalLink,
-  LogOut,
-  X,
-} from "lucide-react";
+import { ChevronRight, ExternalLink, LogOut, X } from "lucide-react";
 
 import { adminNavigation } from "@/types/admin-navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -17,10 +12,7 @@ type AdminMobileSidebarProps = {
   onClose: () => void;
 };
 
-export function AdminMobileSidebar({
-  open,
-  onClose,
-}: AdminMobileSidebarProps) {
+export function AdminMobileSidebar({ open, onClose }: AdminMobileSidebarProps) {
   const pathname = usePathname();
 
   const handleLogout = async () => {
@@ -46,11 +38,7 @@ export function AdminMobileSidebar({
           transition-opacity
           duration-300
           lg:hidden
-          ${
-            open
-              ? "pointer-events-auto opacity-100"
-              : "pointer-events-none opacity-0"
-          }
+          ${open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}
         `}
       />
 
@@ -71,22 +59,12 @@ export function AdminMobileSidebar({
           duration-300
           ease-out
           lg:hidden
-          ${
-            open
-              ? "translate-x-0"
-              : "-translate-x-full"
-          }
+          ${open ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         <div className="flex items-center justify-between border-b border-[#E5E1D8] px-5 py-5">
-          <Link
-            href="/admin"
-            onClick={onClose}
-            className="block"
-          >
-            <span className="font-serif text-2xl tracking-tight text-[#263A2D]">
-              Altunhan
-            </span>
+          <Link href="/admin" onClick={onClose} className="block">
+            <span className="font-serif text-2xl tracking-tight text-[#263A2D]">Altunhan</span>
 
             <span className="mt-0.5 block text-[9px] font-semibold tracking-[0.28em] text-[#A8754F]">
               FARM ADMIN
@@ -113,9 +91,7 @@ export function AdminMobileSidebar({
               const Icon = item.icon;
 
               const isActive =
-                item.href === "/admin"
-                  ? pathname === "/admin"
-                  : pathname.startsWith(item.href);
+                item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
 
               return (
                 <Link
@@ -130,25 +106,14 @@ export function AdminMobileSidebar({
                     px-3
                     text-sm
                     transition-colors
-                    ${
-                      isActive
-                        ? "bg-[#263A2D] text-white"
-                        : "text-[#5F655E] active:bg-[#ECE9E1]"
-                    }
+                    ${isActive ? "bg-[#263A2D] text-white" : "text-[#5F655E] active:bg-[#ECE9E1]"}
                   `}
                 >
-                  <Icon
-                    size={18}
-                    strokeWidth={1.7}
-                  />
+                  <Icon size={18} strokeWidth={1.7} />
 
-                  <span className="flex-1">
-                    {item.label}
-                  </span>
+                  <span className="flex-1">{item.label}</span>
 
-                  {isActive && (
-                    <ChevronRight size={15} />
-                  )}
+                  {isActive && <ChevronRight size={15} />}
                 </Link>
               );
             })}
@@ -163,7 +128,6 @@ export function AdminMobileSidebar({
             className="flex min-h-12 items-center gap-3 px-3 text-sm text-[#5F655E]"
           >
             <ExternalLink size={18} />
-
             Siteyi Gör
           </Link>
 
@@ -173,7 +137,6 @@ export function AdminMobileSidebar({
             className="flex min-h-12 w-full items-center gap-3 px-3 text-sm text-[#8A5A4A]"
           >
             <LogOut size={18} />
-
             Çıkış Yap
           </button>
         </div>

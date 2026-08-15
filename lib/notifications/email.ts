@@ -143,8 +143,7 @@ export async function sendEmail({
     return {
       success: false,
 
-      message:
-        error instanceof Error ? error.message : "E-posta gönderilemedi.",
+      message: error instanceof Error ? error.message : "E-posta gönderilemedi.",
     };
   }
 }

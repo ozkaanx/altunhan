@@ -11,10 +11,7 @@ type AccommodationGalleryProps = {
   images: AccommodationImage[];
 };
 
-export default function AccommodationGallery({
-  title,
-  images,
-}: AccommodationGalleryProps) {
+export default function AccommodationGallery({ title, images }: AccommodationGalleryProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const hasImages = images.length > 0;
@@ -209,8 +206,7 @@ export default function AccommodationGallery({
 
             const isLastPreview = index === previewImages.length - 1;
 
-            const showRemainingOverlay =
-              isLastPreview && remainingImageCount > 0;
+            const showRemainingOverlay = isLastPreview && remainingImageCount > 0;
 
             return (
               <button

@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  AlertTriangle,
-  ArrowLeft,
-  RefreshCw,
-} from "lucide-react";
+import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react";
 
 import Link from "next/link";
 
@@ -28,9 +24,7 @@ export default function AccommodationError({
           Altunhan Farm
         </p>
 
-        <h1 className="mt-2 font-serif text-3xl text-[#263A2D]">
-          Konaklama yüklenemedi
-        </h1>
+        <h1 className="mt-2 font-serif text-3xl text-[#263A2D]">Konaklama yüklenemedi</h1>
 
         <p className="mt-3 text-sm leading-6 text-[#747972]">
           Konaklama bilgileri yüklenirken beklenmeyen bir sorun oluştu.

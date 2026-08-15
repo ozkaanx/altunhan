@@ -1,14 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import type { ReservationStatus } from "@/types/reservation";
+import { formatReservationDate } from "@/lib/reservation/date-utils";
 
-import {
-  BedDouble,
-  CheckCircle2,
-  Clock3,
-  DoorClosed,
-  XCircle,
-} from "lucide-react";
+import { BedDouble, CheckCircle2, Clock3, DoorClosed, XCircle } from "lucide-react";
 
 import { useMemo, useState } from "react";
 
@@ -18,12 +14,7 @@ export type RoomReservation = {
   guest_name: string;
   check_in: string;
   check_out: string;
-  status:
-    | "pending_payment"
-    | "pending_approval"
-    | "confirmed"
-    | "rejected"
-    | "cancelled";
+  status: ReservationStatus;
   created_at: string;
 };
 
@@ -44,26 +35,13 @@ export type AdminRoom = {
 
 type StatusFilter = "all" | "available" | "occupied" | "inactive";
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("tr-TR", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(`${value}T00:00:00`));
-}
-
 function isReservationActive(reservation: RoomReservation) {
-  if (
-    reservation.status === "confirmed" ||
-    reservation.status === "pending_approval"
-  ) {
+  if (reservation.status === "confirmed" || reservation.status === "pending_approval") {
     return true;
   }
 
   if (reservation.status === "pending_payment") {
-    return (
-      new Date(reservation.created_at).getTime() >= Date.now() - 60 * 60 * 1000
-    );
+    return new Date(reservation.created_at).getTime() >= Date.now() - 60 * 60 * 1000;
   }
 
   return false;
@@ -76,27 +54,17 @@ function getReservationForDate(room: AdminRoom, selectedDate: string) {
         return false;
       }
 
-      return (
-        reservation.check_in <= selectedDate &&
-        reservation.check_out > selectedDate
-      );
+      return reservation.check_in <= selectedDate && reservation.check_out > selectedDate;
     }) ?? null
   );
 }
 
 export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
-  const [accommodationFilter, setAccommodationFilter] = useState<
-    number | "all"
-  >("all");
+  const [accommodationFilter, setAccommodationFilter] = useState<number | "all">("all");
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   const [selectedDate, setSelectedDate] = useState(getTurkeyToday());
-
-  const weekDates = useMemo(
-    () => Array.from({ length: 7 }, (_, index) => addDays(selectedDate, index)),
-    [selectedDate],
-  );
 
   const accommodationOptions = useMemo(() => {
     const map = new Map<number, string>();
@@ -117,8 +85,7 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
     const inactive = rooms.filter((room) => !room.is_active).length;
 
     const occupied = rooms.filter(
-      (room) =>
-        room.is_active && Boolean(getReservationForDate(room, selectedDate)),
+      (room) => room.is_active && Boolean(getReservationForDate(room, selectedDate)),
     ).length;
 
     const available = rooms.filter(
@@ -135,10 +102,7 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
 
   const filteredRooms = useMemo(() => {
     return rooms.filter((room) => {
-      if (
-        accommodationFilter !== "all" &&
-        room.accommodation_id !== accommodationFilter
-      ) {
+      if (accommodationFilter !== "all" && room.accommodation_id !== accommodationFilter) {
         return false;
       }
 
@@ -193,18 +157,6 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
       month: "2-digit",
       day: "2-digit",
     }).format(new Date());
-  }
-
-  function addDays(dateString: string, amount: number) {
-    const date = new Date(`${dateString}T12:00:00`);
-
-    date.setDate(date.getDate() + amount);
-
-    return [
-      date.getFullYear(),
-      String(date.getMonth() + 1).padStart(2, "0"),
-      String(date.getDate()).padStart(2, "0"),
-    ].join("-");
   }
 
   return (
@@ -277,9 +229,7 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
             </button>
           ))}
         </div>
-        <p className="text-xs text-[#8B8E87] lg:ml-auto">
-          {filteredRooms.length} oda gösteriliyor
-        </p>
+        <p className="text-xs text-[#8B8E87] lg:ml-auto">{filteredRooms.length} oda gösteriliyor</p>
       </div>
       <div className="mt-7 border border-[#E3E0D8] bg-white">
         <div className="flex flex-wrap items-center gap-5 border-t border-[#EEEAE3] px-5 py-3">
@@ -312,9 +262,7 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
             <div key={key} className="border border-[#E3E0D8] bg-white">
               <div className="flex flex-col gap-3 border-b border-[#EEEAE3] p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h2 className="font-serif text-2xl text-[#263A2D]">
-                    {group.title}
-                  </h2>
+                  <h2 className="font-serif text-2xl text-[#263A2D]">{group.title}</h2>
 
                   <p className="mt-1 text-xs text-[#8B8E87]">
                     {group.rooms.length} oda gösteriliyor
@@ -328,18 +276,12 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
 
               <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3">
                 {group.rooms.map((room) => {
-                  const activeReservation = getReservationForDate(
-                    room,
-                    selectedDate,
-                  );
+                  const activeReservation = getReservationForDate(room, selectedDate);
 
                   const isOccupied = Boolean(activeReservation);
 
                   return (
-                    <article
-                      key={room.id}
-                      className="border border-[#E6E2DA] bg-[#FAF9F6] p-4"
-                    >
+                    <article key={room.id} className="border border-[#E6E2DA] bg-[#FAF9F6] p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-3">
                           <div
@@ -392,16 +334,14 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
                           </p>
 
                           <p className="mt-2 text-[11px] text-[#8B8E87]">
-                            {formatDate(activeReservation.check_in)}
+                            {formatReservationDate(activeReservation.check_in)}
                             {" → "}
-                            {formatDate(activeReservation.check_out)}
+                            {formatReservationDate(activeReservation.check_out)}
                           </p>
                         </div>
                       ) : (
                         <div className="mt-4 border-t border-[#E8E4DC] pt-4">
-                          <p className="text-xs text-[#969990]">
-                            Aktif rezervasyon bulunmuyor.
-                          </p>
+                          <p className="text-xs text-[#969990]">Aktif rezervasyon bulunmuyor.</p>
                         </div>
                       )}
                     </article>
@@ -454,11 +394,7 @@ function StatCard({
   );
 }
 
-function StatusBadge({
-  type,
-}: {
-  type: "available" | "occupied" | "inactive";
-}) {
+function StatusBadge({ type }: { type: "available" | "occupied" | "inactive" }) {
   if (type === "occupied") {
     return (
       <span className="inline-flex shrink-0 items-center gap-1 bg-[#F4EBDC] px-2 py-1 text-[10px] font-medium text-[#8A642F]">

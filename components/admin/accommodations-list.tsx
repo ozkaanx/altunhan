@@ -24,9 +24,7 @@ function getCoverImage(accommodation: Accommodation) {
   return sortedImages[0]?.image_url ?? null;
 }
 
-export function AccommodationsList({
-  accommodations,
-}: AccommodationsListProps) {
+export function AccommodationsList({ accommodations }: AccommodationsListProps) {
   const [search, setSearch] = useState("");
 
   const filteredItems = useMemo(() => {
@@ -70,10 +68,7 @@ export function AccommodationsList({
 
       <div className="mt-6">
         <div className="relative w-full sm:max-w-[380px]">
-          <Search
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#92968E]"
-          />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#92968E]" />
 
           <input
             value={search}
@@ -83,33 +78,23 @@ export function AccommodationsList({
           />
         </div>
       </div>
-{filteredItems.length === 0 && (
-  <div className="mt-6 border border-[#E3E0D8] bg-white px-5 py-12 text-center">
-    <BedDouble
-      size={32}
-      strokeWidth={1.2}
-      className="mx-auto text-[#AAA69B]"
-    />
+      {filteredItems.length === 0 && (
+        <div className="mt-6 border border-[#E3E0D8] bg-white px-5 py-12 text-center">
+          <BedDouble size={32} strokeWidth={1.2} className="mx-auto text-[#AAA69B]" />
 
-    <p className="mt-4 text-sm font-semibold text-[#263A2D]">
-      Konaklama bulunamadı
-    </p>
+          <p className="mt-4 text-sm font-semibold text-[#263A2D]">Konaklama bulunamadı</p>
 
-    <p className="mt-2 text-xs text-[#92968E]">
-      Arama kriterinize uygun konaklama bulunmuyor.
-    </p>
-  </div>
-)}
+          <p className="mt-2 text-xs text-[#92968E]">
+            Arama kriterinize uygun konaklama bulunmuyor.
+          </p>
+        </div>
+      )}
 
       <div className="mt-5 space-y-4 md:hidden">
         {filteredItems.map((item) => (
           <article key={item.id} className="border border-[#E3E0D8] bg-white">
             <div className="relative flex aspect-[16/8] items-center justify-center bg-[#E9E6DE]">
-              <BedDouble
-                size={34}
-                strokeWidth={1.3}
-                className="text-[#AAA69B]"
-              />
+              <BedDouble size={34} strokeWidth={1.3} className="text-[#AAA69B]" />
 
               <span
                 className={`
@@ -121,11 +106,7 @@ export function AccommodationsList({
                   py-1.5
                   text-[10px]
                   font-semibold
-                  ${
-                    item.is_active
-                      ? "bg-[#263A2D] text-white"
-                      : "bg-[#D9D6CF] text-[#666B65]"
-                  }
+                  ${item.is_active ? "bg-[#263A2D] text-white" : "bg-[#D9D6CF] text-[#666B65]"}
                 `}
               >
                 {item.is_active ? "Yayında" : "Pasif"}
@@ -133,9 +114,7 @@ export function AccommodationsList({
             </div>
 
             <div className="p-4">
-              <h3 className="text-lg font-semibold text-[#263A2D]">
-                {item.title}
-              </h3>
+              <h3 className="text-lg font-semibold text-[#263A2D]">{item.title}</h3>
 
               {item.short_description && (
                 <p className="mt-1 line-clamp-2 text-xs leading-5 text-[#777B74]">
@@ -151,9 +130,7 @@ export function AccommodationsList({
                     <span className="text-[10px] text-[#969990]">Kapasite</span>
                   </div>
 
-                  <p className="mt-1 text-xs font-semibold text-[#4C524B]">
-                    {item.capacity} kişi
-                  </p>
+                  <p className="mt-1 text-xs font-semibold text-[#4C524B]">{item.capacity} kişi</p>
                 </div>
 
                 <div>
@@ -163,25 +140,19 @@ export function AccommodationsList({
                     <span className="text-[10px] text-[#969990]">Yatak</span>
                   </div>
 
-                  <p className="mt-1 text-xs font-semibold text-[#4C524B]">
-                    {item.bed_count}
-                  </p>
+                  <p className="mt-1 text-xs font-semibold text-[#4C524B]">{item.bed_count}</p>
                 </div>
 
                 <div>
                   <p className="text-[10px] text-[#969990]">Banyo</p>
 
-                  <p className="mt-1 text-xs font-semibold text-[#4C524B]">
-                    {item.bathroom_count}
-                  </p>
+                  <p className="mt-1 text-xs font-semibold text-[#4C524B]">{item.bathroom_count}</p>
                 </div>
               </div>
 
               <div className="mt-4 flex items-end justify-between gap-4">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.1em] text-[#969990]">
-                    Gecelik
-                  </p>
+                  <p className="text-[10px] uppercase tracking-[0.1em] text-[#969990]">Gecelik</p>
 
                   <p className="mt-1 text-xl font-semibold text-[#263A2D]">
                     {Number(item.price).toLocaleString("tr-TR")} TL
@@ -221,10 +192,7 @@ export function AccommodationsList({
 
               <tbody>
                 {filteredItems.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="border-b border-[#F0EDE7] last:border-0"
-                  >
+                  <tr key={item.id} className="border-b border-[#F0EDE7] last:border-0">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-4">
                         <div className="h-14 w-20 shrink-0 overflow-hidden bg-[#EEEAE3]">
@@ -242,9 +210,7 @@ export function AccommodationsList({
                         </div>
 
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-[#263A2D]">
-                            {item.title}
-                          </p>
+                          <p className="text-sm font-semibold text-[#263A2D]">{item.title}</p>
 
                           <p className="mt-1 max-w-[300px] truncate text-[11px] text-[#92968E]">
                             {item.short_description ?? "—"}
@@ -253,9 +219,7 @@ export function AccommodationsList({
                       </div>
                     </td>
 
-                    <td className="px-5 py-4 text-xs text-[#626860]">
-                      {item.capacity} kişi
-                    </td>
+                    <td className="px-5 py-4 text-xs text-[#626860]">{item.capacity} kişi</td>
 
                     <td className="px-5 py-4 text-xs font-semibold text-[#263A2D]">
                       {Number(item.price).toLocaleString("tr-TR")} TL

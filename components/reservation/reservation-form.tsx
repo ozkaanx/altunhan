@@ -73,12 +73,7 @@ export function ReservationForm({
   });
 
   if (createdReservation) {
-    return (
-      <ReservationPayment
-        reservation={createdReservation}
-        settings={settings}
-      />
-    );
+    return <ReservationPayment reservation={createdReservation} settings={settings} />;
   }
 
   return (

@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Loader2,
-  Phone,
-  Search,
-} from "lucide-react";
+import { Loader2, Phone, Search } from "lucide-react";
 
 type TrackingSearchFormProps = {
   reservationCode: string;
@@ -12,17 +8,11 @@ type TrackingSearchFormProps = {
   error: string | null;
   isLoading: boolean;
 
-  onReservationCodeChange: (
-    value: string,
-  ) => void;
+  onReservationCodeChange: (value: string) => void;
 
-  onPhoneChange: (
-    value: string,
-  ) => void;
+  onPhoneChange: (value: string) => void;
 
-  onSubmit: (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 };
 
 export function TrackingSearchForm({
@@ -46,20 +36,13 @@ export function TrackingSearchForm({
         </h1>
 
         <p className="mt-3 text-sm leading-6 text-[#777C75]">
-          Rezervasyon numaranız ve
-          telefon numaranız ile
-          rezervasyon durumunuzu
+          Rezervasyon numaranız ve telefon numaranız ile rezervasyon durumunuzu
           görüntüleyebilirsiniz.
         </p>
 
-        <form
-          onSubmit={onSubmit}
-          className="mt-7 space-y-4"
-        >
+        <form onSubmit={onSubmit} className="mt-7 space-y-4">
           <div>
-            <label className="text-xs font-medium text-[#40463F]">
-              Rezervasyon Numarası
-            </label>
+            <label className="text-xs font-medium text-[#40463F]">Rezervasyon Numarası</label>
 
             <div className="relative mt-2">
               <Search
@@ -69,16 +52,8 @@ export function TrackingSearchForm({
 
               <input
                 required
-                value={
-                  reservationCode
-                }
-                onChange={(
-                  event,
-                ) =>
-                  onReservationCodeChange(
-                    event.target.value,
-                  )
-                }
+                value={reservationCode}
+                onChange={(event) => onReservationCodeChange(event.target.value)}
                 placeholder="AF-XXXXXXXX"
                 autoComplete="off"
                 spellCheck={false}
@@ -88,9 +63,7 @@ export function TrackingSearchForm({
           </div>
 
           <div>
-            <label className="text-xs font-medium text-[#40463F]">
-              Telefon Numarası
-            </label>
+            <label className="text-xs font-medium text-[#40463F]">Telefon Numarası</label>
 
             <div className="relative mt-2">
               <Phone
@@ -102,13 +75,7 @@ export function TrackingSearchForm({
                 required
                 type="tel"
                 value={phone}
-                onChange={(
-                  event,
-                ) =>
-                  onPhoneChange(
-                    event.target.value,
-                  )
-                }
+                onChange={(event) => onPhoneChange(event.target.value)}
                 placeholder="+90 5__ ___ __ __"
                 autoComplete="tel"
                 inputMode="tel"
@@ -125,26 +92,17 @@ export function TrackingSearchForm({
 
           <button
             type="submit"
-            disabled={
-              isLoading
-            }
+            disabled={isLoading}
             className="flex h-12 w-full items-center justify-center gap-2 bg-[#263A2D] px-5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? (
               <>
-                <Loader2
-                  size={16}
-                  className="animate-spin"
-                />
-
+                <Loader2 size={16} className="animate-spin" />
                 Sorgulanıyor...
               </>
             ) : (
               <>
-                <Search
-                  size={16}
-                />
-
+                <Search size={16} />
                 Rezervasyonumu Sorgula
               </>
             )}

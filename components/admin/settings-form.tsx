@@ -29,9 +29,7 @@ type SettingsFormProps = {
 };
 
 export function SettingsForm({ settings }: SettingsFormProps) {
-  const [bankAccountHolder, setBankAccountHolder] = useState(
-    settings.bank_account_holder ?? "",
-  );
+  const [bankAccountHolder, setBankAccountHolder] = useState(settings.bank_account_holder ?? "");
 
   const [bankName, setBankName] = useState(settings.bank_name ?? "");
 
@@ -51,9 +49,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
   const [success, setSuccess] = useState<string | null>(null);
 
-  const [heroImageUrl, setHeroImageUrl] = useState(
-    settings.hero_image_url ?? "",
-  );
+  const [heroImageUrl, setHeroImageUrl] = useState(settings.hero_image_url ?? "");
 
   const [heroImage, setHeroImage] = useState<File | null>(null);
 
@@ -169,9 +165,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
     } catch (error) {
       console.error(error);
 
-      setHeroError(
-        error instanceof Error ? error.message : "Hero görseli yüklenemedi.",
-      );
+      setHeroError(error instanceof Error ? error.message : "Hero görseli yüklenemedi.");
     } finally {
       setIsUploadingHero(false);
     }
@@ -187,9 +181,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             </div>
 
             <div>
-              <h2 className="text-sm font-semibold text-[#263A2D]">
-                Hero Görseli
-              </h2>
+              <h2 className="text-sm font-semibold text-[#263A2D]">Hero Görseli</h2>
 
               <p className="mt-1 text-[10px] text-[#969990]">
                 Ana sayfanın üst bölümünde kullanılan görsel.
@@ -261,9 +253,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             </div>
 
             <div>
-              <h2 className="text-sm font-semibold text-[#263A2D]">
-                Ödeme Bilgileri
-              </h2>
+              <h2 className="text-sm font-semibold text-[#263A2D]">Ödeme Bilgileri</h2>
 
               <p className="mt-1 text-[10px] text-[#969990]">
                 Rezervasyon sonrası müşteriye gösterilir.
@@ -311,9 +301,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             </div>
 
             <div>
-              <h2 className="text-sm font-semibold text-[#263A2D]">
-                İletişim Bilgileri
-              </h2>
+              <h2 className="text-sm font-semibold text-[#263A2D]">İletişim Bilgileri</h2>
 
               <p className="mt-1 text-[10px] text-[#969990]">
                 Site ve müşteri iletişiminde kullanılacak.
@@ -389,11 +377,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
           disabled={isSaving}
           className="flex h-12 w-full items-center justify-center gap-2 bg-[#263A2D] px-6 text-xs font-semibold text-white shadow-lg disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         >
-          {isSaving ? (
-            <Loader2 size={16} className="animate-spin" />
-          ) : (
-            <Save size={16} />
-          )}
+          {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
 
           {isSaving ? "Kaydediliyor..." : "Ayarları Kaydet"}
         </button>

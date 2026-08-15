@@ -24,37 +24,13 @@ import type { Accommodation } from "@/types/accommodation";
 import type { HomepageContent } from "@/types/homepage-content";
 import type { SiteSettings } from "@/types/site-settings";
 
+import { getAmenityConfig, getAmenityLabel } from "@/lib/accommodation/amenities";
+
 type AccommodationDetailPageProps = {
   params: Promise<{
     slug: string;
   }>;
 };
-
-const amenityLabels: Record<string, string> = {
-  wifi: "Wi-Fi",
-  air_conditioning: "Klima",
-  private_bathroom: "Özel Banyo",
-  sea_view: "Deniz Manzarası",
-  breakfast: "Kahvaltı",
-  private_beach: "Kendine Ait Beach",
-  white_sunbed_and_umbrella: "Beyaz Şezlong ve Şemsiye",
-  open_parking: "Açık Otopark",
-  large_garden: "Geniş Bahçe",
-  children_playground: "Çocuk Oyun Parkı",
-  regularly_treated_area: "Sürekli İlaçlanan Alan",
-  seafront_restaurant: "Denize Sıfır Restoran",
-};
-
-function getAmenityLabel(amenity: string) {
-  return (
-    amenityLabels[amenity] ??
-    amenity
-      .replaceAll("_", " ")
-      .replace(/\b\w/g, (letter) =>
-        letter.toLocaleUpperCase("tr-TR"),
-      )
-  );
-}
 
 export async function generateMetadata({
   params,
@@ -86,16 +62,11 @@ export async function generateMetadata({
     };
   }
 
-  const images =
-    accommodation.accommodation_images ?? [];
+  const images = accommodation.accommodation_images ?? [];
 
   const coverImage =
     images.find((image) => image.is_cover) ??
-    [...images].sort(
-      (a, b) =>
-        Number(a.sort_order ?? 0) -
-        Number(b.sort_order ?? 0),
-    )[0];
+    [...images].sort((a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0))[0];
 
   const description =
     accommodation.short_description ||
@@ -127,23 +98,17 @@ export async function generateMetadata({
   };
 }
 
-export default async function AccommodationDetailPage({
-  params,
-}: AccommodationDetailPageProps) {
+export default async function AccommodationDetailPage({ params }: AccommodationDetailPageProps) {
   const { slug } = await params;
 
   const supabase = await createClient();
 
-  const [
-    accommodationResult,
-    settingsResult,
-    accommodationsResult,
-    homepageContentResult,
-  ] = await Promise.all([
-    supabase
-      .from("accommodations")
-      .select(
-        `
+  const [accommodationResult, settingsResult, accommodationsResult, homepageContentResult] =
+    await Promise.all([
+      supabase
+        .from("accommodations")
+        .select(
+          `
         id,
         title,
         slug,
@@ -165,21 +130,17 @@ export default async function AccommodationDetailPage({
           is_cover
         )
       `,
-      )
-      .eq("slug", slug)
-      .eq("is_active", true)
-      .single(),
+        )
+        .eq("slug", slug)
+        .eq("is_active", true)
+        .single(),
 
-    supabase
-      .from("site_settings")
-      .select("*")
-      .eq("id", 1)
-      .single(),
+      supabase.from("site_settings").select("*").eq("id", 1).single(),
 
-    supabase
-      .from("accommodations")
-      .select(
-        `
+      supabase
+        .from("accommodations")
+        .select(
+          `
         id,
         title,
         slug,
@@ -193,42 +154,28 @@ export default async function AccommodationDetailPage({
           is_cover
         )
       `,
-      )
-      .eq("is_active", true)
-      .order("created_at", {
-        ascending: true,
-      }),
+        )
+        .eq("is_active", true)
+        .order("created_at", {
+          ascending: true,
+        }),
 
-    supabase
-      .from("homepage_content")
-      .select("*")
-      .eq("id", 1)
-      .single(),
-  ]);
+      supabase.from("homepage_content").select("*").eq("id", 1).single(),
+    ]);
 
-  if (
-    accommodationResult.error ||
-    !accommodationResult.data
-  ) {
+  if (accommodationResult.error || !accommodationResult.data) {
     notFound();
   }
 
-  const accommodation =
-    accommodationResult.data as Accommodation;
+  const accommodation = accommodationResult.data as Accommodation;
 
-  const settings =
-    settingsResult.data as SiteSettings | null;
+  const settings = settingsResult.data as SiteSettings | null;
 
-  const homepageContent =
-    homepageContentResult.data as HomepageContent | null;
+  const homepageContent = homepageContentResult.data as HomepageContent | null;
 
-  const accommodations =
-    (accommodationsResult.data ??
-      []) as HomeAccommodation[];
+  const accommodations = (accommodationsResult.data ?? []) as HomeAccommodation[];
 
-  const images = [
-    ...(accommodation.accommodation_images ?? []),
-  ].sort((a, b) => {
+  const images = [...(accommodation.accommodation_images ?? [])].sort((a, b) => {
     if (a.is_cover && !b.is_cover) {
       return -1;
     }
@@ -237,16 +184,10 @@ export default async function AccommodationDetailPage({
       return 1;
     }
 
-    return (
-      Number(a.sort_order ?? 0) -
-      Number(b.sort_order ?? 0)
-    );
+    return Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0);
   });
 
-  const reservationHref =
-    `/rezervasyon?accommodation=${encodeURIComponent(
-      accommodation.slug,
-    )}`;
+  const reservationHref = `/rezervasyon?accommodation=${encodeURIComponent(accommodation.slug)}`;
 
   return (
     <>
@@ -273,23 +214,15 @@ export default async function AccommodationDetailPage({
                 hover:text-[#263A2D]
               "
             >
-              <ArrowLeft
-                size={14}
-                className="transition-transform group-hover:-translate-x-1"
-              />
-
+              <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" />
               Konaklamalara Dön
             </Link>
           </div>
         </section>
 
         <section className="px-5 py-7 sm:px-6 sm:py-9 md:px-12 md:py-12 lg:px-16">
-          <AccommodationGallery
-            title={accommodation.title}
-            images={images}
-          />
+          <AccommodationGallery title={accommodation.title} images={images} />
         </section>
-
 
         <section className="px-5 sm:px-6 md:px-12 lg:px-16">
           <div
@@ -351,7 +284,6 @@ export default async function AccommodationDetailPage({
                 </p>
               )}
 
-
               <div
                 className="
                   mt-7
@@ -380,7 +312,6 @@ export default async function AccommodationDetailPage({
                 />
               </div>
             </div>
-
 
             <aside className="lg:sticky lg:top-6">
               <div
@@ -424,12 +355,7 @@ export default async function AccommodationDetailPage({
                         sm:text-4xl
                       "
                     >
-                      {Number(
-                        accommodation.price,
-                      ).toLocaleString(
-                        "tr-TR",
-                      )}{" "}
-                      TL
+                      {Number(accommodation.price).toLocaleString("tr-TR")} TL
                     </p>
                   </div>
                 </div>
@@ -442,8 +368,7 @@ export default async function AccommodationDetailPage({
                     text-[#777D75]
                   "
                 >
-                  Tarih ve kişi bilgilerinizi seçerek
-                  müsaitliği anında kontrol edebilirsiniz.
+                  Tarih ve kişi bilgilerinizi seçerek müsaitliği anında kontrol edebilirsiniz.
                 </p>
 
                 <Link
@@ -484,8 +409,7 @@ export default async function AccommodationDetailPage({
                       text-[#858A83]
                     "
                   >
-                    Rezervasyon oluşturulduktan sonra
-                    ödeme ve onay adımları ekranda
+                    Rezervasyon oluşturulduktan sonra ödeme ve onay adımları ekranda
                     gösterilecektir.
                   </p>
                 </div>
@@ -493,7 +417,6 @@ export default async function AccommodationDetailPage({
             </aside>
           </div>
         </section>
-
 
         <section className="px-5 py-10 sm:px-6 sm:py-12 md:px-12 md:py-16 lg:px-16">
           <div
@@ -506,7 +429,6 @@ export default async function AccommodationDetailPage({
               lg:gap-16
             "
           >
-
             <div>
               <p
                 className="
@@ -548,7 +470,6 @@ export default async function AccommodationDetailPage({
               </p>
             </div>
 
-
             <div>
               <p
                 className="
@@ -584,66 +505,61 @@ export default async function AccommodationDetailPage({
                     sm:grid-cols-2
                   "
                 >
-                  {accommodation.amenities.map(
-                    (amenity) => (
+                  {accommodation.amenities.map((amenity) => {
+                    const Icon = getAmenityConfig(amenity)?.icon ?? Check;
+
+                    return (
                       <div
                         key={amenity}
                         className="
-                          flex
-                          min-h-14
-                          items-center
-                          gap-3
-                          border
-                          border-[#DED9D0]
-                          bg-[#F8F4EB]
-                          px-4
-                          py-3
-                        "
+        flex
+        min-h-14
+        items-center
+        gap-3
+        border
+        border-[#DED9D0]
+        bg-[#F8F4EB]
+        px-4
+        py-3
+      "
                       >
                         <div
                           className="
-                            flex
-                            h-8
-                            w-8
-                            shrink-0
-                            items-center
-                            justify-center
-                            bg-[#E9EDE6]
-                            text-[#526048]
-                          "
+          flex
+          h-10
+          w-10
+          shrink-0
+          items-center
+          justify-center
+          bg-[#E9EDE6]
+          text-[#526048]
+        "
                         >
-                          <Check
-                            size={14}
-                            strokeWidth={2}
-                          />
+                          <Icon size={18} strokeWidth={1.8} />
                         </div>
 
                         <span
                           className="
-                            text-xs
-                            font-medium
-                            leading-5
-                            text-[#505750]
-                          "
+          text-xs
+          font-medium
+          leading-5
+          text-[#505750]
+        "
                         >
-                          {getAmenityLabel(
-                            amenity,
-                          )}
+                          {getAmenityLabel(amenity)}
                         </span>
                       </div>
-                    ),
-                  )}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="mt-5 text-sm text-[#777D75]">
-                  Bu konaklama için henüz özellik
-                  bilgisi eklenmemiş.
+                  Bu konaklama için henüz özellik bilgisi eklenmemiş.
                 </p>
               )}
             </div>
           </div>
         </section>
-
 
         <section
           className="
@@ -723,11 +639,7 @@ export default async function AccommodationDetailPage({
         </section>
       </main>
 
-      <Footer
-        settings={settings}
-        accommodations={accommodations}
-        content={homepageContent}
-      />
+      <Footer settings={settings} accommodations={accommodations} content={homepageContent} />
     </>
   );
 }
@@ -768,10 +680,7 @@ function InfoCard({
           text-[#526048]
         "
       >
-        <Icon
-          size={21}
-          strokeWidth={1.3}
-        />
+        <Icon size={21} strokeWidth={1.3} />
       </div>
 
       <div>

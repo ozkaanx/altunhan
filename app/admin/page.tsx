@@ -10,9 +10,12 @@ import {
   Users,
 } from "lucide-react";
 
-import type { Review } from "@/types/review";
+import type { ReservationStatus } from "@/types/reservation";
+import { getTurkeyToday } from "@/lib/reservation/date-utils";
 
 import { createClient } from "@/lib/supabase/server";
+
+import { getReservationStatusLabel } from "@/lib/reservation/status-utils";
 
 type DashboardReservation = {
   id: number;
@@ -31,12 +34,7 @@ type DashboardReservation = {
 
   total_price: number;
 
-  status:
-    | "pending_payment"
-    | "pending_approval"
-    | "confirmed"
-    | "rejected"
-    | "cancelled";
+  status: ReservationStatus;
 
   created_at: string;
 
@@ -45,18 +43,6 @@ type DashboardReservation = {
     title: string;
   }>;
 };
-
-const statusLabels = {
-  pending_payment: "Ödeme Bekleniyor",
-
-  pending_approval: "Onay Bekliyor",
-
-  confirmed: "Onaylandı",
-
-  rejected: "Reddedildi",
-
-  cancelled: "İptal Edildi",
-} as const;
 
 function getStatusClass(status: DashboardReservation["status"]) {
   switch (status) {
@@ -75,18 +61,6 @@ function getStatusClass(status: DashboardReservation["status"]) {
     case "cancelled":
       return "bg-[#E7E9EA] text-[#5F676B]";
   }
-}
-
-function getTurkeyDate() {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Istanbul",
-
-    year: "numeric",
-
-    month: "2-digit",
-
-    day: "2-digit",
-  }).format(new Date());
 }
 
 function formatLongDate(value: string) {
@@ -126,7 +100,7 @@ function formatGuestSummary(adultCount: number, childCount: number) {
 export default async function AdminPage() {
   const supabase = await createClient();
 
-  const today = getTurkeyDate();
+  const today = getTurkeyToday();
 
   const todayDate = new Date(`${today}T00:00:00+03:00`);
 
@@ -300,14 +274,11 @@ child_count,
 
   const pendingCount = pendingResult.count ?? 0;
 
-  const todayCheckIns = (todayCheckInsResult.data ??
-    []) as DashboardReservation[];
+  const todayCheckIns = (todayCheckInsResult.data ?? []) as DashboardReservation[];
 
-  const upcomingReservations = (upcomingResult.data ??
-    []) as DashboardReservation[];
+  const upcomingReservations = (upcomingResult.data ?? []) as DashboardReservation[];
 
-  const recentReservations = (recentResult.data ??
-    []) as DashboardReservation[];
+  const recentReservations = (recentResult.data ?? []) as DashboardReservation[];
 
   const confirmedMonth = confirmedMonthResult.data ?? [];
 
@@ -365,13 +336,10 @@ child_count,
       <div className="mb-7">
         <p className="text-xs text-[#8B8E87]">{todayFormatted}</p>
 
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#263A2D]">
-          Dashboard
-        </h1>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#263A2D]">Dashboard</h1>
 
         <p className="mt-2 text-sm leading-6 text-[#71756E]">
-          Altunhan Farm'ın rezervasyon ve konaklama durumunu buradan takip
-          edebilirsiniz.
+        Altunhan Farm’ın rezervasyon ve konaklama durumunu buradan takip
         </p>
       </div>
 
@@ -380,15 +348,10 @@ child_count,
           const Icon = stat.icon;
 
           return (
-            <article
-              key={stat.title}
-              className="border border-[#E3E0D8] bg-white p-4 sm:p-5"
-            >
+            <article key={stat.title} className="border border-[#E3E0D8] bg-white p-4 sm:p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[11px] text-[#83877F] sm:text-xs">
-                    {stat.title}
-                  </p>
+                  <p className="text-[11px] text-[#83877F] sm:text-xs">{stat.title}</p>
 
                   <p className="mt-3 break-words text-xl font-semibold tracking-tight text-[#263A2D] sm:text-3xl">
                     {stat.value}
@@ -416,13 +379,9 @@ child_count,
                 Bugün
               </p>
 
-              <h2 className="mt-2 text-lg font-semibold">
-                Giriş Yapacak Misafirler
-              </h2>
+              <h2 className="mt-2 text-lg font-semibold">Giriş Yapacak Misafirler</h2>
 
-              <p className="mt-1 text-xs text-white/55">
-                {todayCheckIns.length} rezervasyon
-              </p>
+              <p className="mt-1 text-xs text-white/55">{todayCheckIns.length} rezervasyon</p>
             </div>
 
             <div className="flex h-10 w-10 items-center justify-center bg-white/10">
@@ -444,16 +403,11 @@ child_count,
                   className="flex items-center justify-between gap-4 border border-white/10 bg-white/5 p-3"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">
-                      {reservation.guest_name}
-                    </p>
+                    <p className="truncate text-sm font-medium">{reservation.guest_name}</p>
 
                     <p className="mt-1 truncate text-[10px] text-white/50">
                       {reservation.accommodations?.[0]?.title ?? "Konaklama"} ·{" "}
-                      {formatGuestSummary(
-                        reservation.adult_count,
-                        reservation.child_count,
-                      )}
+                      {formatGuestSummary(reservation.adult_count, reservation.child_count)}
                     </p>
                   </div>
 
@@ -471,13 +425,9 @@ child_count,
         <section className="border border-[#E3E0D8] bg-white">
           <div className="flex items-center justify-between border-b border-[#EAE7E0] px-4 py-4 sm:px-5">
             <div>
-              <h2 className="text-sm font-semibold text-[#263A2D]">
-                Yaklaşan Rezervasyonlar
-              </h2>
+              <h2 className="text-sm font-semibold text-[#263A2D]">Yaklaşan Rezervasyonlar</h2>
 
-              <p className="mt-1 text-[10px] text-[#92958E] sm:text-[11px]">
-                Önümüzdeki 7 gün
-              </p>
+              <p className="mt-1 text-[10px] text-[#92958E] sm:text-[11px]">Önümüzdeki 7 gün</p>
             </div>
 
             <Link
@@ -521,27 +471,18 @@ child_count,
                         reservation.status,
                       )}`}
                     >
-                      {statusLabels[reservation.status]}
+                      {getReservationStatusLabel(reservation.status)}
                     </span>
                   </div>
 
                   <div className="mt-4 grid grid-cols-3 gap-3">
-                    <DashboardDetail
-                      label="Giriş"
-                      value={formatShortDate(reservation.check_in)}
-                    />
+                    <DashboardDetail label="Giriş" value={formatShortDate(reservation.check_in)} />
 
-                    <DashboardDetail
-                      label="Çıkış"
-                      value={formatShortDate(reservation.check_out)}
-                    />
+                    <DashboardDetail label="Çıkış" value={formatShortDate(reservation.check_out)} />
 
                     <DashboardDetail
                       label="Misafir"
-                      value={formatGuestSummary(
-                        reservation.adult_count,
-                        reservation.child_count,
-                      )}
+                      value={formatGuestSummary(reservation.adult_count, reservation.child_count)}
                     />
                   </div>
                 </Link>
@@ -552,13 +493,9 @@ child_count,
 
         <section className="border border-[#E3E0D8] bg-white">
           <div className="border-b border-[#EAE7E0] px-4 py-4 sm:px-5">
-            <h2 className="text-sm font-semibold text-[#263A2D]">
-              Dikkat Gerekenler
-            </h2>
+            <h2 className="text-sm font-semibold text-[#263A2D]">Dikkat Gerekenler</h2>
 
-            <p className="mt-1 text-[10px] text-[#92958E] sm:text-[11px]">
-              Admin işlemleri
-            </p>
+            <p className="mt-1 text-[10px] text-[#92958E] sm:text-[11px]">Admin işlemleri</p>
           </div>
 
           <div className="space-y-3 p-4 sm:p-5">
@@ -572,9 +509,7 @@ child_count,
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold text-[#4D485F]">
-                    Ödeme Kontrolü
-                  </p>
+                  <p className="text-xs font-semibold text-[#4D485F]">Ödeme Kontrolü</p>
 
                   <p className="mt-1 text-[10px] text-[#7D778F]">
                     {pendingCount} rezervasyon onay bekliyor
@@ -595,9 +530,7 @@ child_count,
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold text-[#4B5845]">
-                    Aktif Konaklamalar
-                  </p>
+                  <p className="text-xs font-semibold text-[#4B5845]">Aktif Konaklamalar</p>
 
                   <p className="mt-1 text-[10px] text-[#798174]">
                     {activeAccommodationCount} konaklama yayında
@@ -615,9 +548,7 @@ child_count,
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold text-[#685A47]">
-                    Bugünkü Girişler
-                  </p>
+                  <p className="text-xs font-semibold text-[#685A47]">Bugünkü Girişler</p>
 
                   <p className="mt-1 text-[10px] text-[#8D806F]">
                     {todayCheckIns.length} misafir grubu
@@ -625,9 +556,7 @@ child_count,
                 </div>
               </div>
 
-              <span className="text-lg font-semibold text-[#9A7041]">
-                {todayCheckIns.length}
-              </span>
+              <span className="text-lg font-semibold text-[#9A7041]">{todayCheckIns.length}</span>
             </div>
           </div>
         </section>
@@ -636,9 +565,7 @@ child_count,
       <section className="mt-6 border border-[#E3E0D8] bg-white">
         <div className="flex items-center justify-between border-b border-[#EAE7E0] px-4 py-4 sm:px-5">
           <div>
-            <h2 className="text-sm font-semibold text-[#263A2D]">
-              Son Rezervasyonlar
-            </h2>
+            <h2 className="text-sm font-semibold text-[#263A2D]">Son Rezervasyonlar</h2>
 
             <p className="mt-1 text-[10px] text-[#92958E] sm:text-[11px]">
               En son gelen 5 rezervasyon
@@ -656,19 +583,13 @@ child_count,
 
         {recentReservations.length === 0 ? (
           <div className="px-5 py-12 text-center">
-            <p className="text-xs text-[#92958E]">
-              Henüz rezervasyon bulunmuyor.
-            </p>
+            <p className="text-xs text-[#92958E]">Henüz rezervasyon bulunmuyor.</p>
           </div>
         ) : (
           <>
             <div className="divide-y divide-[#F0EDE7] md:hidden">
               {recentReservations.map((reservation) => (
-                <Link
-                  key={reservation.id}
-                  href="/admin/reservations"
-                  className="block p-4"
-                >
+                <Link key={reservation.id} href="/admin/reservations" className="block p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-[#263A2D]">
@@ -685,7 +606,7 @@ child_count,
                         reservation.status,
                       )}`}
                     >
-                      {statusLabels[reservation.status]}
+                      {getReservationStatusLabel(reservation.status)}
                     </span>
                   </div>
 
@@ -725,10 +646,7 @@ child_count,
 
                 <tbody>
                   {recentReservations.map((reservation) => (
-                    <tr
-                      key={reservation.id}
-                      className="border-b border-[#F0EDE7] last:border-0"
-                    >
+                    <tr key={reservation.id} className="border-b border-[#F0EDE7] last:border-0">
                       <td className="px-5 py-4">
                         <p className="text-xs font-medium text-[#343A34]">
                           {reservation.guest_name}
@@ -758,7 +676,7 @@ child_count,
                             reservation.status,
                           )}`}
                         >
-                          {statusLabels[reservation.status]}
+                          {getReservationStatusLabel(reservation.status)}
                         </span>
                       </td>
                     </tr>
@@ -783,9 +701,7 @@ function DashboardDetail({
 }) {
   return (
     <div>
-      <p className="text-[9px] uppercase tracking-[0.08em] text-[#A0A39C]">
-        {label}
-      </p>
+      <p className="text-[9px] uppercase tracking-[0.08em] text-[#A0A39C]">{label}</p>
 
       <p className="mt-1 text-[11px] font-medium text-[#4E544D]">{value}</p>
     </div>

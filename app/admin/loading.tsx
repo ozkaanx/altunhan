@@ -9,10 +9,7 @@ export default function AdminLoading() {
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {[1, 2, 3, 4].map((item) => (
-          <div
-            key={item}
-            className="h-32 animate-pulse border border-[#E3E0D8] bg-white"
-          />
+          <div key={item} className="h-32 animate-pulse border border-[#E3E0D8] bg-white" />
         ))}
       </div>
 

@@ -68,9 +68,7 @@ export function ReservationDetailDrawer({
   onReject,
   onCancel,
 }: ReservationDetailDrawerProps) {
-  const [actionModal, setActionModal] = useState<"reject" | "cancel" | null>(
-    null,
-  );
+  const [actionModal, setActionModal] = useState<"reject" | "cancel" | null>(null);
 
   const [reason, setReason] = useState("");
 
@@ -124,9 +122,7 @@ export function ReservationDetailDrawer({
     setIsOpeningReceipt(true);
 
     try {
-      const result = await getReceiptSignedUrl(
-        reservation.receipt_storage_path,
-      );
+      const result = await getReceiptSignedUrl(reservation.receipt_storage_path);
 
       if (!result.success || !result.url) {
         setReceiptError(result.message ?? "Dekont açılamadı.");
@@ -223,10 +219,7 @@ export function ReservationDetailDrawer({
     setIsChangingRoom(true);
 
     try {
-      const result = await changeReservationRoom(
-        reservation.id,
-        selectedRoomId,
-      );
+      const result = await changeReservationRoom(reservation.id, selectedRoomId);
 
       if (!result.success) {
         setRoomError(result.message ?? "Oda değiştirilemedi.");
@@ -249,11 +242,7 @@ export function ReservationDetailDrawer({
         onClick={onClose}
         className={`
           fixed inset-0 z-40 bg-black/30
-          ${
-            open
-              ? "pointer-events-auto opacity-100"
-              : "pointer-events-none opacity-0"
-          }
+          ${open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}
         `}
       />
 
@@ -276,9 +265,7 @@ export function ReservationDetailDrawer({
               {reservation.reservation_code}
             </p>
 
-            <h2 className="mt-1 text-lg font-semibold text-[#263A2D]">
-              {reservation.guest_name}
-            </h2>
+            <h2 className="mt-1 text-lg font-semibold text-[#263A2D]">{reservation.guest_name}</h2>
           </div>
 
           <button
@@ -296,24 +283,12 @@ export function ReservationDetailDrawer({
               Misafir
             </p>
 
-            <InfoRow
-              icon={User}
-              label="Ad Soyad"
-              value={reservation.guest_name}
-            />
+            <InfoRow icon={User} label="Ad Soyad" value={reservation.guest_name} />
 
-            <InfoRow
-              icon={Phone}
-              label="Telefon"
-              value={reservation.guest_phone}
-            />
+            <InfoRow icon={Phone} label="Telefon" value={reservation.guest_phone} />
 
             {reservation.guest_email && (
-              <InfoRow
-                icon={Mail}
-                label="E-posta"
-                value={reservation.guest_email}
-              />
+              <InfoRow icon={Mail} label="E-posta" value={reservation.guest_email} />
             )}
           </section>
 
@@ -397,36 +372,32 @@ export function ReservationDetailDrawer({
               </button>
             )}
 
-            {receiptError && (
-              <p className="mt-2 text-xs text-[#98584E]">{receiptError}</p>
-            )}
+            {receiptError && <p className="mt-2 text-xs text-[#98584E]">{receiptError}</p>}
           </section>
 
-          {reservation.status === "rejected" &&
-            reservation.rejection_reason && (
-              <section className="border border-[#E5C7C0] bg-[#FFF8F6] p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#98584E]">
-                  Red Sebebi
-                </p>
+          {reservation.status === "rejected" && reservation.rejection_reason && (
+            <section className="border border-[#E5C7C0] bg-[#FFF8F6] p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#98584E]">
+                Red Sebebi
+              </p>
 
-                <p className="mt-2 text-sm leading-6 text-[#6D625F]">
-                  {reservation.rejection_reason}
-                </p>
-              </section>
-            )}
+              <p className="mt-2 text-sm leading-6 text-[#6D625F]">
+                {reservation.rejection_reason}
+              </p>
+            </section>
+          )}
 
-          {reservation.status === "cancelled" &&
-            reservation.cancellation_reason && (
-              <section className="border border-[#DDD9D1] bg-[#F3F2EF] p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#646A63]">
-                  İptal Sebebi
-                </p>
+          {reservation.status === "cancelled" && reservation.cancellation_reason && (
+            <section className="border border-[#DDD9D1] bg-[#F3F2EF] p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#646A63]">
+                İptal Sebebi
+              </p>
 
-                <p className="mt-2 text-sm leading-6 text-[#666B65]">
-                  {reservation.cancellation_reason}
-                </p>
-              </section>
-            )}
+              <p className="mt-2 text-sm leading-6 text-[#666B65]">
+                {reservation.cancellation_reason}
+              </p>
+            </section>
+          )}
 
           {approveError && (
             <div className="border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs text-[#98584E]">
@@ -451,11 +422,7 @@ export function ReservationDetailDrawer({
                 disabled={isApproving}
                 className="flex h-12 items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white"
               >
-                {isApproving ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <Check size={16} />
-                )}
+                {isApproving ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
                 Onayla
               </button>
             </div>
@@ -476,17 +443,11 @@ export function ReservationDetailDrawer({
 
       {actionModal && (
         <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 sm:items-center sm:p-4">
-          <button
-            type="button"
-            className="absolute inset-0"
-            onClick={closeActionModal}
-          />
+          <button type="button" className="absolute inset-0" onClick={closeActionModal} />
 
           <div className="relative z-10 w-full bg-white p-5 shadow-2xl sm:max-w-[480px]">
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#98584E]">
-              {actionModal === "reject"
-                ? "Rezervasyonu Reddet"
-                : "Rezervasyonu İptal Et"}
+              {actionModal === "reject" ? "Rezervasyonu Reddet" : "Rezervasyonu İptal Et"}
             </p>
 
             <h3 className="mt-2 text-xl font-semibold text-[#263A2D]">
@@ -508,16 +469,12 @@ export function ReservationDetailDrawer({
               rows={5}
               className="mt-5 w-full resize-none border border-[#DDD9D1] bg-[#FAF9F6] p-3 text-sm text-[#263A2D] outline-none"
               placeholder={
-                actionModal === "reject"
-                  ? "Red sebebini yazın..."
-                  : "İptal sebebini yazın..."
+                actionModal === "reject" ? "Red sebebini yazın..." : "İptal sebebini yazın..."
               }
             />
 
             {actionError && (
-              <div className="mt-3 bg-[#F8EEEA] p-3 text-xs text-[#98584E]">
-                {actionError}
-              </div>
+              <div className="mt-3 bg-[#F8EEEA] p-3 text-xs text-[#98584E]">{actionError}</div>
             )}
 
             <div className="mt-5 grid grid-cols-2 gap-3">
@@ -536,9 +493,7 @@ export function ReservationDetailDrawer({
                 disabled={isActionLoading || reason.trim().length < 5}
                 className="flex h-11 items-center justify-center gap-2 bg-[#98584E] text-xs font-semibold text-white disabled:opacity-50"
               >
-                {isActionLoading && (
-                  <Loader2 size={15} className="animate-spin" />
-                )}
+                {isActionLoading && <Loader2 size={15} className="animate-spin" />}
 
                 {actionModal === "reject" ? "Reddet" : "İptal Et"}
               </button>
@@ -564,13 +519,10 @@ export function ReservationDetailDrawer({
               Fiziksel Oda
             </p>
 
-            <h3 className="mt-2 text-xl font-semibold text-[#263A2D]">
-              Odayı Değiştir
-            </h3>
+            <h3 className="mt-2 text-xl font-semibold text-[#263A2D]">Odayı Değiştir</h3>
 
             <p className="mt-2 text-xs leading-5 text-[#7D817B]">
-              Sadece bu rezervasyon tarihleri için müsait olan aynı tipteki
-              odalar seçilebilir.
+              Sadece bu rezervasyon tarihleri için müsait olan aynı tipteki odalar seçilebilir.
             </p>
 
             <div className="mt-5 space-y-2">
@@ -590,9 +542,7 @@ export function ReservationDetailDrawer({
                     } ${disabled ? "cursor-not-allowed opacity-40" : ""}`}
                   >
                     <div>
-                      <p className="text-sm font-semibold text-[#263A2D]">
-                        {room.roomName}
-                      </p>
+                      <p className="text-sm font-semibold text-[#263A2D]">{room.roomName}</p>
 
                       <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-[#969990]">
                         {room.roomNumber ?? "—"}
@@ -608,11 +558,7 @@ export function ReservationDetailDrawer({
                             : "text-[#98584E]"
                       }`}
                     >
-                      {room.isCurrent
-                        ? "Mevcut"
-                        : room.isAvailable
-                          ? "Müsait"
-                          : "Dolu"}
+                      {room.isCurrent ? "Mevcut" : room.isAvailable ? "Müsait" : "Dolu"}
                     </span>
                   </button>
                 );
@@ -641,9 +587,7 @@ export function ReservationDetailDrawer({
                 disabled={isChangingRoom || !selectedRoomId}
                 className="flex h-11 items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white disabled:opacity-50"
               >
-                {isChangingRoom && (
-                  <Loader2 size={15} className="animate-spin" />
-                )}
+                {isChangingRoom && <Loader2 size={15} className="animate-spin" />}
                 Odayı Kaydet
               </button>
             </div>

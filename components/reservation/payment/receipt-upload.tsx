@@ -61,13 +61,9 @@ export function ReceiptUpload({
       {receipt && (
         <div className="mt-3 flex items-center justify-between gap-3 border border-[#E4E1D9] bg-[#F7F6F2] px-3 py-3">
           <div className="min-w-0">
-            <p className="truncate text-xs font-medium text-[#263A2D]">
-              {receipt.name}
-            </p>
+            <p className="truncate text-xs font-medium text-[#263A2D]">{receipt.name}</p>
 
-            <p className="mt-1 text-[10px] text-[#969990]">
-              {formatFileSize(receipt.size)}
-            </p>
+            <p className="mt-1 text-[10px] text-[#969990]">{formatFileSize(receipt.size)}</p>
           </div>
 
           <button

@@ -1,8 +1,6 @@
 "use server";
 
-import {
-  createClient,
-} from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
 export type AccommodationBusyRange = {
   checkIn: string;
@@ -32,52 +30,31 @@ export async function getAccommodationBusyRanges(
     return {
       success: false,
       ranges: [],
-      message:
-        "Konaklama seçilemedi.",
+      message: "Konaklama seçilemedi.",
     };
   }
 
-  const supabase =
-    await createClient();
+  const supabase = await createClient();
 
-  const {
-    data,
-    error,
-  } = await supabase.rpc(
-    "get_accommodation_busy_ranges",
-    {
-      p_accommodation_id:
-        accommodationId,
-    },
-  );
+  const { data, error } = await supabase.rpc("get_accommodation_busy_ranges", {
+    p_accommodation_id: accommodationId,
+  });
 
   if (error) {
-    console.error(
-      "Dolu tarihler alınamadı:",
-      error,
-    );
+    console.error("Dolu tarihler alınamadı:", error);
 
     return {
       success: false,
       ranges: [],
-      message:
-        "Müsaitlik bilgisi alınamadı.",
+      message: "Müsaitlik bilgisi alınamadı.",
     };
   }
 
   const ranges =
-    (
-      data as
-        | AccommodationBusyRangeRpc[]
-        | null
-    )?.map(
-      (item) => ({
-        checkIn:
-          item.check_in,
-        checkOut:
-          item.check_out,
-      }),
-    ) ?? [];
+    (data as AccommodationBusyRangeRpc[] | null)?.map((item) => ({
+      checkIn: item.check_in,
+      checkOut: item.check_out,
+    })) ?? [];
 
   return {
     success: true,

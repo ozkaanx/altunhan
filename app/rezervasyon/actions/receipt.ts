@@ -1,12 +1,8 @@
 "use server";
 
-import {
-  createClient,
-} from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
-import {
-  notifyReceiptSubmitted,
-} from "@/lib/notifications/reservation-emails";
+import { notifyReceiptSubmitted } from "@/lib/notifications/reservation-emails";
 
 type SaveReceiptResult =
   | {
@@ -22,73 +18,43 @@ export async function saveReceiptPath(
   reservationCode: string,
   storagePath: string,
 ): Promise<SaveReceiptResult> {
-  if (
-    !reservationId ||
-    !reservationCode.trim() ||
-    !storagePath.trim()
-  ) {
+  if (!reservationId || !reservationCode.trim() || !storagePath.trim()) {
     return {
       success: false,
-      message:
-        "Dekont bilgileri eksik.",
+      message: "Dekont bilgileri eksik.",
     };
   }
 
-  const supabase =
-    await createClient();
+  const supabase = await createClient();
 
-  const {
-    data,
-    error,
-  } = await supabase.rpc(
-    "submit_reservation_receipt",
-    {
-      p_reservation_id:
-        reservationId,
+  const { data, error } = await supabase.rpc("submit_reservation_receipt", {
+    p_reservation_id: reservationId,
 
-      p_reservation_code:
-        reservationCode,
+    p_reservation_code: reservationCode,
 
-      p_storage_path:
-        storagePath,
-    },
-  );
+    p_storage_path: storagePath,
+  });
 
   if (error) {
-    console.error(
-      "Dekont kaydedilemedi:",
-      error,
-    );
+    console.error("Dekont kaydedilemedi:", error);
 
     return {
       success: false,
-      message:
-        error.message ||
-        "Dekont kaydedilemedi.",
+      message: error.message || "Dekont kaydedilemedi.",
     };
   }
 
   if (!data) {
     return {
       success: false,
-      message:
-        "Dekont kaydedilemedi.",
+      message: "Dekont kaydedilemedi.",
     };
   }
 
   try {
-    await notifyReceiptSubmitted(
-      supabase,
-      reservationCode,
-      storagePath,
-    );
-  } catch (
-    notificationError
-  ) {
-    console.error(
-      "Dekont bildirimi gönderilemedi:",
-      notificationError,
-    );
+    await notifyReceiptSubmitted(supabase, reservationCode, storagePath);
+  } catch (notificationError) {
+    console.error("Dekont bildirimi gönderilemedi:", notificationError);
   }
 
   return {

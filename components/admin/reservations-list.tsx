@@ -22,8 +22,10 @@ import {
 } from "@/app/admin/reservations/action";
 
 import { ReservationDetailDrawer } from "@/components/admin/reservation-detail-drawer";
+import { formatReservationDate } from "@/lib/reservation/date-utils";
 
 import type { Reservation, ReservationStatus } from "@/types/reservation";
+import { getReservationStatusLabel } from "@/lib/reservation/status-utils";
 
 type ReservationsListProps = {
   reservations: Reservation[];
@@ -41,18 +43,6 @@ type ReservationsListProps = {
   initialSearch: string;
 
   pageSize: number;
-};
-
-const statusLabels: Record<ReservationStatus, string> = {
-  pending_payment: "Ödeme Bekleniyor",
-
-  pending_approval: "Onay Bekliyor",
-
-  confirmed: "Onaylandı",
-
-  rejected: "Reddedildi",
-
-  cancelled: "İptal Edildi",
 };
 
 const filters: Array<ReservationStatus | "all"> = [
@@ -81,14 +71,6 @@ function getStatusClass(status: ReservationStatus) {
     case "cancelled":
       return "bg-[#E7E9EA] text-[#5F676B]";
   }
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("tr-TR", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(`${value}T00:00:00`));
 }
 
 function StatusIcon({ status }: { status: ReservationStatus }) {
@@ -142,12 +124,7 @@ export function ReservationsList({
 
   const [search, setSearch] = useState(initialSearch);
 
-  const [selectedReservation, setSelectedReservation] =
-    useState<Reservation | null>(null);
-
-  useEffect(() => {
-    setSearch(initialSearch);
-  }, [initialSearch]);
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -308,10 +285,7 @@ export function ReservationsList({
 
         <div className="mt-6 space-y-4">
           <div className="relative max-w-[420px]">
-            <Search
-              size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#92968E]"
-            />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#92968E]" />
 
             <input
               value={search}
@@ -333,7 +307,7 @@ export function ReservationsList({
                     : "border-[#DDD9D1] bg-white text-[#6D726B]"
                 }`}
               >
-                {filter === "all" ? "Tümü" : statusLabels[filter]}
+                {filter === "all" ? "Tümü" : getReservationStatusLabel(filter)}
               </button>
             ))}
           </div>
@@ -341,9 +315,7 @@ export function ReservationsList({
 
         <div className="mt-5 flex flex-col gap-1 text-xs text-[#858A83] sm:flex-row sm:items-center sm:justify-between">
           <p>
-            Toplam{" "}
-            <span className="font-semibold text-[#263A2D]">{totalCount}</span>{" "}
-            rezervasyon
+            Toplam <span className="font-semibold text-[#263A2D]">{totalCount}</span> rezervasyon
           </p>
 
           {totalCount > 0 && (
@@ -355,9 +327,7 @@ export function ReservationsList({
 
         {reservations.length === 0 && (
           <div className="mt-5 border border-[#E3E0D8] bg-white px-5 py-16 text-center">
-            <p className="text-sm font-semibold text-[#263A2D]">
-              Rezervasyon bulunamadı
-            </p>
+            <p className="text-sm font-semibold text-[#263A2D]">Rezervasyon bulunamadı</p>
 
             <p className="mt-1 text-xs text-[#969990]">
               Arama veya filtreye uygun rezervasyon bulunmuyor.
@@ -367,10 +337,7 @@ export function ReservationsList({
 
         <div className="mt-5 space-y-3 md:hidden">
           {reservations.map((reservation) => (
-            <article
-              key={reservation.id}
-              className="border border-[#E3E0D8] bg-white p-4"
-            >
+            <article key={reservation.id} className="border border-[#E3E0D8] bg-white p-4">
               <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="break-all text-[10px] font-semibold uppercase tracking-[0.12em] text-[#A8754F]">
@@ -381,9 +348,7 @@ export function ReservationsList({
                     {reservation.guest_name}
                   </h2>
 
-                  <p className="mt-1 text-[11px] text-[#8B8E87]">
-                    {reservation.guest_phone}
-                  </p>
+                  <p className="mt-1 text-[11px] text-[#8B8E87]">{reservation.guest_phone}</p>
                 </div>
 
                 <span
@@ -393,7 +358,7 @@ export function ReservationsList({
                 >
                   <StatusIcon status={reservation.status} />
 
-                  {statusLabels[reservation.status]}
+                  {getReservationStatusLabel(reservation.status)}
                 </span>
               </div>
 
@@ -407,7 +372,7 @@ export function ReservationsList({
                     <p className="text-[10px] text-[#969990]">Giriş</p>
 
                     <p className="mt-1 text-xs font-medium text-[#4C524B]">
-                      {formatDate(reservation.check_in)}
+                      {formatReservationDate(reservation.check_in)}
                     </p>
                   </div>
 
@@ -415,7 +380,7 @@ export function ReservationsList({
                     <p className="text-[10px] text-[#969990]">Çıkış</p>
 
                     <p className="mt-1 text-xs font-medium text-[#4C524B]">
-                      {formatDate(reservation.check_out)}
+                      {formatReservationDate(reservation.check_out)}
                     </p>
                   </div>
 
@@ -432,9 +397,7 @@ export function ReservationsList({
 
                     <p className="mt-1 text-xs font-medium text-[#4C524B]">
                       {reservation.adult_count} yetişkin
-                      {reservation.child_count > 0
-                        ? ` · ${reservation.child_count} çocuk`
-                        : ""}
+                      {reservation.child_count > 0 ? ` · ${reservation.child_count} çocuk` : ""}
                     </p>
                   </div>
                 </div>
@@ -442,9 +405,7 @@ export function ReservationsList({
 
               <div className="mt-4 flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.1em] text-[#969990]">
-                    Toplam
-                  </p>
+                  <p className="text-[10px] uppercase tracking-[0.1em] text-[#969990]">Toplam</p>
 
                   <p className="mt-1 text-xl font-semibold text-[#263A2D]">
                     {Number(reservation.total_price).toLocaleString("tr-TR")} TL
@@ -487,22 +448,15 @@ export function ReservationsList({
 
               <tbody>
                 {reservations.map((reservation) => (
-                  <tr
-                    key={reservation.id}
-                    className="border-b border-[#F0EDE7] last:border-0"
-                  >
+                  <tr key={reservation.id} className="border-b border-[#F0EDE7] last:border-0">
                     <td className="px-5 py-4 text-xs font-semibold text-[#263A2D]">
                       {reservation.reservation_code}
                     </td>
 
                     <td className="px-5 py-4">
-                      <p className="text-xs font-medium text-[#343A34]">
-                        {reservation.guest_name}
-                      </p>
+                      <p className="text-xs font-medium text-[#343A34]">{reservation.guest_name}</p>
 
-                      <p className="mt-1 text-[10px] text-[#969990]">
-                        {reservation.guest_phone}
-                      </p>
+                      <p className="mt-1 text-[10px] text-[#969990]">{reservation.guest_phone}</p>
                     </td>
 
                     <td className="px-5 py-4 text-xs text-[#646A63]">
@@ -510,16 +464,15 @@ export function ReservationsList({
                     </td>
 
                     <td className="px-5 py-4 text-xs text-[#646A63]">
-                      {formatDate(reservation.check_in)}
+                      {formatReservationDate(reservation.check_in)}
 
                       {" → "}
 
-                      {formatDate(reservation.check_out)}
+                      {formatReservationDate(reservation.check_out)}
                     </td>
 
                     <td className="px-5 py-4 text-xs font-semibold text-[#263A2D]">
-                      {Number(reservation.total_price).toLocaleString("tr-TR")}{" "}
-                      TL
+                      {Number(reservation.total_price).toLocaleString("tr-TR")} TL
                     </td>
 
                     <td className="px-5 py-4">
@@ -528,7 +481,7 @@ export function ReservationsList({
                           reservation.status,
                         )}`}
                       >
-                        {statusLabels[reservation.status]}
+                        {getReservationStatusLabel(reservation.status)}
                       </span>
                     </td>
 
@@ -552,11 +505,8 @@ export function ReservationsList({
         {totalPages > 1 && (
           <div className="mt-6 flex flex-col gap-3 border-t border-[#E3E0D8] pt-5 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-[#8B8E87]">
-              Sayfa{" "}
-              <span className="font-semibold text-[#263A2D]">
-                {currentPage}
-              </span>{" "}
-              / {totalPages}
+              Sayfa <span className="font-semibold text-[#263A2D]">{currentPage}</span> /{" "}
+              {totalPages}
             </p>
 
             <div className="flex items-center gap-1.5">
@@ -578,9 +528,7 @@ export function ReservationsList({
 
                 return (
                   <div key={page} className="flex items-center gap-1.5">
-                    {showDots && (
-                      <span className="px-1 text-xs text-[#969990]">…</span>
-                    )}
+                    {showDots && <span className="px-1 text-xs text-[#969990]">…</span>}
 
                     <button
                       type="button"

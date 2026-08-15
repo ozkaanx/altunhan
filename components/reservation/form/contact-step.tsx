@@ -76,8 +76,8 @@ export function ContactStep({
         </div>
 
         <p className="text-[10px] leading-5 text-[#969990]">
-          Rezervasyon bilgileri e-posta adresinize gönderilecektir. Rezervasyon
-          takibinde telefon numaranız kullanılacaktır.
+          Rezervasyon bilgileri e-posta adresinize gönderilecektir. Rezervasyon takibinde telefon
+          numaranız kullanılacaktır.
         </p>
       </div>
     </section>

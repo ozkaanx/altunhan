@@ -21,18 +21,9 @@ type ReservationPaymentProps = {
   settings: SiteSettings | null;
 };
 
-export function ReservationPayment({
-  reservation,
-  settings,
-}: ReservationPaymentProps) {
-  const {
-    receipt,
-    error,
-    isUploading,
-    selectReceipt,
-    clearReceipt,
-    uploadReceipt,
-  } = useReceiptUpload(reservation);
+export function ReservationPayment({ reservation, settings }: ReservationPaymentProps) {
+  const { receipt, error, isUploading, selectReceipt, clearReceipt, uploadReceipt } =
+    useReceiptUpload(reservation);
 
   const hasBankInformation =
     Boolean(settings?.iban?.trim()) &&
@@ -51,9 +42,7 @@ export function ReservationPayment({
         </p>
 
         <h1 className="mt-2 font-serif text-3xl text-[#263A2D] sm:text-4xl">
-          {hasBankInformation
-            ? "Ödemenizi tamamlayın."
-            : "Rezervasyon talebiniz oluşturuldu."}
+          {hasBankInformation ? "Ödemenizi tamamlayın." : "Rezervasyon talebiniz oluşturuldu."}
         </h1>
 
         <p className="mt-3 max-w-xl text-sm leading-6 text-[#70756F]">
@@ -63,20 +52,11 @@ export function ReservationPayment({
         </p>
 
         <div className="mt-7 grid gap-3 sm:grid-cols-2">
-          <ReservationDetailCard
-            label="Rezervasyon No"
-            value={reservation.reservationCode}
-          />
+          <ReservationDetailCard label="Rezervasyon No" value={reservation.reservationCode} />
 
-          <ReservationDetailCard
-            label="Konaklama"
-            value={reservation.accommodationTitle}
-          />
+          <ReservationDetailCard label="Konaklama" value={reservation.accommodationTitle} />
 
-          <ReservationDetailCard
-            label="Giriş"
-            value={formatReservationDate(reservation.checkIn)}
-          />
+          <ReservationDetailCard label="Giriş" value={formatReservationDate(reservation.checkIn)} />
 
           <ReservationDetailCard
             label="Çıkış"
@@ -98,10 +78,7 @@ export function ReservationPayment({
           <>
             <div className="mt-7 border border-[#E7DCCB] bg-[#FAF6EE] p-4 sm:p-5">
               <div className="flex gap-3">
-                <AlertTriangle
-                  size={19}
-                  className="mt-0.5 shrink-0 text-[#A8754F]"
-                />
+                <AlertTriangle size={19} className="mt-0.5 shrink-0 text-[#A8754F]" />
 
                 <div>
                   <p className="text-sm font-semibold text-[#263A2D]">
@@ -109,17 +86,14 @@ export function ReservationPayment({
                   </p>
 
                   <p className="mt-1 text-xs leading-5 text-[#777B74]">
-                    Rezervasyon oluşturulduktan sonraki 1 saat boyunca seçilen
-                    oda geçici olarak tutulur. Bu süre geçtikten sonra da dekont
-                    yükleyebilirsiniz ancak müsaitlik yeniden kontrol edilir.
+                    Rezervasyon oluşturulduktan sonraki 1 saat boyunca seçilen oda geçici olarak
+                    tutulur. Bu süre geçtikten sonra da dekont yükleyebilirsiniz ancak müsaitlik
+                    yeniden kontrol edilir.
                   </p>
                 </div>
               </div>
             </div>
-            <BankInformation
-              settings={settings}
-              reservationCode={reservation.reservationCode}
-            />
+            <BankInformation settings={settings} reservationCode={reservation.reservationCode} />
 
             <ReceiptUpload
               receipt={receipt}
@@ -132,19 +106,14 @@ export function ReservationPayment({
           </>
         ) : (
           <div className="mt-7 flex gap-3 border border-[#E7DCCB] bg-[#FAF6EE] p-4 sm:p-5">
-            <AlertTriangle
-              size={19}
-              className="mt-0.5 shrink-0 text-[#A8754F]"
-            />
+            <AlertTriangle size={19} className="mt-0.5 shrink-0 text-[#A8754F]" />
 
             <div>
-              <p className="text-sm font-semibold text-[#263A2D]">
-                Ödeme bilgileri hazırlanıyor
-              </p>
+              <p className="text-sm font-semibold text-[#263A2D]">Ödeme bilgileri hazırlanıyor</p>
 
               <p className="mt-1 text-xs leading-5 text-[#777B74]">
-                Banka ve ödeme bilgileri sisteme eklendiğinde Havale/EFT ve
-                dekont yükleme işlemleri kullanılabilir hale gelecektir.
+                Banka ve ödeme bilgileri sisteme eklendiğinde Havale/EFT ve dekont yükleme işlemleri
+                kullanılabilir hale gelecektir.
               </p>
             </div>
           </div>

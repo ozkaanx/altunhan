@@ -2,25 +2,15 @@ import type { Metadata } from "next";
 
 import Link from "next/link";
 
-import {
-  ArrowLeft,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
-import {
-  ReservationForm,
-} from "@/components/reservation/reservation-form";
+import { ReservationForm } from "@/components/reservation/reservation-form";
 
-import {
-  createClient,
-} from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 
-import type {
-  PublicAccommodation,
-} from "@/types/public-reservation";
+import type { PublicAccommodation } from "@/types/public-reservation";
 
-import type {
-  SiteSettings,
-} from "@/types/site-settings";
+import type { SiteSettings } from "@/types/site-settings";
 
 export const metadata: Metadata = {
   title: "Rezervasyon",
@@ -33,8 +23,7 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title:
-      "Rezervasyon | Altunhan Farm",
+    title: "Rezervasyon | Altunhan Farm",
 
     description:
       "Altunhan Farm için uygun tarihleri kontrol edin ve rezervasyon talebinizi oluşturun.",
@@ -51,23 +40,14 @@ type ReservationPageProps = {
   }>;
 };
 
-export default async function ReservationPage({
-  searchParams,
-}: ReservationPageProps) {
-  const params =
-    await searchParams;
+export default async function ReservationPage({ searchParams }: ReservationPageProps) {
+  const params = await searchParams;
 
-  const requestedAccommodationSlug =
-    params.accommodation ??
-    null;
+  const requestedAccommodationSlug = params.accommodation ?? null;
 
-  const supabase =
-    await createClient();
+  const supabase = await createClient();
 
-  const [
-    accommodationsResult,
-    settingsResult,
-  ] = await Promise.all([
+  const [accommodationsResult, settingsResult] = await Promise.all([
     supabase
       .from("accommodations")
       .select(
@@ -83,66 +63,31 @@ export default async function ReservationPage({
           max_total_guests
         `,
       )
-      .eq(
-        "is_active",
-        true,
-      )
-      .order(
-        "created_at",
-        {
-          ascending: true,
-        },
-      ),
+      .eq("is_active", true)
+      .order("created_at", {
+        ascending: true,
+      }),
 
-    supabase
-      .from("site_settings")
-      .select("*")
-      .eq("id", 1)
-      .single(),
+    supabase.from("site_settings").select("*").eq("id", 1).single(),
   ]);
 
-  const {
-    data: accommodations,
-    error:
-      accommodationsError,
-  } =
-    accommodationsResult;
+  const { data: accommodations, error: accommodationsError } = accommodationsResult;
 
-  const {
-    data: settings,
-  } =
-    settingsResult;
+  const { data: settings } = settingsResult;
 
-  if (
-    accommodationsError
-  ) {
-    console.error(
-      "Konaklamalar alınamadı:",
-      accommodationsError,
-    );
+  if (accommodationsError) {
+    console.error("Konaklamalar alınamadı:", accommodationsError);
   }
 
-  const publicAccommodations =
-    (
-      accommodations ?? []
-    ) as PublicAccommodation[];
+  const publicAccommodations = (accommodations ?? []) as PublicAccommodation[];
 
-  const requestedAccommodation =
-    requestedAccommodationSlug
-      ? publicAccommodations.find(
-          (
-            accommodation,
-          ) =>
-            accommodation.slug ===
-            requestedAccommodationSlug,
-        )
-      : null;
+  const requestedAccommodation = requestedAccommodationSlug
+    ? publicAccommodations.find(
+        (accommodation) => accommodation.slug === requestedAccommodationSlug,
+      )
+    : null;
 
-  const initialAccommodationId =
-    requestedAccommodation?.id ??
-    publicAccommodations[0]
-      ?.id ??
-    null;
+  const initialAccommodationId = requestedAccommodation?.id ?? publicAccommodations[0]?.id ?? null;
 
   return (
     <main className="min-h-screen bg-[#F4F2ED]">
@@ -152,10 +97,7 @@ export default async function ReservationPage({
             href="/"
             className="inline-flex items-center gap-2 text-xs font-medium text-[#71766F]"
           >
-            <ArrowLeft
-              size={14}
-            />
-
+            <ArrowLeft size={14} />
             Altunhan Farm
           </Link>
         </div>
@@ -172,38 +114,21 @@ export default async function ReservationPage({
           </h1>
 
           <p className="mt-4 text-sm leading-6 text-[#71756E]">
-            Konaklamanızı,
-            tarihlerinizi ve misafir
-            bilgilerinizi seçin.
-            Müsaitliği kontrol
-            ettikten sonra
-            rezervasyon talebinizi
-            oluşturabilirsiniz.
+            Konaklamanızı, tarihlerinizi ve misafir bilgilerinizi seçin. Müsaitliği kontrol ettikten
+            sonra rezervasyon talebinizi oluşturabilirsiniz.
           </p>
         </div>
 
-        {publicAccommodations.length >
-        0 ? (
+        {publicAccommodations.length > 0 ? (
           <ReservationForm
-            accommodations={
-              publicAccommodations
-            }
-            settings={
-              settings as
-                | SiteSettings
-                | null
-            }
-            initialAccommodationId={
-              initialAccommodationId
-            }
+            accommodations={publicAccommodations}
+            settings={settings as SiteSettings | null}
+            initialAccommodationId={initialAccommodationId}
           />
         ) : (
           <div className="border border-[#E3E0D8] bg-white px-5 py-16 text-center">
             <p className="text-sm font-semibold text-[#263A2D]">
-              Şu anda
-              rezervasyona açık
-              konaklama
-              bulunmuyor.
+              Şu anda rezervasyona açık konaklama bulunmuyor.
             </p>
 
             <Link
