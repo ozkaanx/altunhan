@@ -43,10 +43,7 @@ function parseStatus(value?: string): ReservationStatus | "all" {
 }
 
 function sanitizeSearch(value?: string) {
-  return (
-    value?.trim().replace(/[,()]/g, " ").replace(/\s+/g, " ").slice(0, 100) ??
-    ""
-  );
+  return value?.trim().replace(/[,()]/g, " ").replace(/\s+/g, " ").slice(0, 100) ?? "";
 }
 
 function createPageUrl({
@@ -77,9 +74,7 @@ function createPageUrl({
   return query ? `/admin/reservations?${query}` : "/admin/reservations";
 }
 
-export default async function ReservationsPage({
-  searchParams,
-}: ReservationsPageProps) {
+export default async function ReservationsPage({ searchParams }: ReservationsPageProps) {
   const params = await searchParams;
 
   const currentPage = parsePage(params.page);
@@ -151,13 +146,9 @@ export default async function ReservationsPage({
     return (
       <section>
         <div className="border border-[#E7D6D1] bg-[#F8EEEA] px-5 py-14 text-center">
-          <h2 className="text-sm font-semibold text-[#8A5147]">
-            Rezervasyonlar yüklenemedi
-          </h2>
+          <h2 className="text-sm font-semibold text-[#8A5147]">Rezervasyonlar yüklenemedi</h2>
 
-          <p className="mt-2 text-xs text-[#9B746D]">
-            Veriler alınırken bir hata oluştu.
-          </p>
+          <p className="mt-2 text-xs text-[#9B746D]">Veriler alınırken bir hata oluştu.</p>
         </div>
       </section>
     );

@@ -87,8 +87,6 @@ function formatShortDate(value: string) {
   }).format(new Date(`${value}T00:00:00+03:00`));
 }
 
-
-
 function formatGuestSummary(adultCount: number, childCount: number) {
   if (childCount > 0) {
     return `${adultCount} yetişkin · ${childCount} çocuk`;
@@ -339,7 +337,7 @@ child_count,
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#263A2D]">Dashboard</h1>
 
         <p className="mt-2 text-sm leading-6 text-[#71756E]">
-        Altunhan Farm’ın rezervasyon ve konaklama durumunu buradan takip
+          Altunhan Farm’ın rezervasyon ve konaklama durumunu buradan takip
         </p>
       </div>
 

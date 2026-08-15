@@ -5,10 +5,12 @@ import { notFound } from "next/navigation";
 
 import {
   ArrowLeft,
+  ArrowRight,
   Bath,
   BedDouble,
   Check,
   Users,
+  type LucideIcon,
 } from "lucide-react";
 
 import type { HomeAccommodation } from "@/app/page";
@@ -18,19 +20,35 @@ import Footer from "@/components/shared/footer";
 import { Header } from "@/components/shared/header";
 import Navbar from "@/components/shared/navbar";
 
+import { amenityOptions } from "@/lib/accommodation/amenities";
+import { formatPrice } from "@/lib/formatters/price";
 import { createClient } from "@/lib/supabase/server";
 
 import type { Accommodation } from "@/types/accommodation";
 import type { HomepageContent } from "@/types/homepage-content";
 import type { SiteSettings } from "@/types/site-settings";
 
-import { getAmenityConfig, getAmenityLabel } from "@/lib/accommodation/amenities";
-
 type AccommodationDetailPageProps = {
   params: Promise<{
     slug: string;
   }>;
 };
+
+function getAmenityMeta(amenity: string) {
+  const option = amenityOptions.find((item) => item.value === amenity);
+
+  if (option) {
+    return option;
+  }
+
+  return {
+    value: amenity,
+    label: amenity
+      .replaceAll("_", " ")
+      .replace(/\b\w/g, (letter) => letter.toLocaleUpperCase("tr-TR")),
+    icon: Check,
+  };
+}
 
 export async function generateMetadata({
   params,
@@ -43,14 +61,14 @@ export async function generateMetadata({
     .from("accommodations")
     .select(
       `
-      title,
-      short_description,
-      accommodation_images!accommodation_images_accommodation_id_fkey (
-        image_url,
-        sort_order,
-        is_cover
-      )
-    `,
+        title,
+        short_description,
+        accommodation_images!accommodation_images_accommodation_id_fkey (
+          image_url,
+          sort_order,
+          is_cover
+        )
+      `,
     )
     .eq("slug", slug)
     .eq("is_active", true)
@@ -109,27 +127,27 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
         .from("accommodations")
         .select(
           `
-        id,
-        title,
-        slug,
-        short_description,
-        description,
-        price,
-        capacity,
-        bed_count,
-        bathroom_count,
-        amenities,
-        is_active,
-        created_at,
-        updated_at,
-        accommodation_images!accommodation_images_accommodation_id_fkey (
           id,
-          image_url,
-          storage_path,
-          sort_order,
-          is_cover
-        )
-      `,
+          title,
+          slug,
+          short_description,
+          description,
+          price,
+          capacity,
+          bed_count,
+          bathroom_count,
+          amenities,
+          is_active,
+          created_at,
+          updated_at,
+          accommodation_images!accommodation_images_accommodation_id_fkey (
+            id,
+            image_url,
+            storage_path,
+            sort_order,
+            is_cover
+          )
+        `,
         )
         .eq("slug", slug)
         .eq("is_active", true)
@@ -141,19 +159,19 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
         .from("accommodations")
         .select(
           `
-        id,
-        title,
-        slug,
-        short_description,
-        price,
-        capacity,
-        accommodation_images!accommodation_images_accommodation_id_fkey (
           id,
-          image_url,
-          sort_order,
-          is_cover
-        )
-      `,
+          title,
+          slug,
+          short_description,
+          price,
+          capacity,
+          accommodation_images!accommodation_images_accommodation_id_fkey (
+            id,
+            image_url,
+            sort_order,
+            is_cover
+          )
+        `,
         )
         .eq("is_active", true)
         .order("created_at", {
@@ -195,7 +213,7 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
 
       <Navbar />
 
-      <main className="bg-[#F5F1E8]">
+      <main className="bg-[#F5F1E8] pb-[88px] lg:pb-0">
         <section className="border-b border-[#DDD8CC] px-5 py-5 sm:px-6 md:px-12 lg:px-16">
           <div className="mx-auto max-w-[1500px]">
             <Link
@@ -221,7 +239,9 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
         </section>
 
         <section className="px-5 py-7 sm:px-6 sm:py-9 md:px-12 md:py-12 lg:px-16">
-          <AccommodationGallery title={accommodation.title} images={images} />
+          <div className="mx-auto max-w-[1500px]">
+            <AccommodationGallery title={accommodation.title} images={images} />
+          </div>
         </section>
 
         <section className="px-5 sm:px-6 md:px-12 lg:px-16">
@@ -230,40 +250,43 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
               mx-auto
               grid
               max-w-[1500px]
-              gap-8
+              gap-9
               border-b
-              border-[#DDD8CC]
-              pb-10
-              lg:grid-cols-[minmax(0,1fr)_360px]
-              lg:items-start
-              lg:gap-16
-              lg:pb-12
+              border-[#D9D4CA]
+              pb-12
+             lg:grid-cols-[minmax(0,1fr)_380px]
+lg:items-start
+lg:gap-14
+              lg:pb-16
             "
           >
             <div className="min-w-0">
-              <p
-                className="
-                  text-[9px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.25em]
-                  text-[#A8754F]
-                "
-              >
-                Konaklama
-              </p>
+              <div className="flex items-center gap-3">
+                <div className="h-px w-8 bg-[#A8754F]" />
+
+                <p
+                  className="
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.25em]
+                    text-[#A8754F]
+                  "
+                >
+                  Konaklama
+                </p>
+              </div>
 
               <h1
                 className="
-                  mt-3
+                  mt-4
                   max-w-[900px]
                   font-serif
-                  text-[36px]
-                  leading-[1.03]
+                  text-[38px]
+                  leading-[1.02]
                   text-[#263A2D]
-                  sm:text-4xl
-                  md:text-5xl
-                  lg:text-[56px]
+                  sm:text-5xl
+                  lg:text-[58px]
                 "
               >
                 {accommodation.title}
@@ -273,11 +296,11 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
                 <p
                   className="
                     mt-5
-                    max-w-[720px]
+                    max-w-[680px]
                     text-sm
                     leading-7
                     text-[#626860]
-                    sm:text-base
+                    sm:text-[15px]
                   "
                 >
                   {accommodation.short_description}
@@ -286,11 +309,12 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
 
               <div
                 className="
-                  mt-7
+                  mt-8
                   grid
-                  grid-cols-1
-                  gap-3
-                  sm:grid-cols-3
+                  grid-cols-3
+                  border
+                  border-[#D9D4CA]
+                  bg-[#FAF8F2]
                 "
               >
                 <InfoCard
@@ -313,218 +337,50 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
               </div>
             </div>
 
-            <aside className="lg:sticky lg:top-6">
+            <aside className="lg:sticky lg:top-28">
               <div
                 className="
-                  border
-                  border-[#D8D2C8]
-                  bg-[#FAF8F2]
-                  p-5
-                  sm:p-6
-                "
+      border
+      border-[#D4CEC3]
+      bg-[#FAF8F2]
+      p-6
+      shadow-[0_12px_35px_rgba(38,58,45,0.04)]
+      sm:p-7
+    "
               >
-                <div
-                  className="
-                    flex
-                    items-end
-                    justify-between
-                    gap-4
-                    lg:block
-                  "
-                >
+                <div className="flex items-start justify-between gap-5">
                   <div>
                     <p
                       className="
-                        text-[9px]
-                        font-semibold
-                        uppercase
-                        tracking-[0.18em]
-                        text-[#8B9089]
-                      "
+            text-[9px]
+            font-semibold
+            uppercase
+            tracking-[0.2em]
+            text-[#A8754F]
+          "
                     >
-                      Gecelik
+                      Gecelik Fiyat
                     </p>
 
                     <p
                       className="
-                        mt-2
-                        font-serif
-                        text-[34px]
-                        leading-none
-                        text-[#263A2D]
-                        sm:text-4xl
-                      "
+            mt-3
+            font-serif
+            text-[40px]
+            leading-none
+            tracking-[-0.02em]
+            text-[#263A2D]
+            sm:text-[44px]
+          "
                     >
-                      {Number(accommodation.price).toLocaleString("tr-TR")} TL
+                      {formatPrice(accommodation.price)}
                     </p>
+
+                    <p className="mt-2 text-[10px] text-[#92968E]">Oda başına / gecelik</p>
                   </div>
-                </div>
 
-                <p
-                  className="
-                    mt-4
-                    text-[11px]
-                    leading-5
-                    text-[#777D75]
-                  "
-                >
-                  Tarih ve kişi bilgilerinizi seçerek müsaitliği anında kontrol edebilirsiniz.
-                </p>
-
-                <Link
-                  href={reservationHref}
-                  className="
-                    mt-5
-                    flex
-                    h-12
-                    w-full
-                    items-center
-                    justify-center
-                    bg-[#263A2D]
-                    px-5
-                    text-[10px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.16em]
-                    text-white
-                    transition-colors
-                    hover:bg-[#354A3B]
-                  "
-                >
-                  Rezervasyon Yap
-                </Link>
-
-                <div
-                  className="
-                    mt-5
-                    border-t
-                    border-[#DDD8CC]
-                    pt-4
-                  "
-                >
-                  <p
+                  <div
                     className="
-                      text-[10px]
-                      leading-5
-                      text-[#858A83]
-                    "
-                  >
-                    Rezervasyon oluşturulduktan sonra ödeme ve onay adımları ekranda
-                    gösterilecektir.
-                  </p>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </section>
-
-        <section className="px-5 py-10 sm:px-6 sm:py-12 md:px-12 md:py-16 lg:px-16">
-          <div
-            className="
-              mx-auto
-              grid
-              max-w-[1500px]
-              gap-10
-              lg:grid-cols-[0.8fr_1.2fr]
-              lg:gap-16
-            "
-          >
-            <div>
-              <p
-                className="
-                  text-[9px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.24em]
-                  text-[#A8754F]
-                "
-              >
-                Altunhan Farm
-              </p>
-
-              <h2
-                className="
-                  mt-3
-                  font-serif
-                  text-[30px]
-                  leading-tight
-                  text-[#263A2D]
-                  sm:text-[34px]
-                "
-              >
-                Konaklama Hakkında
-              </h2>
-
-              <p
-                className="
-                  mt-5
-                  whitespace-pre-line
-                  text-sm
-                  leading-7
-                  text-[#646A63]
-                "
-              >
-                {accommodation.description ||
-                  accommodation.short_description ||
-                  "Altunhan Farm'da doğayla iç içe huzurlu bir konaklama deneyimi."}
-              </p>
-            </div>
-
-            <div>
-              <p
-                className="
-                  text-[9px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.24em]
-                  text-[#A8754F]
-                "
-              >
-                Olanaklar
-              </p>
-
-              <h2
-                className="
-                  mt-3
-                  font-serif
-                  text-[30px]
-                  leading-tight
-                  text-[#263A2D]
-                  sm:text-[34px]
-                "
-              >
-                Konaklama Özellikleri
-              </h2>
-
-              {accommodation.amenities?.length > 0 ? (
-                <div
-                  className="
-                    mt-6
-                    grid
-                    gap-3
-                    sm:grid-cols-2
-                  "
-                >
-                  {accommodation.amenities.map((amenity) => {
-                    const Icon = getAmenityConfig(amenity)?.icon ?? Check;
-
-                    return (
-                      <div
-                        key={amenity}
-                        className="
-        flex
-        min-h-14
-        items-center
-        gap-3
-        border
-        border-[#DED9D0]
-        bg-[#F8F4EB]
-        px-4
-        py-3
-      "
-                      >
-                        <div
-                          className="
           flex
           h-10
           w-10
@@ -534,28 +390,308 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
           bg-[#E9EDE6]
           text-[#526048]
         "
+                  >
+                    <BedDouble size={17} strokeWidth={1.4} />
+                  </div>
+                </div>
+
+                <div className="my-6 h-px bg-[#DDD8CC]" />
+
+                <p
+                  className="
+        text-xs
+        leading-6
+        text-[#676E66]
+      "
+                >
+                  Tarih ve kişi bilgilerinizi seçerek konaklamanız için müsaitliği kontrol edin.
+                </p>
+
+                <Link
+                  href={reservationHref}
+                  className="
+        group
+        mt-6
+        flex
+        h-[52px]
+        w-full
+        items-center
+        justify-center
+        gap-3
+        bg-[#263A2D]
+        px-5
+        text-[10px]
+        font-semibold
+        uppercase
+        tracking-[0.17em]
+        text-white
+        transition-colors
+        hover:bg-[#354A3B]
+      "
+                >
+                  Rezervasyon Yap
+                  <ArrowRight
+                    size={14}
+                    className="
+          transition-transform
+          duration-300
+          group-hover:translate-x-1
+        "
+                  />
+                </Link>
+
+                <div
+                  className="
+        mt-5
+        flex
+        items-start
+        gap-3
+        border-t
+        border-[#DDD8CC]
+        pt-5
+      "
+                >
+                  <div
+                    className="
+          mt-0.5
+          flex
+          h-5
+          w-5
+          shrink-0
+          items-center
+          justify-center
+          rounded-full
+          bg-[#E9EDE6]
+          text-[#526048]
+        "
+                  >
+                    <Check size={11} strokeWidth={2} />
+                  </div>
+
+                  <p
+                    className="
+          text-[10px]
+          leading-5
+          text-[#7D837C]
+        "
+                  >
+                    Müsaitlik kontrolünden sonra ödeme ve onay adımları ekranda gösterilir.
+                  </p>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section
+          className="
+            px-5
+            py-12
+            sm:px-6
+            sm:py-14
+            md:px-12
+            md:py-18
+            lg:px-16
+          "
+        >
+          <div
+            className="
+              mx-auto
+              grid
+              max-w-[1500px]
+              gap-12
+              lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]
+              lg:gap-20
+            "
+          >
+            <div className="lg:pr-4">
+              <div className="flex items-center gap-3">
+                <span
+                  className="
+                    font-serif
+                    text-[12px]
+                    italic
+                    text-[#A8754F]
+                  "
+                >
+                  01
+                </span>
+
+                <div className="h-px w-7 bg-[#A8754F]" />
+
+                <p
+                  className="
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.24em]
+                    text-[#A8754F]
+                  "
+                >
+                  Altunhan Farm
+                </p>
+              </div>
+
+              <h2
+                className="
+                  mt-4
+                  max-w-[520px]
+                  font-serif
+                  text-[32px]
+                  leading-[1.08]
+                  text-[#263A2D]
+                  sm:text-[38px]
+                "
+              >
+                Konaklama Hakkında
+              </h2>
+
+              <div
+                className="
+                  mt-6
+                  border-l
+                  border-[#C9B08A]
+                  pl-5
+                  sm:pl-6
+                "
+              >
+                <p
+                  className="
+                    max-w-[580px]
+                    whitespace-pre-line
+                    text-[14px]
+                    leading-7
+                    text-[#5F665E]
+                    sm:text-[15px]
+                    sm:leading-8
+                  "
+                >
+                  {accommodation.description ||
+                    accommodation.short_description ||
+                    "Altunhan Farm'da doğayla iç içe huzurlu bir konaklama deneyimi."}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-3">
+                <span
+                  className="
+                    font-serif
+                    text-[12px]
+                    italic
+                    text-[#A8754F]
+                  "
+                >
+                  02
+                </span>
+
+                <div className="h-px w-7 bg-[#A8754F]" />
+
+                <p
+                  className="
+                    text-[9px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.24em]
+                    text-[#A8754F]
+                  "
+                >
+                  Olanaklar
+                </p>
+              </div>
+
+              <h2
+                className="
+                  mt-4
+                  font-serif
+                  text-[32px]
+                  leading-[1.08]
+                  text-[#263A2D]
+                  sm:text-[38px]
+                "
+              >
+                Konaklama Özellikleri
+              </h2>
+
+              {accommodation.amenities?.length > 0 ? (
+                <div
+                  className="
+                    mt-7
+                    grid
+                    gap-2.5
+                    sm:grid-cols-2
+                  "
+                >
+                  {accommodation.amenities.map((amenity) => {
+                    const amenityMeta = getAmenityMeta(amenity);
+                    const Icon = amenityMeta.icon;
+
+                    return (
+                      <div
+                        key={amenity}
+                        className="
+                          group
+                          flex
+                          min-h-[58px]
+                          items-center
+                          gap-3.5
+                          border
+                          border-[#DDD8CC]
+                          bg-[#FAF8F2]
+                          px-3.5
+                          py-2.5
+                          transition-colors
+                          hover:border-[#C9B08A]
+                          hover:bg-[#F7F2E8]
+                        "
+                      >
+                        <div
+                          className="
+                            flex
+                            h-9
+                            w-9
+                            shrink-0
+                            items-center
+                            justify-center
+                            bg-[#E9EDE6]
+                            text-[#526048]
+                            transition-colors
+                            group-hover:bg-[#E2E8DE]
+                          "
                         >
-                          <Icon size={18} strokeWidth={1.8} />
+                          <Icon size={16} strokeWidth={1.5} />
                         </div>
 
                         <span
                           className="
-          text-xs
-          font-medium
-          leading-5
-          text-[#505750]
-        "
+                            text-[11px]
+                            font-medium
+                            leading-5
+                            text-[#4E554E]
+                            sm:text-xs
+                          "
                         >
-                          {getAmenityLabel(amenity)}
+                          {amenityMeta.label}
                         </span>
                       </div>
                     );
                   })}
                 </div>
               ) : (
-                <p className="mt-5 text-sm text-[#777D75]">
-                  Bu konaklama için henüz özellik bilgisi eklenmemiş.
-                </p>
+                <div
+                  className="
+                    mt-7
+                    border
+                    border-[#DDD8CC]
+                    bg-[#FAF8F2]
+                    p-5
+                  "
+                >
+                  <p className="text-sm text-[#777D75]">
+                    Bu konaklama için henüz özellik bilgisi eklenmemiş.
+                  </p>
+                </div>
               )}
             </div>
           </div>
@@ -563,14 +699,12 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
 
         <section
           className="
-            border-t
-            border-[#DDD8CC]
-            bg-[#FAF8F2]
             px-5
-            py-12
+            pb-14
             sm:px-6
+            sm:pb-16
             md:px-12
-            md:py-14
+            md:pb-20
             lg:px-16
           "
         >
@@ -580,10 +714,17 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
               flex
               max-w-[1500px]
               flex-col
-              gap-6
+              gap-7
+              bg-[#263A2D]
+              px-6
+              py-8
+              text-white
+              sm:px-8
+              sm:py-10
               md:flex-row
               md:items-center
               md:justify-between
+              lg:px-10
             "
           >
             <div>
@@ -593,7 +734,7 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
                   font-semibold
                   uppercase
                   tracking-[0.24em]
-                  text-[#A8754F]
+                  text-[#C9B08A]
                 "
               >
                 Altunhan Farm
@@ -602,38 +743,62 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
               <h2
                 className="
                   mt-3
-                  max-w-[650px]
+                  max-w-[680px]
                   font-serif
-                  text-[28px]
+                  text-[30px]
                   leading-tight
-                  text-[#263A2D]
-                  sm:text-[34px]
+                  text-white
+                  sm:text-[38px]
                 "
               >
                 Saros&apos;ta yerinizi ayırın.
               </h2>
+
+              <p
+                className="
+                  mt-3
+                  max-w-[560px]
+                  text-xs
+                  leading-6
+                  text-white/60
+                  sm:text-sm
+                "
+              >
+                Tarihlerinizi seçin, müsaitliği kontrol edin ve rezervasyon talebinizi birkaç adımda
+                oluşturun.
+              </p>
             </div>
 
             <Link
               href={reservationHref}
               className="
+                group
                 inline-flex
                 h-12
                 shrink-0
                 items-center
                 justify-center
-                bg-[#263A2D]
+                gap-3
+                bg-[#F5F1E8]
                 px-8
                 text-[10px]
                 font-semibold
                 uppercase
                 tracking-[0.16em]
-                text-white
+                text-[#263A2D]
                 transition-colors
-                hover:bg-[#354A3B]
+                hover:bg-white
               "
             >
               Rezervasyon Yap
+              <ArrowRight
+                size={14}
+                className="
+                  transition-transform
+                  duration-300
+                  group-hover:translate-x-1
+                "
+              />
             </Link>
           </div>
         </section>

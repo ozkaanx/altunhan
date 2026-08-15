@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+
 import { ChevronLeft, ChevronRight, Images, X } from "lucide-react";
+
 import { useEffect, useState } from "react";
 
 import type { AccommodationImage } from "@/types/accommodation";
@@ -76,7 +78,19 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
 
   if (!hasImages) {
     return (
-      <div className="flex min-h-[420px] items-center justify-center bg-[#E8E2D7] text-sm text-[#8E8A81]">
+      <div
+        className="
+          flex
+          min-h-[380px]
+          items-center
+          justify-center
+          border
+          border-[#DDD8CC]
+          bg-[#E8E2D7]
+          text-sm
+          text-[#8E8A81]
+        "
+      >
         Henüz fotoğraf eklenmemiş.
       </div>
     );
@@ -86,8 +100,6 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
 
   const previewImages = images.slice(1, 4);
 
-  const remainingImageCount = Math.max(images.length - 4, 0);
-
   if (images.length === 1) {
     return (
       <>
@@ -95,14 +107,15 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
           type="button"
           onClick={() => openGallery(0)}
           className="
+            group
             relative
             block
-            aspect-[16/9]
+            aspect-[16/10]
             w-full
             overflow-hidden
             bg-[#E8E2D7]
             text-left
-            lg:h-[620px]
+            lg:h-[600px]
             lg:aspect-auto
           "
         >
@@ -115,10 +128,13 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
             className="
               object-cover
               transition-transform
-              duration-500
-              hover:scale-[1.02]
+              duration-700
+              ease-out
+              group-hover:scale-[1.015]
             "
           />
+
+          <GalleryButton imageCount={images.length} />
         </button>
 
         {activeIndex !== null && (
@@ -142,8 +158,7 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
           grid
           gap-2
           sm:gap-3
-
-          lg:h-[620px]
+          lg:h-[600px]
           lg:grid-cols-[minmax(0,3fr)_minmax(260px,1fr)]
         "
       >
@@ -151,12 +166,12 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
           type="button"
           onClick={() => openGallery(0)}
           className="
+            group
             relative
             aspect-[16/10]
             overflow-hidden
             bg-[#E8E2D7]
             text-left
-
             lg:h-full
             lg:aspect-auto
           "
@@ -170,8 +185,21 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
             className="
               object-cover
               transition-transform
-              duration-500
-              hover:scale-[1.02]
+              duration-700
+              ease-out
+              group-hover:scale-[1.015]
+            "
+          />
+
+          <div
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              bg-gradient-to-t
+              from-black/10
+              via-transparent
+              to-transparent
             "
           />
         </button>
@@ -206,8 +234,6 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
 
             const isLastPreview = index === previewImages.length - 1;
 
-            const showRemainingOverlay = isLastPreview && remainingImageCount > 0;
-
             return (
               <button
                 type="button"
@@ -220,7 +246,6 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
                   min-h-0
                   overflow-hidden
                   bg-[#E8E2D7]
-
                   lg:h-full
                   lg:aspect-auto
                 "
@@ -233,41 +258,25 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
                   className="
                     object-cover
                     transition-transform
-                    duration-500
-                    group-hover:scale-105
+                    duration-700
+                    ease-out
+                    group-hover:scale-[1.03]
                   "
                 />
 
-                {showRemainingOverlay && (
-                  <div
-                    className="
-                      absolute
-                      inset-0
-                      flex
-                      items-center
-                      justify-center
-                      bg-black/50
-                      transition-colors
-                      duration-300
-                      group-hover:bg-black/60
-                    "
-                  >
-                    <div className="flex flex-col items-center text-white">
-                      <Images size={20} strokeWidth={1.5} />
+                <div
+                  className="
+                    pointer-events-none
+                    absolute
+                    inset-0
+                    bg-black/0
+                    transition-colors
+                    duration-300
+                    group-hover:bg-black/5
+                  "
+                />
 
-                      <span
-                        className="
-                          mt-2
-                          text-xs
-                          font-semibold
-                          tracking-[0.08em]
-                        "
-                      >
-                        +{remainingImageCount} Fotoğraf
-                      </span>
-                    </div>
-                  </div>
-                )}
+                {isLastPreview && <GalleryButton imageCount={images.length} />}
               </button>
             );
           })}
@@ -285,6 +294,49 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
         />
       )}
     </>
+  );
+}
+
+function GalleryButton({ imageCount }: { imageCount: number }) {
+  return (
+    <div
+      className="
+        pointer-events-none
+        absolute
+        bottom-3
+        right-3
+        flex
+        items-center
+        gap-2.5
+        border
+        border-white/40
+        bg-[#FAF8F2]/95
+        px-3
+        py-2.5
+        text-[#263A2D]
+        shadow-sm
+        backdrop-blur-sm
+        sm:bottom-4
+        sm:right-4
+      "
+    >
+      <Images size={14} strokeWidth={1.5} />
+
+      <div className="text-left">
+        <p
+          className="
+            text-[8px]
+            font-semibold
+            uppercase
+            tracking-[0.13em]
+          "
+        >
+          Tüm Fotoğraflar
+        </p>
+
+        <p className="mt-0.5 text-[9px] text-[#7B8179]">{imageCount} fotoğraf</p>
+      </div>
+    </div>
   );
 }
 

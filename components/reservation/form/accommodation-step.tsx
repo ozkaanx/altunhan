@@ -2,8 +2,6 @@
 
 import { SectionTitle } from "@/components/shared/sectionTitle";
 
-
-
 import { formatPrice } from "@/lib/formatters/price";
 
 import type { PublicAccommodation } from "@/types/public-reservation";

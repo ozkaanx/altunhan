@@ -6,7 +6,6 @@ import { useTrackingReceiptUpload } from "@/hooks/reservation/use-tracking-recei
 
 import { formatReservationDate } from "@/lib/reservation/date-utils";
 
-
 import { formatPrice } from "@/lib/formatters/price";
 
 import type { SiteSettings } from "@/types/site-settings";
@@ -126,11 +125,7 @@ export function TrackingResult({
               value={`${reservation.nightCount} gece`}
             />
 
-            <InfoCard
-              icon={Phone}
-              label="Toplam"
-              value={formatPrice(reservation.totalPrice)}
-            />
+            <InfoCard icon={Phone} label="Toplam" value={formatPrice(reservation.totalPrice)} />
           </div>
 
           <TrackingTimeline reservation={reservation} />
