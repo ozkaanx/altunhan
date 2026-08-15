@@ -1,4 +1,4 @@
-import type { AccommodationBusyRange } from "@/app/rezervasyon/action";
+import type { AccommodationBusyRange } from "@/types/public-reservation";
 
 export function getTurkeyToday() {
   return new Intl.DateTimeFormat("en-CA", {

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { getAccommodationBusyRanges } from "@/app/rezervasyon/action";
 
-import type { AccommodationBusyRange } from "@/app/rezervasyon/action";
+import type { AccommodationBusyRange } from "@/types/public-reservation";
 
 export function useReservationAvailability(accommodationId: number | null) {
   const [busyRanges, setBusyRanges] = useState<AccommodationBusyRange[]>([]);

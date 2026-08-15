@@ -2,10 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-export type AccommodationBusyRange = {
-  checkIn: string;
-  checkOut: string;
-};
+import type { AccommodationBusyRange } from "@/types/public-reservation";
 
 type AccommodationBusyRangeRpc = {
   check_in: string;
