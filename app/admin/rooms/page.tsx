@@ -1,6 +1,7 @@
 import { RoomsBoard } from "@/components/admin/rooms-board";
 
-import type { AdminRoom } from "@/components/admin/rooms-board";
+
+import type { AdminRoom } from "@/types/admin-room";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -75,9 +76,13 @@ export default async function RoomsPage() {
     return (
       <section>
         <div className="border border-[#E7D6D1] bg-[#F8EEEA] px-5 py-12 text-center">
-          <h2 className="text-sm font-semibold text-[#8A5147]">Odalar yüklenemedi</h2>
+          <h2 className="text-sm font-semibold text-[#8A5147]">
+            Odalar yüklenemedi
+          </h2>
 
-          <p className="mt-2 text-xs text-[#9B746D]">Oda bilgileri alınırken bir hata oluştu.</p>
+          <p className="mt-2 text-xs text-[#9B746D]">
+            Oda bilgileri alınırken bir hata oluştu.
+          </p>
         </div>
       </section>
     );
@@ -93,7 +98,8 @@ export default async function RoomsPage() {
         </h1>
 
         <p className="mt-2 text-sm text-[#71756E]">
-          Oteldeki fiziksel odaları, dolulukları ve aktif rezervasyonları yönetin.
+          Oteldeki fiziksel odaları, dolulukları ve aktif rezervasyonları
+          yönetin.
         </p>
       </div>
 
