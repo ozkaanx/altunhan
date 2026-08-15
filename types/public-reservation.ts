@@ -1,3 +1,5 @@
+import type { PublicReservationValues } from "@/lib/reservation/reservation-schema";
+
 export type PublicAccommodationImage = {
   id: number;
   image_url: string;
@@ -20,19 +22,7 @@ export type PublicAccommodation = {
   accommodation_images?: PublicAccommodationImage[];
 };
 
-export type ReservationCreateInput = {
-  accommodationId: number;
-
-  checkIn: string;
-  checkOut: string;
-
-  adultCount: number;
-  childCount: number;
-
-  guestName: string;
-  guestPhone: string;
-  guestEmail: string;
-};
+export type ReservationCreateInput = PublicReservationValues;
 
 export type ReservationCreateResult =
   | {

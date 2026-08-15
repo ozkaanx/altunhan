@@ -14,6 +14,8 @@ import type { CreatedReservation } from "@/types/reservation-ui";
 
 import { calculateReservationTotal } from "@/lib/reservation/reservation-utils";
 
+import { publicReservationSchema } from "@/lib/reservation/reservation-schema";
+
 type UseReservationFormParams = {
   accommodations: PublicAccommodation[];
 
@@ -189,8 +191,22 @@ export function useReservationForm({
       return;
     }
 
-    if (!checkIn || !checkOut) {
-      setError("Lütfen giriş ve çıkış tarihlerini seçin.");
+    const validationResult = publicReservationSchema.safeParse({
+      accommodationId,
+
+      checkIn,
+      checkOut,
+
+      adultCount,
+      childCount,
+
+      guestName,
+      guestPhone,
+      guestEmail,
+    });
+
+    if (!validationResult.success) {
+      setError(validationResult.error.issues[0]?.message ?? "Rezervasyon bilgileri geçersiz.");
 
       return;
     }
@@ -201,25 +217,22 @@ export function useReservationForm({
       return;
     }
 
-    if (adultCount < 1) {
-      setError("En az 1 yetişkin seçilmelidir.");
+    const input = validationResult.data;
+    const totalGuestCount = input.adultCount + input.childCount;
 
-      return;
-    }
-
-    if (adultCount > selectedAccommodation.max_adults) {
+    if (input.adultCount > selectedAccommodation.max_adults) {
       setError(`Bu konaklamada en fazla ${selectedAccommodation.max_adults} yetişkin kalabilir.`);
 
       return;
     }
 
-    if (childCount > selectedAccommodation.max_children) {
+    if (input.childCount > selectedAccommodation.max_children) {
       setError(`Bu konaklamada en fazla ${selectedAccommodation.max_children} çocuk kalabilir.`);
 
       return;
     }
 
-    if (guestCount > selectedAccommodation.max_total_guests) {
+    if (totalGuestCount > selectedAccommodation.max_total_guests) {
       setError(
         `Bu konaklamanın maksimum toplam kapasitesi ${selectedAccommodation.max_total_guests} kişidir.`,
       );
@@ -227,30 +240,10 @@ export function useReservationForm({
       return;
     }
 
-    if (!guestName.trim() || !guestPhone.trim() || !guestEmail.trim()) {
-      setError("Lütfen ad soyad, telefon ve e-posta bilgilerinizi girin.");
-
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      const result = await createPublicReservation({
-        accommodationId,
-
-        checkIn,
-        checkOut,
-
-        adultCount,
-        childCount,
-
-        guestName: guestName.trim(),
-
-        guestPhone: guestPhone.trim(),
-
-        guestEmail: guestEmail.trim(),
-      });
+      const result = await createPublicReservation(input);
 
       if (!result.success) {
         setError(result.message);
@@ -266,7 +259,6 @@ export function useReservationForm({
         accommodationTitle: result.reservation.accommodationTitle,
 
         checkIn: result.reservation.checkIn,
-
         checkOut: result.reservation.checkOut,
 
         nightCount: result.reservation.nightCount,
@@ -280,10 +272,10 @@ export function useReservationForm({
         top: 0,
         behavior: "smooth",
       });
-    } catch (error) {
-      console.error("Rezervasyon oluşturulamadı:", error);
+    } catch (submitError) {
+      console.error("Rezervasyon oluşturulamadı:", submitError);
 
-      setError(error instanceof Error ? error.message : "Rezervasyon oluşturulamadı.");
+      setError(submitError instanceof Error ? submitError.message : "Rezervasyon oluşturulamadı.");
     } finally {
       setIsSubmitting(false);
     }

@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 
 import type { ReservationCreateInput, ReservationCreateResult } from "@/types/public-reservation";
+import { publicReservationSchema } from "@/lib/reservation/reservation-schema";
 
 type ReservationRpcResult = {
   reservation_id: number;
@@ -15,67 +16,31 @@ type ReservationRpcResult = {
 export async function createPublicReservation(
   values: ReservationCreateInput,
 ): Promise<ReservationCreateResult> {
-  const guestName = values.guestName.trim();
+  const validationResult = publicReservationSchema.safeParse(values);
 
-  const guestPhone = values.guestPhone.trim();
-
-  const guestEmail = values.guestEmail.trim().toLowerCase();
-
-  if (
-    !values.accommodationId ||
-    !values.checkIn ||
-    !values.checkOut ||
-    !guestName ||
-    !guestPhone ||
-    !guestEmail
-  ) {
+  if (!validationResult.success) {
     return {
       success: false,
-      message: "Lütfen zorunlu alanları doldurun.",
+      message: validationResult.error.issues[0]?.message ?? "Rezervasyon bilgileri geçersiz.",
     };
   }
 
-  if (!Number.isInteger(values.adultCount) || values.adultCount < 1) {
-    return {
-      success: false,
-      message: "En az 1 yetişkin seçilmelidir.",
-    };
-  }
-
-  if (!Number.isInteger(values.childCount) || values.childCount < 0) {
-    return {
-      success: false,
-      message: "Çocuk sayısı geçersiz.",
-    };
-  }
-
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (!emailPattern.test(guestEmail)) {
-    return {
-      success: false,
-      message: "Lütfen geçerli bir e-posta adresi girin.",
-    };
-  }
+  const input = validationResult.data;
 
   const supabase = await createClient();
 
   const { data, error } = await supabase.rpc("create_public_reservation_v2", {
-    p_accommodation_id: values.accommodationId,
+    p_accommodation_id: input.accommodationId,
 
-    p_check_in: values.checkIn,
+    p_check_in: input.checkIn,
+    p_check_out: input.checkOut,
 
-    p_check_out: values.checkOut,
+    p_adult_count: input.adultCount,
+    p_child_count: input.childCount,
 
-    p_adult_count: values.adultCount,
-
-    p_child_count: values.childCount,
-
-    p_guest_name: guestName,
-
-    p_guest_phone: guestPhone,
-
-    p_guest_email: guestEmail,
+    p_guest_name: input.guestName,
+    p_guest_phone: input.guestPhone,
+    p_guest_email: input.guestEmail,
   });
 
   if (error) {
@@ -106,9 +71,8 @@ export async function createPublicReservation(
 
       accommodationTitle: reservation.accommodation_title,
 
-      checkIn: values.checkIn,
-
-      checkOut: values.checkOut,
+      checkIn: input.checkIn,
+      checkOut: input.checkOut,
 
       nightCount: Number(reservation.night_count),
 
