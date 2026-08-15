@@ -49,10 +49,6 @@ export default function Restaurant() {
           lg:px-16
         "
       >
-        {/* ===================== */}
-        {/* BAŞLIK */}
-        {/* ===================== */}
-
         <div
           className="
             mb-10
@@ -109,10 +105,6 @@ export default function Restaurant() {
           </p>
         </div>
 
-        {/* ===================== */}
-        {/* ANA ALAN */}
-        {/* ===================== */}
-
         <div
           className="
     grid
@@ -160,8 +152,6 @@ export default function Restaurant() {
               "
             />
 
-            {/* Fotoğraf alt yazısı */}
-
             <div
               className="
                 absolute
@@ -200,10 +190,6 @@ export default function Restaurant() {
               </p>
             </div>
           </div>
-
-          {/* ================= */}
-          {/* ÖZELLİKLER */}
-          {/* ================= */}
 
           <div
             className="

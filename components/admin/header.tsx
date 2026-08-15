@@ -12,7 +12,6 @@ export function AdminHeader() {
   return (
     <>
       <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[#E5E1D8] bg-white/95 px-4 backdrop-blur-md sm:px-5 lg:px-8">
-        {/* Left */}
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
@@ -34,7 +33,6 @@ export function AdminHeader() {
           </div>
         </div>
 
-        {/* Right */}
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Link
             href="/"

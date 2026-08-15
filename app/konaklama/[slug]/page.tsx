@@ -255,8 +255,6 @@ export default async function AccommodationDetailPage({
       <Navbar />
 
       <main className="bg-[#F5F1E8]">
-        {/* GERİ DÖN */}
-
         <section className="border-b border-[#DDD8CC] px-5 py-5 sm:px-6 md:px-12 lg:px-16">
           <div className="mx-auto max-w-[1500px]">
             <Link
@@ -285,8 +283,6 @@ export default async function AccommodationDetailPage({
           </div>
         </section>
 
-        {/* GALERİ */}
-
         <section className="px-5 py-7 sm:px-6 sm:py-9 md:px-12 md:py-12 lg:px-16">
           <AccommodationGallery
             title={accommodation.title}
@@ -294,7 +290,6 @@ export default async function AccommodationDetailPage({
           />
         </section>
 
-        {/* BAŞLIK + REZERVASYON */}
 
         <section className="px-5 sm:px-6 md:px-12 lg:px-16">
           <div
@@ -356,7 +351,6 @@ export default async function AccommodationDetailPage({
                 </p>
               )}
 
-              {/* HIZLI BİLGİ */}
 
               <div
                 className="
@@ -387,7 +381,6 @@ export default async function AccommodationDetailPage({
               </div>
             </div>
 
-            {/* FİYAT / CTA */}
 
             <aside className="lg:sticky lg:top-6">
               <div
@@ -501,7 +494,6 @@ export default async function AccommodationDetailPage({
           </div>
         </section>
 
-        {/* DETAYLAR */}
 
         <section className="px-5 py-10 sm:px-6 sm:py-12 md:px-12 md:py-16 lg:px-16">
           <div
@@ -514,7 +506,6 @@ export default async function AccommodationDetailPage({
               lg:gap-16
             "
           >
-            {/* AÇIKLAMA */}
 
             <div>
               <p
@@ -557,7 +548,6 @@ export default async function AccommodationDetailPage({
               </p>
             </div>
 
-            {/* ÖZELLİKLER */}
 
             <div>
               <p
@@ -654,7 +644,6 @@ export default async function AccommodationDetailPage({
           </div>
         </section>
 
-        {/* ALT CTA */}
 
         <section
           className="

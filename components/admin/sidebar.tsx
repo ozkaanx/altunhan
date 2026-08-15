@@ -23,7 +23,7 @@ export function AdminSidebar() {
   };
 
   return (
-<aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-[#E5E1D8] bg-[#F8F6F1] xl:flex">      {/* Logo */}
+<aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-[#E5E1D8] bg-[#F8F6F1] xl:flex">      
       <div className="border-b border-[#E5E1D8] px-6 py-6">
         <Link href="/admin" className="block">
           <span className="font-serif text-2xl tracking-tight text-[#263A2D]">
@@ -36,7 +36,6 @@ export function AdminSidebar() {
         </Link>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-5">
         <p className="px-3 pb-3 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#9B968C]">
           Yönetim
@@ -84,7 +83,6 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      {/* Bottom */}
       <div className="space-y-1 border-t border-[#E5E1D8] p-3">
         <Link
           href="/"

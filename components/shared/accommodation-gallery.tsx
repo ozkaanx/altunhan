@@ -1,12 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Images,
-  X,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Images, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import type { AccommodationImage } from "@/types/accommodation";
@@ -96,9 +91,6 @@ export default function AccommodationGallery({
 
   const remainingImageCount = Math.max(images.length - 4, 0);
 
-  /*
-   * Sadece 1 fotoğraf varsa sağ tarafı boş bırakmıyoruz.
-   */
   if (images.length === 1) {
     return (
       <>
@@ -148,10 +140,6 @@ export default function AccommodationGallery({
 
   return (
     <>
-      {/* ============================= */}
-      {/* ANA GALERİ */}
-      {/* ============================= */}
-
       <div
         className="
           grid
@@ -162,7 +150,6 @@ export default function AccommodationGallery({
           lg:grid-cols-[minmax(0,3fr)_minmax(260px,1fr)]
         "
       >
-        {/* Ana fotoğraf */}
         <button
           type="button"
           onClick={() => openGallery(0)}
@@ -192,7 +179,6 @@ export default function AccommodationGallery({
           />
         </button>
 
-        {/* Küçük fotoğraflar */}
         <div
           className={`
             grid
@@ -221,8 +207,7 @@ export default function AccommodationGallery({
           {previewImages.map((image, index) => {
             const actualIndex = index + 1;
 
-            const isLastPreview =
-              index === previewImages.length - 1;
+            const isLastPreview = index === previewImages.length - 1;
 
             const showRemainingOverlay =
               isLastPreview && remainingImageCount > 0;
@@ -272,10 +257,7 @@ export default function AccommodationGallery({
                     "
                   >
                     <div className="flex flex-col items-center text-white">
-                      <Images
-                        size={20}
-                        strokeWidth={1.5}
-                      />
+                      <Images size={20} strokeWidth={1.5} />
 
                       <span
                         className="
@@ -295,10 +277,6 @@ export default function AccommodationGallery({
           })}
         </div>
       </div>
-
-      {/* ============================= */}
-      {/* FULLSCREEN GALERİ */}
-      {/* ============================= */}
 
       {activeIndex !== null && (
         <GalleryModal
@@ -348,7 +326,6 @@ function GalleryModal({
       aria-modal="true"
       aria-label={`${title} fotoğraf galerisi`}
     >
-      {/* Kapat */}
       <button
         type="button"
         aria-label="Galeriyi kapat"
@@ -377,7 +354,6 @@ function GalleryModal({
         <X size={20} />
       </button>
 
-      {/* Önceki */}
       {images.length > 1 && (
         <button
           type="button"
@@ -410,7 +386,6 @@ function GalleryModal({
         </button>
       )}
 
-      {/* Sonraki */}
       {images.length > 1 && (
         <button
           type="button"
@@ -443,7 +418,6 @@ function GalleryModal({
         </button>
       )}
 
-      {/* Aktif fotoğraf */}
       <div className="relative h-[82vh] w-full max-w-[1400px]">
         <Image
           src={images[activeIndex].image_url}
@@ -455,7 +429,6 @@ function GalleryModal({
         />
       </div>
 
-      {/* Sayaç */}
       <div
         className="
           absolute

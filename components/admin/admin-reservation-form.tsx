@@ -608,7 +608,6 @@ export function AdminReservationForm({
       onSubmit={handleSubmit}
       className="mt-7 space-y-5"
     >
-      {/* KONAKLAMA */}
       <section className="border border-[#E3E0D8] bg-white">
         <SectionTitle
           icon={BedDouble}
@@ -843,7 +842,6 @@ export function AdminReservationForm({
         </div>
       </section>
 
-      {/* MİSAFİR */}
       <section className="border border-[#E3E0D8] bg-white">
         <SectionTitle
           icon={User}
@@ -996,7 +994,6 @@ export function AdminReservationForm({
         </div>
       </section>
 
-      {/* REZERVASYON */}
       <section className="border border-[#E3E0D8] bg-white">
         <SectionTitle
           icon={Phone}

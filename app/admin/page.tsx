@@ -362,7 +362,6 @@ child_count,
 
   return (
     <section>
-      {/* HEADER */}
       <div className="mb-7">
         <p className="text-xs text-[#8B8E87]">{todayFormatted}</p>
 
@@ -376,7 +375,6 @@ child_count,
         </p>
       </div>
 
-      {/* STATS */}
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {statCards.map((stat) => {
           const Icon = stat.icon;
@@ -410,7 +408,6 @@ child_count,
         })}
       </div>
 
-      {/* TODAY */}
       <div className="mt-6">
         <section className="border border-[#E3E0D8] bg-[#263A2D] p-5 text-white sm:p-6">
           <div className="flex items-start justify-between gap-4">
@@ -470,9 +467,7 @@ child_count,
         </section>
       </div>
 
-      {/* MAIN */}
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        {/* UPCOMING */}
         <section className="border border-[#E3E0D8] bg-white">
           <div className="flex items-center justify-between border-b border-[#EAE7E0] px-4 py-4 sm:px-5">
             <div>
@@ -555,7 +550,6 @@ child_count,
           )}
         </section>
 
-        {/* ATTENTION */}
         <section className="border border-[#E3E0D8] bg-white">
           <div className="border-b border-[#EAE7E0] px-4 py-4 sm:px-5">
             <h2 className="text-sm font-semibold text-[#263A2D]">
@@ -639,7 +633,6 @@ child_count,
         </section>
       </div>
 
-      {/* RECENT */}
       <section className="mt-6 border border-[#E3E0D8] bg-white">
         <div className="flex items-center justify-between border-b border-[#EAE7E0] px-4 py-4 sm:px-5">
           <div>
@@ -669,7 +662,6 @@ child_count,
           </div>
         ) : (
           <>
-            {/* MOBILE */}
             <div className="divide-y divide-[#F0EDE7] md:hidden">
               {recentReservations.map((reservation) => (
                 <Link
@@ -715,7 +707,6 @@ child_count,
               ))}
             </div>
 
-            {/* DESKTOP */}
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full min-w-[800px]">
                 <thead>
