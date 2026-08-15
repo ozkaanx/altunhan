@@ -1,17 +1,34 @@
 "use client";
 
+import Image from "next/image";
+
+import { Check, Users } from "lucide-react";
+
 import { SectionTitle } from "@/components/shared/sectionTitle";
 
 import { formatPrice } from "@/lib/formatters/price";
 
-import type { PublicAccommodation } from "@/types/public-reservation";
+import type { PublicAccommodation, PublicAccommodationImage } from "@/types/public-reservation";
 
 type AccommodationStepProps = {
   accommodations: PublicAccommodation[];
   accommodationId: number | null;
-
   onChange: (accommodation: PublicAccommodation) => void;
 };
+
+function getCoverImage(images: PublicAccommodationImage[] | undefined) {
+  if (!images?.length) {
+    return null;
+  }
+
+  const cover = images.find((image) => image.is_cover);
+
+  if (cover) {
+    return cover.image_url;
+  }
+
+  return [...images].sort((a, b) => Number(a.sort_order) - Number(b.sort_order))[0]?.image_url;
+}
 
 export function AccommodationStep({
   accommodations,
@@ -19,17 +36,82 @@ export function AccommodationStep({
   onChange,
 }: AccommodationStepProps) {
   return (
-    <section className="border border-[#E3E0D8] bg-white p-4 sm:p-6">
-      <SectionTitle number="01" title="Konaklamanızı Seçin" />
+    <section
+      className="
+        border
+        border-[#DDD8CC]
+        bg-[#FAF8F2]
+        p-4
+        sm:p-6
+      "
+    >
+      <div
+        className="
+          flex
+          flex-col
+          gap-3
+          sm:flex-row
+          sm:items-end
+          sm:justify-between
+        "
+      >
+        <div>
+          <SectionTitle number="01" title="Konaklamanızı Seçin" />
+
+          <p
+            className="
+              mt-3
+              max-w-[560px]
+              text-[11px]
+              leading-5
+              text-[#81867F]
+            "
+          >
+            Size uygun konaklama tipini seçin. Tarih ve misafir bilgilerinizi bir sonraki bölümde
+            belirleyebilirsiniz.
+          </p>
+        </div>
+
+        <p
+          className="
+            text-[9px]
+            uppercase
+            tracking-[0.14em]
+            text-[#9A9D96]
+          "
+        >
+          {accommodations.length} seçenek
+        </p>
+      </div>
 
       {accommodations.length === 0 ? (
-        <div className="mt-5 border border-[#E7D8C0] bg-[#FAF5EA] p-4 text-xs leading-5 text-[#88662F]">
+        <div
+          className="
+            mt-6
+            border
+            border-[#E7D8C0]
+            bg-[#FAF5EA]
+            p-4
+            text-xs
+            leading-5
+            text-[#88662F]
+          "
+        >
           Şu anda rezervasyona açık konaklama bulunmuyor.
         </div>
       ) : (
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div
+          className="
+            mt-6
+            grid
+            gap-3
+            sm:grid-cols-2
+          "
+        >
           {accommodations.map((accommodation) => {
             const selected = accommodation.id === accommodationId;
+
+            const image = getCoverImage(accommodation.accommodation_images);
 
             return (
               <button
@@ -37,32 +119,206 @@ export function AccommodationStep({
                 key={accommodation.id}
                 aria-pressed={selected}
                 onClick={() => onChange(accommodation)}
-                className={`border p-4 text-left transition ${
-                  selected
-                    ? "border-[#263A2D] bg-[#F0F2EC]"
-                    : "border-[#E1DED7] bg-white hover:border-[#B9B5AD]"
-                }`}
+                className={`
+                  group
+                  relative
+                  overflow-hidden
+                  border
+                  text-left
+                  transition-all
+                  duration-300
+
+                  ${
+                    selected
+                      ? "border-[#263A2D] bg-[#F2F3ED] shadow-[0_10px_30px_rgba(38,58,45,0.07)]"
+                      : "border-[#DDD8CC] bg-white hover:border-[#B8B2A8]"
+                  }
+                `}
               >
-                <p className="text-sm font-semibold text-[#263A2D]">{accommodation.title}</p>
+                <div
+                  className="
+                    relative
+                    aspect-[16/7]
+                    overflow-hidden
+                    bg-[#E8E2D7]
+                  "
+                >
+                  {image ? (
+                    <Image
+                      src={image}
+                      alt={accommodation.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                      className="
+                        object-cover
+                        transition-transform
+                        duration-700
+                        group-hover:scale-[1.025]
+                      "
+                    />
+                  ) : (
+                    <div
+                      className="
+                        flex
+                        h-full
+                        items-center
+                        justify-center
+                        text-xs
+                        text-[#AAA69B]
+                      "
+                    >
+                      Altunhan Farm
+                    </div>
+                  )}
 
-                {accommodation.short_description && (
-                  <p className="mt-2 line-clamp-2 text-[11px] leading-5 text-[#81857F]">
-                    {accommodation.short_description}
-                  </p>
-                )}
+                  <div
+                    className="
+                      absolute
+                      inset-0
+                      bg-gradient-to-t
+                      from-black/25
+                      via-transparent
+                      to-transparent
+                    "
+                  />
 
-                <div className="mt-4 flex items-end justify-between gap-4">
-                  <div>
-                    <p className="text-[9px] uppercase tracking-[0.1em] text-[#969990]">Gecelik</p>
+                  {selected && (
+                    <div
+                      className="
+                        absolute
+                        right-3
+                        top-3
+                        flex
+                        items-center
+                        gap-1.5
+                        bg-[#263A2D]
+                        px-2.5
+                        py-1.5
+                        text-[8px]
+                        font-semibold
+                        uppercase
+                        tracking-[0.12em]
+                        text-white
+                      "
+                    >
+                      <Check size={11} strokeWidth={2} />
+                      Seçildi
+                    </div>
+                  )}
+                </div>
 
-                    <p className="mt-1 text-base font-semibold text-[#263A2D]">
-                      {formatPrice(Number(accommodation.price))}
-                    </p>
+                <div className="p-4">
+                  <div
+                    className="
+                      flex
+                      items-start
+                      justify-between
+                      gap-4
+                    "
+                  >
+                    <div className="min-w-0">
+                      <p
+                        className="
+                          text-[8px]
+                          font-semibold
+                          uppercase
+                          tracking-[0.18em]
+                          text-[#A8754F]
+                        "
+                      >
+                        Altunhan Farm
+                      </p>
+
+                      <h3
+                        className="
+                          mt-1.5
+                          font-serif
+                          text-xl
+                          leading-tight
+                          text-[#263A2D]
+                        "
+                      >
+                        {accommodation.title}
+                      </h3>
+                    </div>
+
+                    <div className="shrink-0 text-right">
+                      <p
+                        className="
+                          text-[8px]
+                          uppercase
+                          tracking-[0.12em]
+                          text-[#999D95]
+                        "
+                      >
+                        Gecelik
+                      </p>
+
+                      <p
+                        className="
+                          mt-1
+                          whitespace-nowrap
+                          text-sm
+                          font-semibold
+                          text-[#263A2D]
+                        "
+                      >
+                        {formatPrice(accommodation.price)}
+                      </p>
+                    </div>
                   </div>
 
-                  <p className="shrink-0 text-right text-[10px] text-[#858A83]">
-                    Maks. {accommodation.capacity} kişi
-                  </p>
+                  {accommodation.short_description && (
+                    <p
+                      className="
+                        mt-3
+                        line-clamp-2
+                        min-h-[40px]
+                        text-[10px]
+                        leading-5
+                        text-[#7B8079]
+                      "
+                    >
+                      {accommodation.short_description}
+                    </p>
+                  )}
+
+                  <div
+                    className="
+                      mt-4
+                      flex
+                      items-center
+                      justify-between
+                      border-t
+                      border-[#ECE8E0]
+                      pt-3
+                    "
+                  >
+                    <span
+                      className="
+                        flex
+                        items-center
+                        gap-1.5
+                        text-[9px]
+                        text-[#727870]
+                      "
+                    >
+                      <Users size={13} strokeWidth={1.5} />
+                      Maks. {accommodation.capacity} kişi
+                    </span>
+
+                    <span
+                      className={`
+                        text-[9px]
+                        font-semibold
+                        uppercase
+                        tracking-[0.12em]
+                        ${selected ? "text-[#263A2D]" : "text-[#949890]"}
+                      `}
+                    >
+                      {selected ? "Seçiminiz" : "Seç"}
+                    </span>
+                  </div>
                 </div>
               </button>
             );
