@@ -1,5 +1,10 @@
 import type { PublicReservationValues } from "@/lib/reservation/reservation-schema";
 
+export type AccommodationBusyRange = {
+  checkIn: string;
+  checkOut: string;
+};
+
 export type PublicAccommodationImage = {
   id: number;
   image_url: string;
