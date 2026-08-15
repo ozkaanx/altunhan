@@ -1,5 +1,7 @@
 import type { ChangeEvent } from "react";
 
+import Image from "next/image";
+
 import { ImagePlus, Trash2 } from "lucide-react";
 
 import { SectionHeader } from "@/components/admin/accommodation-form/form-elements";
@@ -47,10 +49,13 @@ export function AccommodationImagesSection({
             {images.map((image) => (
               <div key={image.id} className="overflow-hidden border border-[#E3E0D8] bg-white">
                 <div className="relative aspect-[4/3]">
-                  <img
+                  <Image
                     src={image.previewUrl}
                     alt="Konaklama fotoğrafı"
-                    className="h-full w-full object-cover"
+                    fill
+                    unoptimized
+                    sizes="(max-width: 640px) 50vw, 240px"
+                    className="object-cover"
                   />
 
                   {image.isCover && (

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { saveReceiptPath } from "@/app/rezervasyon/action";
@@ -14,6 +15,8 @@ import {
 } from "@/lib/reservation/reservation-utils";
 
 export function useReceiptUpload(reservation: CreatedReservation) {
+  const router = useRouter();
+
   const [receipt, setReceipt] = useState<File | null>(null);
 
   const [isUploading, setIsUploading] = useState(false);
@@ -96,9 +99,7 @@ export function useReceiptUpload(reservation: CreatedReservation) {
 
       setReceipt(null);
 
-      window.location.href = `/rezervasyon/takip?code=${encodeURIComponent(
-        reservation.reservationCode,
-      )}`;
+      router.push(`/rezervasyon/takip?code=${encodeURIComponent(reservation.reservationCode)}`);
     } catch (error) {
       console.error("Dekont yükleme hatası:", error);
 

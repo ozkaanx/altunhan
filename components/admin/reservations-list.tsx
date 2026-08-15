@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { ReservationDetailDrawer } from "@/components/admin/reservation-detail-drawer";
 
-import type { Reservation, ReservationStatus } from "@/types/reservation";
+import type { Reservation } from "@/types/reservation";
 
 import { useReservationsListNavigation } from "@/hooks/admin/use-reservations-list-navigation";
 

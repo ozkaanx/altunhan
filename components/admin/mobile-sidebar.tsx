@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronRight, ExternalLink, LogOut, X } from "lucide-react";
 
 import { adminNavigation } from "@/types/admin-navigation";
@@ -14,13 +14,15 @@ type AdminMobileSidebarProps = {
 
 export function AdminMobileSidebar({ open, onClose }: AdminMobileSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
 
   const handleLogout = async () => {
     const supabase = createClient();
 
     await supabase.auth.signOut();
 
-    window.location.href = "/auth/login";
+    router.replace("/auth/login");
+    router.refresh();
   };
 
   return (

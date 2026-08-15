@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import { ChevronLeft, ChevronRight, Images, X } from "lucide-react";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import type { AccommodationImage } from "@/types/accommodation";
 
@@ -22,11 +22,11 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
     setActiveIndex(index);
   }
 
-  function closeGallery() {
+  const closeGallery = useCallback(() => {
     setActiveIndex(null);
-  }
+  }, []);
 
-  function showPrevious() {
+  const showPrevious = useCallback(() => {
     setActiveIndex((current) => {
       if (current === null) {
         return null;
@@ -34,9 +34,9 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
 
       return current === 0 ? images.length - 1 : current - 1;
     });
-  }
+  }, [images.length]);
 
-  function showNext() {
+  const showNext = useCallback(() => {
     setActiveIndex((current) => {
       if (current === null) {
         return null;
@@ -44,7 +44,7 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
 
       return current === images.length - 1 ? 0 : current + 1;
     });
-  }
+  }, [images.length]);
 
   useEffect(() => {
     if (activeIndex === null) {
@@ -74,7 +74,7 @@ export default function AccommodationGallery({ title, images }: AccommodationGal
 
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activeIndex]);
+  }, [activeIndex, closeGallery, showNext, showPrevious]);
 
   if (!hasImages) {
     return (
