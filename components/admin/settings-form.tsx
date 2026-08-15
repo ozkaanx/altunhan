@@ -253,7 +253,6 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         </div>
       </section>
 
-      {/* BANK */}
       <section className="border border-[#E3E0D8] bg-white">
         <div className="border-b border-[#EEEAE3] px-4 py-4 sm:px-5">
           <div className="flex items-center gap-3">
@@ -304,7 +303,6 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         </div>
       </section>
 
-      {/* CONTACT */}
       <section className="border border-[#E3E0D8] bg-white">
         <div className="border-b border-[#EEEAE3] px-4 py-4 sm:px-5">
           <div className="flex items-center gap-3">

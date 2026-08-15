@@ -46,7 +46,6 @@ export function AccommodationsList({
 
   return (
     <section>
-      {/* Header */}
       <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs text-[#8B8E87]">Konaklama Yönetimi</p>
@@ -69,7 +68,6 @@ export function AccommodationsList({
         </Link>
       </div>
 
-      {/* Search */}
       <div className="mt-6">
         <div className="relative w-full sm:max-w-[380px]">
           <Search
@@ -103,11 +101,9 @@ export function AccommodationsList({
   </div>
 )}
 
-      {/* MOBILE */}
       <div className="mt-5 space-y-4 md:hidden">
         {filteredItems.map((item) => (
           <article key={item.id} className="border border-[#E3E0D8] bg-white">
-            {/* Şimdilik fotoğraf placeholder */}
             <div className="relative flex aspect-[16/8] items-center justify-center bg-[#E9E6DE]">
               <BedDouble
                 size={34}
@@ -205,7 +201,6 @@ export function AccommodationsList({
         ))}
       </div>
 
-      {/* DESKTOP */}
       {filteredItems.length > 0 && (
         <div className="mt-6 hidden overflow-hidden border border-[#E3E0D8] bg-white md:block">
           <div className="overflow-x-auto">

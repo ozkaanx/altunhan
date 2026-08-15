@@ -83,10 +83,6 @@ export default function LocationReviews({
           lg:px-16
         "
       >
-        {/* ====================== */}
-        {/* ÜST BAŞLIKLAR */}
-        {/* ====================== */}
-
         <div
           className="
             mb-8
@@ -97,8 +93,6 @@ export default function LocationReviews({
             xl:gap-16
           "
         >
-          {/* KONUM BAŞLIK */}
-
           <div className="min-w-0">
             <span
               className="
@@ -188,8 +182,6 @@ md:text-[38px]
             </Link>
           </div>
 
-          {/* YORUM BAŞLIK */}
-
           <div
             className="
               flex
@@ -265,10 +257,6 @@ md:text-[38px]
           </div>
         </div>
 
-        {/* ====================== */}
-        {/* HARİTA + YORUMLAR */}
-        {/* ====================== */}
-
         <div
           className="
             grid
@@ -279,8 +267,6 @@ md:text-[38px]
             xl:gap-16
           "
         >
-          {/* HARİTA */}
-
           <div
             className="
               relative
@@ -318,8 +304,6 @@ lg:min-h-[340px]
               "
             />
           </div>
-
-          {/* YORUMLAR */}
 
           <div
             className="
@@ -394,8 +378,6 @@ lg:min-h-[340px]
                           lg:w-[calc((100%-16px)/2)]
                         "
                     >
-                      {/* Büyük tırnak */}
-
                       <div
                         className="
                             font-serif
@@ -407,8 +389,6 @@ lg:min-h-[340px]
                       >
                         “
                       </div>
-
-                      {/* Yorum */}
 
                       <p
                         className="
@@ -423,8 +403,6 @@ lg:min-h-[340px]
                       >
                         {review.review_text}
                       </p>
-
-                      {/* Kullanıcı */}
 
                       <div
                         className="
@@ -482,8 +460,6 @@ lg:min-h-[340px]
                     </article>
                   ))}
                 </div>
-
-                {/* MOBİL KONTROLLER */}
 
                 {reviews.length > 1 && (
                   <div

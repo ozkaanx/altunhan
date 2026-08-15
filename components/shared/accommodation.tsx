@@ -55,7 +55,7 @@ export default function Accommodation({
       "
     >
       <div className="mx-auto max-w-[1500px]">
-        <div className="mb-10 text-center md:mb-14"> 
+        <div className="mb-10 text-center md:mb-14">
           <span
             className="
               mb-4
@@ -99,10 +99,6 @@ export default function Accommodation({
               "Doğanın içinde, sade ve huzurlu konaklama seçeneklerimizi keşfedin."}
           </p>
         </div>
-
-        {/* ===================== */}
-        {/* BOŞ DURUM */}
-        {/* ===================== */}
 
         {accommodations.length === 0 ? (
           <div
@@ -176,10 +172,6 @@ export default function Accommodation({
                       hover:shadow-[0_18px_45px_rgba(38,58,45,0.10)]
                     "
                 >
-                  {/* ================= */}
-                  {/* FOTOĞRAF */}
-                  {/* ================= */}
-
                   <Link
                     href={href}
                     className="
@@ -226,8 +218,6 @@ export default function Accommodation({
                       </div>
                     )}
 
-                    {/* Fotoğraf karartma */}
-
                     <div
                       className="
                           absolute
@@ -240,8 +230,6 @@ export default function Accommodation({
                           duration-500
                         "
                     />
-
-                    {/* Fiyat */}
 
                     <div
                       className="
@@ -280,10 +268,6 @@ export default function Accommodation({
                       </p>
                     </div>
                   </Link>
-
-                  {/* ================= */}
-                  {/* İÇERİK */}
-                  {/* ================= */}
 
                   <div
                     className="
@@ -359,8 +343,6 @@ export default function Accommodation({
                         "Altunhan Farm'da doğayla iç içe huzurlu bir konaklama deneyimi."}
                     </p>
 
-                    {/* Alt bilgi */}
-
                     <div
                       className="
                           mt-auto
@@ -426,10 +408,6 @@ export default function Accommodation({
             })}
           </div>
         )}
-
-        {/* ===================== */}
-        {/* REZERVASYON CTA */}
-        {/* ===================== */}
 
         {accommodations.length > 0 && (
           <div className="mt-10 text-center md:mt-14">

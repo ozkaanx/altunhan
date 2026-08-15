@@ -33,7 +33,6 @@ export function AdminMobileSidebar({
 
   return (
     <>
-      {/* Overlay */}
       <button
         type="button"
         aria-label="Menüyü kapat"
@@ -55,7 +54,6 @@ export function AdminMobileSidebar({
         `}
       />
 
-      {/* Sidebar */}
       <aside
         className={`
           fixed
@@ -80,7 +78,6 @@ export function AdminMobileSidebar({
           }
         `}
       >
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-[#E5E1D8] px-5 py-5">
           <Link
             href="/admin"
@@ -106,7 +103,6 @@ export function AdminMobileSidebar({
           </button>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-5">
           <p className="px-3 pb-3 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#9B968C]">
             Yönetim
@@ -159,7 +155,6 @@ export function AdminMobileSidebar({
           </div>
         </nav>
 
-        {/* Bottom */}
         <div className="border-t border-[#E5E1D8] p-3">
           <Link
             href="/"
