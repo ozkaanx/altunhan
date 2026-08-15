@@ -2,11 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  ChevronRight,
-  ExternalLink,
-  LogOut,
-} from "lucide-react";
+import { ChevronRight, ExternalLink, LogOut } from "lucide-react";
 
 import { adminNavigation } from "@/types/admin-navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -23,12 +19,10 @@ export function AdminSidebar() {
   };
 
   return (
-<aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-[#E5E1D8] bg-[#F8F6F1] xl:flex">      
+    <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-[#E5E1D8] bg-[#F8F6F1] xl:flex">
       <div className="border-b border-[#E5E1D8] px-6 py-6">
         <Link href="/admin" className="block">
-          <span className="font-serif text-2xl tracking-tight text-[#263A2D]">
-            Altunhan
-          </span>
+          <span className="font-serif text-2xl tracking-tight text-[#263A2D]">Altunhan</span>
 
           <span className="mt-0.5 block text-[9px] font-semibold tracking-[0.28em] text-[#A8754F]">
             FARM ADMIN
@@ -45,9 +39,7 @@ export function AdminSidebar() {
           const Icon = item.icon;
 
           const isActive =
-            item.href === "/admin"
-              ? pathname === "/admin"
-              : pathname.startsWith(item.href);
+            item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
 
           return (
             <Link
@@ -71,13 +63,9 @@ export function AdminSidebar() {
             >
               <Icon size={17} strokeWidth={1.7} />
 
-              <span className="flex-1">
-                {item.label}
-              </span>
+              <span className="flex-1">{item.label}</span>
 
-              {isActive && (
-                <ChevronRight size={14} />
-              )}
+              {isActive && <ChevronRight size={14} />}
             </Link>
           );
         })}
@@ -90,7 +78,6 @@ export function AdminSidebar() {
           className="flex items-center gap-3 px-3 py-2.5 text-sm text-[#5F655E] transition-colors hover:bg-[#ECE9E1] hover:text-[#263A2D]"
         >
           <ExternalLink size={17} />
-
           Siteyi Gör
         </Link>
 
@@ -100,7 +87,6 @@ export function AdminSidebar() {
           className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-[#8A5A4A] transition-colors hover:bg-[#F0E4DF]"
         >
           <LogOut size={17} />
-
           Çıkış Yap
         </button>
       </div>

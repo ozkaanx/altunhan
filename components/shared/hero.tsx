@@ -72,14 +72,10 @@ export default function Hero({ content, settings }: HeroProps) {
       <div className="absolute bottom-8 left-6 z-10 flex items-center gap-2 text-white/90 md:left-12 lg:left-16">
         <CiLocationOn className="text-xl" />
 
-        <span className="hidden text-xs tracking-wide md:inline-block">
-          {address}
-        </span>
+        <span className="hidden text-xs tracking-wide md:inline-block">{address}</span>
       </div>
       <div className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-3 text-white/80 md:flex">
-        <span className="text-[9px] uppercase tracking-[0.3em]">
-          Aşağı Kaydır
-        </span>
+        <span className="text-[9px] uppercase tracking-[0.3em]">Aşağı Kaydır</span>
 
         <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/50">
           <FiArrowDown className="animate-bounce text-sm" />

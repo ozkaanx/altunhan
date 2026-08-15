@@ -9,12 +9,10 @@ import { createClient } from "@/lib/supabase/server";
 export default async function NewReservationPage() {
   const supabase = await createClient();
 
-  const {
-    data: accommodations,
-    error: accommodationsError,
-  } = await supabase
+  const { data: accommodations, error: accommodationsError } = await supabase
     .from("accommodations")
-    .select(`
+    .select(
+      `
       id,
       title,
       capacity,
@@ -22,17 +20,15 @@ export default async function NewReservationPage() {
       max_adults,
       max_children,
       max_total_guests
-    `)
+    `,
+    )
     .eq("is_active", true)
     .order("id", {
       ascending: true,
     });
 
   if (accommodationsError) {
-    console.error(
-      "Konaklamalar alınamadı:",
-      accommodationsError,
-    );
+    console.error("Konaklamalar alınamadı:", accommodationsError);
 
     return (
       <section>
@@ -54,23 +50,19 @@ export default async function NewReservationPage() {
       </Link>
 
       <div className="mt-5">
-        <p className="text-xs text-[#8B8E87]">
-          Manuel Rezervasyon
-        </p>
+        <p className="text-xs text-[#8B8E87]">Manuel Rezervasyon</p>
 
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#263A2D]">
           Yeni Rezervasyon
         </h1>
 
         <p className="mt-2 text-sm leading-6 text-[#71756E]">
-          Telefon, WhatsApp veya resepsiyon üzerinden gelen
-          rezervasyonları buradan oluşturabilirsiniz.
+          Telefon, WhatsApp veya resepsiyon üzerinden gelen rezervasyonları buradan
+          oluşturabilirsiniz.
         </p>
       </div>
 
-      <AdminReservationForm
-        accommodations={accommodations ?? []}
-      />
+      <AdminReservationForm accommodations={accommodations ?? []} />
     </section>
   );
 }

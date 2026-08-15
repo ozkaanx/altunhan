@@ -22,11 +22,7 @@ export default function Navbar() {
     <>
       <nav className="relative z-40 w-full bg-[#F5F1E8]">
         <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-4 sm:px-6 md:h-24 md:px-12 lg:px-16">
-          <Link
-            href="/"
-            onClick={closeMenu}
-            className="flex flex-col leading-none"
-          >
+          <Link href="/" onClick={closeMenu} className="flex flex-col leading-none">
             <span className="font-serif text-[20px] tracking-[0.24em] text-[#263A2D] sm:text-[22px] sm:tracking-[0.28em]">
               ALTUNHAN
             </span>
@@ -60,22 +56,12 @@ export default function Navbar() {
 
           <button
             type="button"
-            aria-label={
-              isOpen
-                ? "Menüyü kapat"
-                : "Menüyü aç"
-            }
+            aria-label={isOpen ? "Menüyü kapat" : "Menüyü aç"}
             aria-expanded={isOpen}
-            onClick={() =>
-              setIsOpen((current) => !current)
-            }
+            onClick={() => setIsOpen((current) => !current)}
             className="flex h-11 w-11 items-center justify-center text-[#263A2D] lg:hidden"
           >
-            {isOpen ? (
-              <FiX size={25} />
-            ) : (
-              <FiMenu size={25} />
-            )}
+            {isOpen ? <FiX size={25} /> : <FiMenu size={25} />}
           </button>
         </div>
       </nav>
@@ -91,11 +77,7 @@ export default function Navbar() {
 
           <aside className="fixed right-0 top-0 z-50 flex h-dvh w-[85%] max-w-[360px] flex-col bg-[#F5F1E8] shadow-2xl lg:hidden">
             <div className="flex h-20 items-center justify-between border-b border-[#DDD8CC] px-5">
-              <Link
-                href="/"
-                onClick={closeMenu}
-                className="flex flex-col leading-none"
-              >
+              <Link href="/" onClick={closeMenu} className="flex flex-col leading-none">
                 <span className="font-serif text-[18px] tracking-[0.24em] text-[#263A2D]">
                   ALTUNHAN
                 </span>

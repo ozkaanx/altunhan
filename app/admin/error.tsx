@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  AlertTriangle,
-  RefreshCw,
-} from "lucide-react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
 export default function AdminError({
   reset,
@@ -25,9 +22,7 @@ export default function AdminError({
           Yönetim Paneli
         </p>
 
-        <h1 className="mt-2 text-2xl font-semibold text-[#263A2D]">
-          Veriler yüklenemedi
-        </h1>
+        <h1 className="mt-2 text-2xl font-semibold text-[#263A2D]">Veriler yüklenemedi</h1>
 
         <p className="mt-3 text-sm leading-6 text-[#747972]">
           Yönetim paneli verileri alınırken bir hata oluştu.

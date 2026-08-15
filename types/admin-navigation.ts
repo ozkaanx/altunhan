@@ -5,7 +5,7 @@ import {
   Settings,
   SlidersHorizontal,
   UserRoundCog,
-  BedDouble
+  BedDouble,
 } from "lucide-react";
 
 export const adminNavigation = [
@@ -24,11 +24,11 @@ export const adminNavigation = [
     href: "/admin/accommodations",
     icon: SlidersHorizontal,
   },
-    {
-  label: "Odalar",
-  href: "/admin/rooms",
-  icon: BedDouble,
-},
+  {
+    label: "Odalar",
+    href: "/admin/rooms",
+    icon: BedDouble,
+  },
   {
     label: "Yorumlar",
     href: "/admin/reviews",
@@ -44,5 +44,4 @@ export const adminNavigation = [
     href: "/admin/settings",
     icon: Settings,
   },
-
 ];

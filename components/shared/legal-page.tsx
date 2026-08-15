@@ -1,23 +1,15 @@
 import Link from "next/link";
 
-import {
-  ArrowLeft,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 type LegalPageProps = {
   eyebrow: string;
   title: string;
   description: string;
-  children:
-    React.ReactNode;
+  children: React.ReactNode;
 };
 
-export default function LegalPage({
-  eyebrow,
-  title,
-  description,
-  children,
-}: LegalPageProps) {
+export default function LegalPage({ eyebrow, title, description, children }: LegalPageProps) {
   return (
     <main className="min-h-screen bg-[#F5F1E8] px-6 py-12 md:px-12 md:py-16 lg:px-16">
       <div className="mx-auto max-w-[850px]">
@@ -25,10 +17,7 @@ export default function LegalPage({
           href="/"
           className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#626860]"
         >
-          <ArrowLeft
-            size={14}
-          />
-
+          <ArrowLeft size={14} />
           Ana Sayfaya Dön
         </Link>
 
@@ -41,36 +30,21 @@ export default function LegalPage({
             {title}
           </h1>
 
-          <p className="mt-5 max-w-[650px] text-sm leading-7 text-[#686E67]">
-            {description}
-          </p>
+          <p className="mt-5 max-w-[650px] text-sm leading-7 text-[#686E67]">{description}</p>
         </div>
 
-        <article className="space-y-9 py-10 text-sm leading-7 text-[#5E645D]">
-          {children}
-        </article>
+        <article className="space-y-9 py-10 text-sm leading-7 text-[#5E645D]">{children}</article>
       </div>
     </main>
   );
 }
 
-export function LegalSection({
-  title,
-  children,
-}: {
-  title: string;
-  children:
-    React.ReactNode;
-}) {
+export function LegalSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="font-serif text-2xl text-[#263A2D]">
-        {title}
-      </h2>
+      <h2 className="font-serif text-2xl text-[#263A2D]">{title}</h2>
 
-      <div className="mt-3 space-y-3">
-        {children}
-      </div>
+      <div className="mt-3 space-y-3">{children}</div>
     </section>
   );
 }

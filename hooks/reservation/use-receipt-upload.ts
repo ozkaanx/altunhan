@@ -13,26 +13,19 @@ import {
   isReceiptSizeValid,
 } from "@/lib/reservation/reservation-utils";
 
-export function useReceiptUpload(
-  reservation: CreatedReservation,
-) {
-  const [receipt, setReceipt] =
-    useState<File | null>(null);
+export function useReceiptUpload(reservation: CreatedReservation) {
+  const [receipt, setReceipt] = useState<File | null>(null);
 
-  const [isUploading, setIsUploading] =
-    useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const clearReceipt = () => {
     setReceipt(null);
     setError(null);
   };
 
-  const selectReceipt = (
-    file: File | null,
-  ) => {
+  const selectReceipt = (file: File | null) => {
     setError(null);
 
     if (!file) {
@@ -43,21 +36,15 @@ export function useReceiptUpload(
     if (!isReceiptSizeValid(file.size)) {
       setReceipt(null);
 
-      setError(
-        "Dekont en fazla 10 MB olabilir.",
-      );
+      setError("Dekont en fazla 10 MB olabilir.");
 
       return;
     }
 
-    if (
-      !isAllowedReceiptType(file.type)
-    ) {
+    if (!isAllowedReceiptType(file.type)) {
       setReceipt(null);
 
-      setError(
-        "Sadece JPG, PNG, WEBP veya PDF yükleyebilirsiniz.",
-      );
+      setError("Sadece JPG, PNG, WEBP veya PDF yükleyebilirsiniz.");
 
       return;
     }
@@ -74,77 +61,48 @@ export function useReceiptUpload(
     setError(null);
     setIsUploading(true);
 
-    let storagePath: string | null =
-      null;
+    let storagePath: string | null = null;
 
     const supabase = createClient();
 
     try {
-      const extension =
-        getFileExtension(receipt.name);
+      const extension = getFileExtension(receipt.name);
 
-      storagePath =
-        `${reservation.reservationCode}/` +
-        `${crypto.randomUUID()}.${extension}`;
+      storagePath = `${reservation.reservationCode}/` + `${crypto.randomUUID()}.${extension}`;
 
-      const { error: uploadError } =
-        await supabase.storage
-          .from(
-            "reservation-receipts",
-          )
-          .upload(
-            storagePath,
-            receipt,
-            {
-              cacheControl: "3600",
-              upsert: false,
-              contentType:
-                receipt.type,
-            },
-          );
+      const { error: uploadError } = await supabase.storage
+        .from("reservation-receipts")
+        .upload(storagePath, receipt, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: receipt.type,
+        });
 
       if (uploadError) {
-        throw new Error(
-          `Dekont yüklenemedi: ${uploadError.message}`,
-        );
+        throw new Error(`Dekont yüklenemedi: ${uploadError.message}`);
       }
 
-      const result =
-        await saveReceiptPath(
-          reservation.id,
-          reservation.reservationCode,
-          storagePath,
-        );
+      const result = await saveReceiptPath(
+        reservation.id,
+        reservation.reservationCode,
+        storagePath,
+      );
 
       if (!result.success) {
-        await supabase.storage
-          .from(
-            "reservation-receipts",
-          )
-          .remove([storagePath]);
+        await supabase.storage.from("reservation-receipts").remove([storagePath]);
 
-        throw new Error(
-          result.message,
-        );
+        throw new Error(result.message);
       }
 
       setReceipt(null);
 
-      window.location.href =
-        `/rezervasyon/takip?code=${encodeURIComponent(
-          reservation.reservationCode,
-        )}`;
+      window.location.href = `/rezervasyon/takip?code=${encodeURIComponent(
+        reservation.reservationCode,
+      )}`;
     } catch (error) {
-      console.error(
-        "Dekont yükleme hatası:",
-        error,
-      );
+      console.error("Dekont yükleme hatası:", error);
 
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Dekont yüklenemedi.",
-      );
+      setError(error instanceof Error ? error.message : "Dekont yüklenemedi.");
     } finally {
       setIsUploading(false);
     }

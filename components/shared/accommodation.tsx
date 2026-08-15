@@ -2,16 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { FiArrowRight } from "react-icons/fi";
-
 import { LuBedDouble, LuUsers } from "react-icons/lu";
 
 import type { HomeAccommodation } from "@/app/page";
-
+import { formatPrice } from "@/lib/formatters/price";
 import type { HomepageContent } from "@/types/homepage-content";
 
 type AccommodationProps = {
   accommodations: HomeAccommodation[];
-
   content: HomepageContent | null;
 };
 
@@ -35,10 +33,17 @@ function getCoverImage(accommodation: HomeAccommodation) {
   return firstImage?.image_url ?? null;
 }
 
-export default function Accommodation({
-  accommodations,
-  content,
-}: AccommodationProps) {
+function getShortDescription(accommodation: HomeAccommodation) {
+  const description = accommodation.short_description?.trim();
+
+  if (!description || description.length < 8) {
+    return "Doğayla iç içe, sakin ve konforlu bir konaklama deneyimi.";
+  }
+
+  return description;
+}
+
+export default function Accommodation({ accommodations, content }: AccommodationProps) {
   return (
     <section
       id="konaklama"
@@ -111,11 +116,7 @@ export default function Accommodation({
               text-center
             "
           >
-            <LuBedDouble
-              size={30}
-              strokeWidth={1}
-              className="mx-auto text-[#A8754F]"
-            />
+            <LuBedDouble size={30} strokeWidth={1} className="mx-auto text-[#A8754F]" />
 
             <p
               className="
@@ -134,7 +135,6 @@ export default function Accommodation({
               grid
               items-stretch
               gap-6
-
               ${
                 accommodations.length === 1
                   ? "mx-auto max-w-[430px] grid-cols-1"
@@ -149,38 +149,38 @@ export default function Accommodation({
             {accommodations.map((item) => {
               const image = getCoverImage(item);
 
-              const href = item.slug
-                ? `/konaklama/${item.slug}`
-                : "/rezervasyon";
+              const href = item.slug ? `/konaklama/${item.slug}` : "/rezervasyon";
+
+              const shortDescription = getShortDescription(item);
 
               return (
                 <article
                   key={item.id}
                   className="
-                      group
-                      flex
-                      h-full
-                      min-w-0
-                      flex-col
-                      overflow-hidden
-                      border
-                      border-[#DDD8CC]
-                      bg-[#FAF8F2]
-                      transition-all
-                      duration-500
-                      hover:-translate-y-1
-                      hover:shadow-[0_18px_45px_rgba(38,58,45,0.10)]
-                    "
+                    group
+                    flex
+                    h-full
+                    min-w-0
+                    flex-col
+                    overflow-hidden
+                    border
+                    border-[#DDD8CC]
+                    bg-[#FAF8F2]
+                    transition-all
+                    duration-500
+                    hover:-translate-y-1
+                    hover:shadow-[0_18px_45px_rgba(38,58,45,0.10)]
+                  "
                 >
                   <Link
                     href={href}
                     className="
-                        relative
-                        block
-                        aspect-[4/3]
-                        overflow-hidden
-                        bg-[#E8E2D7]
-                      "
+                      relative
+                      block
+                      aspect-[4/3]
+                      overflow-hidden
+                      bg-[#E8E2D7]
+                    "
                   >
                     {image ? (
                       <Image
@@ -188,125 +188,82 @@ export default function Accommodation({
                         alt={item.title}
                         fill
                         sizes="
-                            (max-width: 768px) 100vw,
-                            (max-width: 1280px) 50vw,
-                            25vw
-                          "
+                          (max-width: 768px) 100vw,
+                          (max-width: 1280px) 50vw,
+                          25vw
+                        "
                         className="
-                            object-cover
-                            transition-transform
-                            duration-700
-                            ease-out
-                            group-hover:scale-105
-                          "
+                          object-cover
+                          transition-transform
+                          duration-700
+                          ease-out
+                          group-hover:scale-105
+                        "
                       />
                     ) : (
                       <div
                         className="
-                            flex
-                            h-full
-                            w-full
-                            items-center
-                            justify-center
-                          "
+                          flex
+                          h-full
+                          w-full
+                          items-center
+                          justify-center
+                        "
                       >
-                        <LuBedDouble
-                          size={42}
-                          strokeWidth={1}
-                          className="text-[#AAA398]"
-                        />
+                        <LuBedDouble size={42} strokeWidth={1} className="text-[#AAA398]" />
                       </div>
                     )}
 
                     <div
                       className="
-                          absolute
-                          inset-0
-                          bg-gradient-to-t
-                          from-black/15
-                          via-transparent
-                          to-transparent
-                          transition-colors
-                          duration-500
-                        "
+                        absolute
+                        inset-0
+                        bg-gradient-to-t
+                        from-black/10
+                        via-transparent
+                        to-transparent
+                      "
                     />
-
-                    <div
-                      className="
-                          absolute
-                          bottom-4
-                          right-4
-                          bg-white/95
-                          px-3
-                          py-2
-                          shadow-sm
-                          backdrop-blur-sm
-                        "
-                    >
-                      <p
-                        className="
-                            text-[8px]
-                            font-medium
-                            uppercase
-                            tracking-[0.14em]
-                            text-[#8C9089]
-                          "
-                      >
-                        Gecelik
-                      </p>
-
-                      <p
-                        className="
-                            mt-0.5
-                            whitespace-nowrap
-                            text-sm
-                            font-semibold
-                            text-[#263A2D]
-                          "
-                      >
-                        {Number(item.price).toLocaleString("tr-TR")} TL
-                      </p>
-                    </div>
                   </Link>
 
                   <div
                     className="
-                        flex
-                        flex-1
-                        flex-col
-                        p-5
-                        sm:p-6
-                      "
+                      flex
+                      flex-1
+                      flex-col
+                      p-5
+                      sm:p-6
+                    "
                   >
                     <div
                       className="
-                          flex
-                          items-start
-                          justify-between
-                          gap-4
-                        "
+                        flex
+                        items-start
+                        justify-between
+                        gap-4
+                      "
                     >
                       <div className="min-w-0">
                         <p
                           className="
-                              text-[8px]
-                              font-semibold
-                              uppercase
-                              tracking-[0.22em]
-                              text-[#A8754F]
-                            "
+                            text-[8px]
+                            font-semibold
+                            uppercase
+                            tracking-[0.22em]
+                            text-[#A8754F]
+                          "
                         >
                           Altunhan Farm
                         </p>
 
                         <h3
                           className="
-                              mt-2
-                              font-serif
-                              text-[22px]
-                              leading-tight
-                              text-[#263A2D]
-                            "
+                            mt-2
+                            font-serif
+                            text-[24px]
+                            leading-[1.15]
+                            text-[#263A2D]
+                          "
                         >
                           {item.title}
                         </h3>
@@ -314,63 +271,84 @@ export default function Accommodation({
 
                       <div
                         className="
-                            flex
-                            h-10
-                            w-10
-                            shrink-0
-                            items-center
-                            justify-center
-                            border
-                            border-[#DDD8CC]
-                            text-[#526048]
-                          "
+                          shrink-0
+                          border
+                          border-[#DDD8CC]
+                          bg-[#F5F1E8]
+                          px-3
+                          py-2.5
+                          text-right
+                        "
                       >
-                        <LuBedDouble size={18} strokeWidth={1.2} />
+                        <p
+                          className="
+                            text-[8px]
+                            font-medium
+                            uppercase
+                            tracking-[0.15em]
+                            text-[#8C9089]
+                          "
+                        >
+                          Gecelik
+                        </p>
+
+                        <p
+                          className="
+                            mt-1
+                            whitespace-nowrap
+                            text-[17px]
+                            font-semibold
+                            leading-none
+                            tracking-tight
+                            text-[#263A2D]
+                          "
+                        >
+                          {formatPrice(item.price)}
+                        </p>
                       </div>
                     </div>
 
                     <p
                       className="
-                          mt-4
-                          line-clamp-2
-                          min-h-[42px]
-                          text-[11px]
-                          leading-[1.8]
-                          text-[#666B64]
-                        "
+                        mt-4
+                        line-clamp-2
+                        min-h-[42px]
+                        text-[11px]
+                        leading-[1.8]
+                        text-[#666B64]
+                      "
                     >
-                      {item.short_description ||
-                        "Altunhan Farm'da doğayla iç içe huzurlu bir konaklama deneyimi."}
+                      {shortDescription}
                     </p>
 
                     <div
                       className="
-                          mt-auto
-                          flex
-                          items-center
-                          justify-between
-                          gap-3
-                          border-t
-                          border-[#DED9D0]
-                          pt-5
-                        "
+                        mt-auto
+                        flex
+                        items-center
+                        justify-between
+                        gap-3
+                        border-t
+                        border-[#DED9D0]
+                        pt-5
+                      "
                     >
                       <div
                         className="
-                            flex
-                            items-center
-                            gap-2
-                            text-[#737971]
-                          "
+                          flex
+                          items-center
+                          gap-2
+                          text-[#737971]
+                        "
                       >
                         <LuUsers size={15} strokeWidth={1.4} />
 
                         <span
                           className="
-                              whitespace-nowrap
-                              text-[10px]
-                              font-medium
-                            "
+                            whitespace-nowrap
+                            text-[10px]
+                            font-medium
+                          "
                         >
                           Maks. {item.capacity} kişi
                         </span>
@@ -379,26 +357,26 @@ export default function Accommodation({
                       <Link
                         href={href}
                         className="
-                            group/link
-                            inline-flex
-                            shrink-0
-                            items-center
-                            gap-2
-                            text-[9px]
-                            font-semibold
-                            uppercase
-                            tracking-[0.14em]
-                            text-[#263A2D]
-                          "
+                          group/link
+                          inline-flex
+                          shrink-0
+                          items-center
+                          gap-2
+                          text-[9px]
+                          font-semibold
+                          uppercase
+                          tracking-[0.14em]
+                          text-[#263A2D]
+                        "
                       >
                         Detay
                         <FiArrowRight
                           size={12}
                           className="
-                              transition-transform
-                              duration-300
-                              group-hover/link:translate-x-1
-                            "
+                            transition-transform
+                            duration-300
+                            group-hover/link:translate-x-1
+                          "
                         />
                       </Link>
                     </div>

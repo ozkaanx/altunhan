@@ -12,33 +12,22 @@ export async function requireAdmin() {
     return {
       success: false as const,
       supabase,
-      message:
-        "Bu işlem için yönetici girişi yapmanız gerekiyor.",
+      message: "Bu işlem için yönetici girişi yapmanız gerekiyor.",
     };
   }
 
   const adminEmails =
-    process.env.ADMIN_EMAILS
-      ?.split(",")
-      .map((email) =>
-        email.trim().toLowerCase(),
-      )
+    process.env.ADMIN_EMAILS?.split(",")
+      .map((email) => email.trim().toLowerCase())
       .filter(Boolean) ?? [];
 
-  const email =
-    user.email
-      ?.trim()
-      .toLowerCase();
+  const email = user.email?.trim().toLowerCase();
 
-  if (
-    !email ||
-    !adminEmails.includes(email)
-  ) {
+  if (!email || !adminEmails.includes(email)) {
     return {
       success: false as const,
       supabase,
-      message:
-        "Bu kullanıcı yönetici yetkisine sahip değil.",
+      message: "Bu kullanıcı yönetici yetkisine sahip değil.",
     };
   }
 

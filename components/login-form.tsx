@@ -34,10 +34,7 @@ export function LoginForm() {
       router.replace("/admin");
       router.refresh();
     } catch (error: unknown) {
-      if (
-        error instanceof Error &&
-        error.message === "Invalid login credentials"
-      ) {
+      if (error instanceof Error && error.message === "Invalid login credentials") {
         setError("E-posta adresi veya şifre hatalı.");
       } else {
         setError("Giriş yapılırken bir hata oluştu.");
@@ -55,9 +52,7 @@ export function LoginForm() {
             Altunhan Farm
           </p>
 
-          <h1 className="mt-3 font-serif text-3xl text-[#263A2D]">
-            Yönetim Paneli
-          </h1>
+          <h1 className="mt-3 font-serif text-3xl text-[#263A2D]">Yönetim Paneli</h1>
 
           <p className="mt-3 text-xs leading-5 text-[#7C817A]">
             Yönetim paneline erişmek için bilgilerinizi girin.
@@ -66,10 +61,7 @@ export function LoginForm() {
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label
-              htmlFor="email"
-              className="text-xs font-medium text-[#40463F]"
-            >
+            <label htmlFor="email" className="text-xs font-medium text-[#40463F]">
               E-posta
             </label>
 
@@ -86,10 +78,7 @@ export function LoginForm() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="text-xs font-medium text-[#40463F]"
-            >
+            <label htmlFor="password" className="text-xs font-medium text-[#40463F]">
               Şifre
             </label>
 

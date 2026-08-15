@@ -1,26 +1,18 @@
 "use client";
 
-import {
-  ArrowLeft,
-  CalendarDays,
-  Home,
-  Phone,
-  ShieldCheck,
-  Users,
-} from "lucide-react";
+import { ArrowLeft, CalendarDays, Home, Phone, ShieldCheck, Users } from "lucide-react";
 
 import { useTrackingReceiptUpload } from "@/hooks/reservation/use-tracking-receipt-upload";
 
 import { formatReservationDate } from "@/lib/reservation/date-utils";
 
-import { formatReservationPrice } from "@/lib/reservation/reservation-utils";
+import { formatPrice } from "@/lib/formatters/price";
 
 import type { SiteSettings } from "@/types/site-settings";
 
-import type {
-  PublicReservationStatus,
-  ReservationTrackingResult,
-} from "@/types/reservation-tracking";
+import type { ReservationTrackingResult } from "@/types/reservation-tracking";
+import { getReservationStatusLabel } from "@/lib/reservation/status-utils";
+
 import { TrackingStatusCard } from "./tracking-status-card";
 import { TrackingTimeline } from "./tracking-timeline";
 import { BankInformation } from "../payment/bank-information";
@@ -34,18 +26,6 @@ type TrackingResultProps = {
   onReset: () => void;
 
   onReservationChange: (reservation: ReservationTrackingResult) => void;
-};
-
-const statusLabels: Record<PublicReservationStatus, string> = {
-  pending_payment: "Ödeme Bekleniyor",
-
-  pending_approval: "Onay Bekliyor",
-
-  confirmed: "Onaylandı",
-
-  rejected: "Reddedildi",
-
-  cancelled: "İptal Edildi",
 };
 
 export function TrackingResult({
@@ -90,9 +70,7 @@ export function TrackingResult({
 
           <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="font-serif text-3xl text-[#263A2D]">
-                {reservation.guestName}
-              </h1>
+              <h1 className="font-serif text-3xl text-[#263A2D]">{reservation.guestName}</h1>
 
               <p className="mt-2 break-all text-xs font-semibold tracking-[0.08em] text-[#7D817B]">
                 {reservation.reservationCode}
@@ -100,7 +78,7 @@ export function TrackingResult({
             </div>
 
             <span className="w-fit bg-[#F0EFEA] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#60665F]">
-              {statusLabels[reservation.status]}
+              {getReservationStatusLabel(reservation.status)}
             </span>
           </div>
         </div>
@@ -109,26 +87,15 @@ export function TrackingResult({
           <TrackingStatusCard status={reservation.status} />
 
           {reservation.status === "rejected" && reservation.rejectionReason && (
-            <ReasonBox
-              title="Red Açıklaması"
-              description={reservation.rejectionReason}
-            />
+            <ReasonBox title="Red Açıklaması" description={reservation.rejectionReason} />
           )}
 
-          {reservation.status === "cancelled" &&
-            reservation.cancellationReason && (
-              <ReasonBox
-                title="İptal Açıklaması"
-                description={reservation.cancellationReason}
-              />
-            )}
+          {reservation.status === "cancelled" && reservation.cancellationReason && (
+            <ReasonBox title="İptal Açıklaması" description={reservation.cancellationReason} />
+          )}
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <InfoCard
-              icon={Home}
-              label="Konaklama"
-              value={reservation.accommodationTitle}
-            />
+            <InfoCard icon={Home} label="Konaklama" value={reservation.accommodationTitle} />
 
             <InfoCard
               icon={Users}
@@ -158,47 +125,33 @@ export function TrackingResult({
               value={`${reservation.nightCount} gece`}
             />
 
-            <InfoCard
-              icon={Phone}
-              label="Toplam"
-              value={formatReservationPrice(reservation.totalPrice)}
-            />
+            <InfoCard icon={Phone} label="Toplam" value={formatPrice(reservation.totalPrice)} />
           </div>
 
           <TrackingTimeline reservation={reservation} />
 
-          {reservation.status === "pending_payment" &&
-            !reservation.hasReceipt && (
-              <>
-                <BankInformation
-                  settings={settings}
-                  reservationCode={reservation.reservationCode}
-                />
+          {reservation.status === "pending_payment" && !reservation.hasReceipt && (
+            <>
+              <BankInformation settings={settings} reservationCode={reservation.reservationCode} />
 
-                <TrackingReceiptUpload
-                  receipt={receipt}
-                  error={error}
-                  uploadSuccess={uploadSuccess}
-                  isUploading={isUploading}
-                  onSelect={selectReceipt}
-                  onRemove={clearReceipt}
-                  onUpload={uploadReceipt}
-                />
-              </>
-            )}
+              <TrackingReceiptUpload
+                receipt={receipt}
+                error={error}
+                uploadSuccess={uploadSuccess}
+                isUploading={isUploading}
+                onSelect={selectReceipt}
+                onRemove={clearReceipt}
+                onUpload={uploadReceipt}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function ReasonBox({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+function ReasonBox({ title, description }: { title: string; description: string }) {
   return (
     <div className="mt-4 border border-[#E5C7C0] bg-[#F8EEEA] p-4">
       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#98584E]">
@@ -226,9 +179,7 @@ function InfoCard({
       <div className="min-w-0">
         <p className="text-[10px] text-[#969990]">{label}</p>
 
-        <p className="mt-1 break-words text-xs font-semibold text-[#263A2D]">
-          {value}
-        </p>
+        <p className="mt-1 break-words text-xs font-semibold text-[#263A2D]">{value}</p>
       </div>
     </div>
   );

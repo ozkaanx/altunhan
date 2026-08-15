@@ -317,14 +317,11 @@ export async function notifyReceiptSubmitted(
   reservationCode: string,
   storagePath: string,
 ) {
-  const { data, error } = await supabase.rpc(
-    "get_receipt_notification_context_v2",
-    {
-      p_reservation_code: reservationCode,
+  const { data, error } = await supabase.rpc("get_receipt_notification_context_v2", {
+    p_reservation_code: reservationCode,
 
-      p_storage_path: storagePath,
-    },
-  );
+    p_storage_path: storagePath,
+  });
 
   if (error) {
     console.error("Dekont bildirim bilgisi alınamadı:", error);

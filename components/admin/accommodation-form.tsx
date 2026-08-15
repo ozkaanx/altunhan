@@ -1,103 +1,21 @@
 "use client";
 
-import {
-  Baby,
-  Bath,
-  BedDouble,
-  Car,
-  ImagePlus,
-  Minus,
-  Plus,
-  Save,
-  ShieldCheck,
-  Trash2,
-  Trees,
-  Umbrella,
-  Users,
-  Utensils,
-  Waves,
-  Wifi,
-  Wind,
-} from "lucide-react";
+import { Baby, ImagePlus, Minus, Plus, Save, Trash2, Users } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { createAccommodation } from "@/app/admin/accommodations/action";
 import { uploadAccommodationImages } from "@/lib/supabase/upload-accommodation-images";
+import { amenityOptions } from "@/lib/accommodation/amenities";
 
-import type {
-  AccommodationFormValues,
-  AccommodationImageValue,
-} from "@/types/accommodation";
+import type { AccommodationFormValues, AccommodationImageValue } from "@/types/accommodation";
 
 type AccommodationFormProps = {
   initialValues?: Partial<AccommodationFormValues>;
   submitLabel?: string;
   onSubmit?: (values: AccommodationFormValues) => void | Promise<void>;
 };
-
-const amenityOptions = [
-  {
-    label: "Wi-Fi",
-    value: "wifi",
-    icon: Wifi,
-  },
-  {
-    label: "Klima",
-    value: "air_conditioning",
-    icon: Wind,
-  },
-  {
-    label: "Özel Banyo",
-    value: "private_bathroom",
-    icon: Bath,
-  },
-  {
-    label: "Deniz Manzarası",
-    value: "sea_view",
-    icon: Waves,
-  },
-  {
-    label: "Kahvaltı",
-    value: "breakfast",
-    icon: Utensils,
-  },
-  {
-    label: "Kendine Ait Beach",
-    value: "private_beach",
-    icon: Waves,
-  },
-  {
-    label: "Beyaz Şezlong ve Şemsiye",
-    value: "white_sunbed_and_umbrella",
-    icon: Umbrella,
-  },
-  {
-    label: "Açık Otopark",
-    value: "open_parking",
-    icon: Car,
-  },
-  {
-    label: "Geniş Bahçe",
-    value: "large_garden",
-    icon: Trees,
-  },
-  {
-    label: "Çocuk Oyun Parkı",
-    value: "children_playground",
-    icon: Baby,
-  },
-  {
-    label: "Sürekli İlaçlanan Alan",
-    value: "regularly_treated_area",
-    icon: ShieldCheck,
-  },
-  {
-    label: "Denize Sıfır Restoran",
-    value: "seafront_restaurant",
-    icon: Utensils,
-  },
-];
 
 const defaultValues: AccommodationFormValues = {
   title: "",
@@ -144,12 +62,7 @@ export function AccommodationForm({
     }));
   };
 
-  type CounterKey =
-    | "maxAdults"
-    | "maxChildren"
-    | "maxTotalGuests"
-    | "bedCount"
-    | "bathroomCount";
+  type CounterKey = "maxAdults" | "maxChildren" | "maxTotalGuests" | "bedCount" | "bathroomCount";
 
   const increment = (key: CounterKey) => {
     setValues((current) => {
@@ -198,11 +111,7 @@ export function AccommodationForm({
       }
 
       if (key === "maxTotalGuests") {
-        const minimumTotal = Math.max(
-          1,
-          current.maxAdults,
-          current.maxChildren,
-        );
+        const minimumTotal = Math.max(1, current.maxAdults, current.maxChildren);
 
         const nextTotal = Math.max(minimumTotal, current.maxTotalGuests - 1);
 
@@ -225,9 +134,7 @@ export function AccommodationForm({
 
     updateValue(
       "amenities",
-      exists
-        ? values.amenities.filter((item) => item !== amenity)
-        : [...values.amenities, amenity],
+      exists ? values.amenities.filter((item) => item !== amenity) : [...values.amenities, amenity],
     );
   };
 
@@ -253,14 +160,12 @@ export function AccommodationForm({
       return;
     }
 
-    const newImages: AccommodationImageValue[] = selectedFiles.map(
-      (file, index) => ({
-        id: crypto.randomUUID(),
-        file,
-        previewUrl: URL.createObjectURL(file),
-        isCover: values.images.length === 0 && index === 0,
-      }),
-    );
+    const newImages: AccommodationImageValue[] = selectedFiles.map((file, index) => ({
+      id: crypto.randomUUID(),
+      file,
+      previewUrl: URL.createObjectURL(file),
+      isCover: values.images.length === 0 && index === 0,
+    }));
 
     updateValue("images", [...values.images, ...newImages]);
 
@@ -356,9 +261,7 @@ export function AccommodationForm({
     } catch (error) {
       console.error(error);
 
-      setSubmitError(
-        error instanceof Error ? error.message : "Beklenmeyen bir hata oluştu.",
-      );
+      setSubmitError(error instanceof Error ? error.message : "Beklenmeyen bir hata oluştu.");
     } finally {
       setIsSubmitting(false);
     }
@@ -367,10 +270,7 @@ export function AccommodationForm({
   return (
     <form onSubmit={handleSubmit} className="mx-auto max-w-[900px] space-y-5">
       <section className="border border-[#E3E0D8] bg-white">
-        <SectionHeader
-          title="Temel Bilgiler"
-          description="Konaklamanın ana bilgilerini girin."
-        />
+        <SectionHeader title="Temel Bilgiler" description="Konaklamanın ana bilgilerini girin." />
 
         <div className="space-y-5 p-4 sm:p-5">
           <Field label="Konaklama Adı">
@@ -386,9 +286,7 @@ export function AccommodationForm({
           <Field label="Kısa Açıklama">
             <input
               value={values.shortDescription}
-              onChange={(event) =>
-                updateValue("shortDescription", event.target.value)
-              }
+              onChange={(event) => updateValue("shortDescription", event.target.value)}
               placeholder="Kartlarda gösterilecek kısa açıklama"
               className={inputClass}
             />
@@ -396,9 +294,7 @@ export function AccommodationForm({
 
           <div>
             <div className="flex items-center justify-between">
-              <label className="text-xs font-medium text-[#40463F]">
-                Açıklama
-              </label>
+              <label className="text-xs font-medium text-[#40463F]">Açıklama</label>
 
               <span className="text-[10px] text-[#A0A39C]">
                 {values.description.length}
@@ -409,9 +305,7 @@ export function AccommodationForm({
             <textarea
               value={values.description}
               maxLength={1000}
-              onChange={(event) =>
-                updateValue("description", event.target.value)
-              }
+              onChange={(event) => updateValue("description", event.target.value)}
               rows={6}
               placeholder="Konaklama hakkında detaylı açıklama..."
               className="mt-2 w-full resize-none border border-[#DDD9D1] bg-[#FAF9F6] p-3 text-sm leading-6 text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D]"
@@ -431,9 +325,7 @@ export function AccommodationForm({
                 min={0}
                 required
                 value={values.price || ""}
-                onChange={(event) =>
-                  updateValue("price", Number(event.target.value))
-                }
+                onChange={(event) => updateValue("price", Number(event.target.value))}
                 className={`${inputClass} pr-14 text-lg font-semibold`}
               />
 
@@ -481,18 +373,13 @@ export function AccommodationForm({
       </section>
 
       <section className="border border-[#E3E0D8] bg-white">
-        <SectionHeader
-          title="Fotoğraflar"
-          description="Konaklamaya ait fotoğrafları yükleyin."
-        />
+        <SectionHeader title="Fotoğraflar" description="Konaklamaya ait fotoğrafları yükleyin." />
 
         <div className="p-4 sm:p-5">
           <label className="flex min-h-36 cursor-pointer flex-col items-center justify-center border border-dashed border-[#CBC7BE] bg-[#FAF9F6] px-4 text-center transition-colors hover:border-[#263A2D]">
             <ImagePlus size={28} strokeWidth={1.5} className="text-[#A8754F]" />
 
-            <p className="mt-3 text-xs font-semibold text-[#263A2D]">
-              Fotoğraf Ekle
-            </p>
+            <p className="mt-3 text-xs font-semibold text-[#263A2D]">Fotoğraf Ekle</p>
 
             <p className="mt-1 max-w-[300px] text-[10px] leading-4 text-[#969990]">
               JPG, PNG veya WEBP. Maksimum 10 MB.
@@ -510,10 +397,7 @@ export function AccommodationForm({
           {values.images.length > 0 && (
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {values.images.map((image) => (
-                <div
-                  key={image.id}
-                  className="overflow-hidden border border-[#E3E0D8] bg-white"
-                >
+                <div key={image.id} className="overflow-hidden border border-[#E3E0D8] bg-white">
                   <div className="relative aspect-[4/3]">
                     <img
                       src={image.previewUrl}
@@ -554,10 +438,7 @@ export function AccommodationForm({
       </section>
 
       <section className="border border-[#E3E0D8] bg-white">
-        <SectionHeader
-          title="Özellikler"
-          description="Konaklamada bulunan imkanları seçin."
-        />
+        <SectionHeader title="Özellikler" description="Konaklamada bulunan imkanları seçin." />
 
         <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 sm:p-5">
           {amenityOptions.map((amenity) => {
@@ -590,9 +471,7 @@ export function AccommodationForm({
           <div>
             <p className="text-sm font-semibold text-[#263A2D]">Yayın Durumu</p>
 
-            <p className="mt-1 text-[11px] text-[#969990]">
-              Web sitesinde göster.
-            </p>
+            <p className="mt-1 text-[11px] text-[#969990]">Web sitesinde göster.</p>
           </div>
 
           <button
@@ -635,13 +514,7 @@ export function AccommodationForm({
 const inputClass =
   "mt-2 h-11 w-full min-w-0 border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:text-sm";
 
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
       <label className="text-xs font-medium text-[#40463F]">{label}</label>
@@ -651,20 +524,12 @@ function Field({
   );
 }
 
-function SectionHeader({
-  title,
-  description,
-}: {
-  title: string;
-  description?: string;
-}) {
+function SectionHeader({ title, description }: { title: string; description?: string }) {
   return (
     <div className="border-b border-[#ECE8E1] px-4 py-4 sm:px-5">
       <h2 className="text-sm font-semibold text-[#263A2D]">{title}</h2>
 
-      {description && (
-        <p className="mt-1 text-[11px] text-[#92968E]">{description}</p>
-      )}
+      {description && <p className="mt-1 text-[11px] text-[#92968E]">{description}</p>}
     </div>
   );
 }

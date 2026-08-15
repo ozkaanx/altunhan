@@ -3,9 +3,7 @@ import { Geist } from "next/font/google";
 
 import "./globals.css";
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
-  "https://altunhan-beta.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://altunhan-beta.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -76,8 +74,7 @@ export const metadata: Metadata = {
 
     title: "Altunhan Farm | Saros'ta Doğayla İç İçe Konaklama",
 
-    description:
-      "Saros Körfezi'nin kıyısında, doğayla iç içe konaklama deneyimi.",
+    description: "Saros Körfezi'nin kıyısında, doğayla iç içe konaklama deneyimi.",
 
     images: ["/images/hero/altunhan-farm.jpg"],
   },

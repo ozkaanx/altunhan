@@ -220,21 +220,13 @@ export default function Restaurant() {
                       lg:flex-1
                       lg:px-8
 
-                      ${
-                        index < restaurantItems.length - 1
-                          ? "border-b border-[#DDD8CC]"
-                          : ""
-                      }
+                      ${index < restaurantItems.length - 1 ? "border-b border-[#DDD8CC]" : ""}
 
                       ${index % 2 === 0 ? "sm:border-r lg:border-r-0" : ""}
 
                       ${index < 2 ? "sm:border-b" : "sm:border-b-0"}
 
-                      ${
-                        index < restaurantItems.length - 1
-                          ? "lg:border-b"
-                          : "lg:border-b-0"
-                      }
+                      ${index < restaurantItems.length - 1 ? "lg:border-b" : "lg:border-b-0"}
                     `}
                 >
                   <div

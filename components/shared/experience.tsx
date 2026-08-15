@@ -11,29 +11,22 @@ export default function AboutExperience({ content }: AboutExperienceProps) {
     {
       icon: LuLeaf,
       title: content?.feature_1_title || "DOĞANIN İÇİNDE",
-      description:
-        content?.feature_1_description || "Yeşilin ve sakinliğin arasında.",
+      description: content?.feature_1_description || "Yeşilin ve sakinliğin arasında.",
     },
     {
       icon: LuWaves,
       title: content?.feature_2_title || "DENİZE BİRKAÇ ADIM",
-      description:
-        content?.feature_2_description ||
-        "Saros'un berrak sularına doğrudan erişim.",
+      description: content?.feature_2_description || "Saros'un berrak sularına doğrudan erişim.",
     },
     {
       icon: LuHouse,
       title: content?.feature_3_title || "KENDİNE AİT BİR ALAN",
-      description:
-        content?.feature_3_description || "Taş odalar ve bungalov seçenekleri.",
+      description: content?.feature_3_description || "Taş odalar ve bungalov seçenekleri.",
     },
   ];
 
   return (
-    <section
-      id="deneyim"
-      className="w-full border-b border-[#DDD8CC] bg-[#F5F1E8]"
-    >
+    <section id="deneyim" className="w-full border-b border-[#DDD8CC] bg-[#F5F1E8]">
       <div className="mx-auto grid max-w-[1600px] grid-cols-1 px-6 md:grid-cols-4 md:px-12 lg:px-16">
         <div className="py-10 text-center md:pr-8 md:text-left lg:py-12">
           <h2 className="font-serif text-[28px] leading-[1.05] text-[#263A2D] lg:text-[30px]">

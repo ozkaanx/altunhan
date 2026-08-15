@@ -19,11 +19,7 @@ type FooterProps = {
   content: HomepageContent | null;
 };
 
-export default function Footer({
-  settings,
-  accommodations,
-  content,
-}: FooterProps) {
+export default function Footer({ settings, accommodations, content }: FooterProps) {
   const phone = settings?.phone?.trim() || "";
 
   const whatsapp = settings?.whatsapp?.trim() || "";
@@ -34,14 +30,10 @@ export default function Footer({
 
   const phoneHref = phone ? `tel:${phone.replace(/[^\d+]/g, "")}` : null;
 
-  const whatsappHref = whatsapp
-    ? `https://wa.me/${whatsapp.replace(/\D/g, "")}`
-    : null;
+  const whatsappHref = whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, "")}` : null;
 
   const mapsUrl = address
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        address,
-      )}`
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
     : null;
 
   return (
@@ -85,8 +77,7 @@ export default function Footer({
               </Link>
 
               <p className="mt-6 max-w-[280px] text-xs leading-6 text-white/55">
-                Saros&apos;un kıyısında, doğayla iç içe, sakin ve unutulmaz bir
-                yaşam deneyimi.
+                Saros&apos;un kıyısında, doğayla iç içe, sakin ve unutulmaz bir yaşam deneyimi.
               </p>
             </div>
 
@@ -163,9 +154,7 @@ export default function Footer({
                     <li key={accommodation.id}>
                       <Link
                         href={
-                          accommodation.slug
-                            ? `/konaklama/${accommodation.slug}`
-                            : "/rezervasyon"
+                          accommodation.slug ? `/konaklama/${accommodation.slug}` : "/rezervasyon"
                         }
                         className="text-xs text-white/65 transition-colors hover:text-white"
                       >
@@ -174,9 +163,7 @@ export default function Footer({
                     </li>
                   ))
                 ) : (
-                  <li className="text-xs text-white/45">
-                    Aktif konaklama bulunmuyor.
-                  </li>
+                  <li className="text-xs text-white/45">Aktif konaklama bulunmuyor.</li>
                 )}
               </ul>
             </div>
@@ -208,11 +195,7 @@ export default function Footer({
 
                 {phoneHref && (
                   <a href={phoneHref} className="group flex items-center gap-3">
-                    <FiPhone
-                      size={15}
-                      strokeWidth={1.2}
-                      className="text-[#C59A6A]"
-                    />
+                    <FiPhone size={15} strokeWidth={1.2} className="text-[#C59A6A]" />
 
                     <span className="text-xs text-white/65 transition-colors group-hover:text-white">
                       {phone}
@@ -227,11 +210,7 @@ export default function Footer({
                     rel="noopener noreferrer"
                     className="group flex items-center gap-3"
                   >
-                    <FiMessageCircle
-                      size={15}
-                      strokeWidth={1.2}
-                      className="text-[#C59A6A]"
-                    />
+                    <FiMessageCircle size={15} strokeWidth={1.2} className="text-[#C59A6A]" />
 
                     <span className="text-xs text-white/65 transition-colors group-hover:text-white">
                       WhatsApp
@@ -240,15 +219,8 @@ export default function Footer({
                 )}
 
                 {email && (
-                  <a
-                    href={`mailto:${email}`}
-                    className="group flex items-center gap-3"
-                  >
-                    <FiMail
-                      size={15}
-                      strokeWidth={1.2}
-                      className="text-[#C59A6A]"
-                    />
+                  <a href={`mailto:${email}`} className="group flex items-center gap-3">
+                    <FiMail size={15} strokeWidth={1.2} className="text-[#C59A6A]" />
 
                     <span className="break-all text-xs text-white/65 transition-colors group-hover:text-white">
                       {email}
@@ -260,9 +232,7 @@ export default function Footer({
           </div>
 
           <div className="mt-14 flex flex-col gap-5 border-t border-white/10 pt-6 md:flex-row md:items-center md:justify-between">
-            <p className="text-[10px] text-white/40">
-              © 2026 Altunhan Farm. Tüm hakları saklıdır.
-            </p>
+            <p className="text-[10px] text-white/40">© 2026 Altunhan Farm. Tüm hakları saklıdır.</p>
 
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link

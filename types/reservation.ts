@@ -1,9 +1,5 @@
 export type ReservationStatus =
-  | "pending_payment"
-  | "pending_approval"
-  | "confirmed"
-  | "rejected"
-  | "cancelled";
+  "pending_payment" | "pending_approval" | "confirmed" | "rejected" | "cancelled";
 
 export type Reservation = {
   id: number;

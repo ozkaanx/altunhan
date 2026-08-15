@@ -17,10 +17,7 @@ export default function ReservationLoading() {
         <div className="mt-8 grid gap-5 lg:grid-cols-[1fr_320px]">
           <div className="space-y-5">
             {[1, 2, 3].map((item) => (
-              <div
-                key={item}
-                className="h-56 animate-pulse border border-[#E3E0D8] bg-white"
-              />
+              <div key={item} className="h-56 animate-pulse border border-[#E3E0D8] bg-white" />
             ))}
           </div>
 

@@ -19,11 +19,7 @@ export const Header = ({ settings }: HeaderProps) => {
         className={`
           mx-auto flex max-w-[1600px]
           items-center
-          ${
-            hasContactInfo
-              ? "justify-center lg:justify-between"
-              : "justify-center"
-          }
+          ${hasContactInfo ? "justify-center lg:justify-between" : "justify-center"}
         `}
       >
         <div className="flex items-center gap-2">
