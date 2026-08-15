@@ -56,7 +56,7 @@ export default function CerezPolitikasiPage() {
 
           <p className="border-t border-[#E3E0D8] pt-6 text-xs text-[#8A8E87]">
             Şu anda reklam veya pazarlama amaçlı çerez altyapısı kullanılmıyorsa ayrıca bir izin
-            banner'ı gösterilmesi gerekmeyebilir. Analitik veya reklam araçları eklenirse bu
+            banner&apos;ı gösterilmesi gerekmeyebilir. Analitik veya reklam araçları eklenirse bu
             politika yeniden gözden geçirilmelidir.
           </p>
         </div>

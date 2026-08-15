@@ -26,7 +26,7 @@ export default async function SettingsPage() {
           <p className="text-sm font-semibold text-[#98584E]">Ayarlar yüklenemedi.</p>
 
           <p className="mt-2 text-xs leading-5 text-[#9B746D]">
-            Supabase'deki site_settings tablosunu kontrol edin.
+            Supabase&apos;deki site_settings tablosunu kontrol edin.
           </p>
         </div>
       </section>

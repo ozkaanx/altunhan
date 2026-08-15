@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { BedDouble, Eye, Plus, Search, Users } from "lucide-react";
 
@@ -196,12 +197,14 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
                   <tr key={item.id} className="border-b border-[#F0EDE7] last:border-0">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-4">
-                        <div className="h-14 w-20 shrink-0 overflow-hidden bg-[#EEEAE3]">
+                        <div className="relative h-14 w-20 shrink-0 overflow-hidden bg-[#EEEAE3]">
                           {getCoverImage(item) ? (
-                            <img
+                            <Image
                               src={getCoverImage(item)!}
                               alt={item.title}
-                              className="h-full w-full object-cover"
+                              fill
+                              sizes="80px"
+                              className="object-cover"
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center">

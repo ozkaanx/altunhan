@@ -5,6 +5,7 @@ import { ReservationRoomModal } from "@/components/admin/reservation-detail/rese
 import { useReservationDetail } from "@/hooks/admin/use-reservation-detail";
 
 import type { ReservationDetailDrawerProps } from "@/types/admin-reservation-detail";
+import type { Reservation } from "@/types/reservation";
 import { ReservationDrawerHeader } from "@/components/admin/reservation-detail/reservation-drawer-header";
 import { ReservationInformation } from "@/components/admin/reservation-detail/reservation-information";
 import { ReservationStatusActions } from "@/components/admin/reservation-detail/reservation-status-actions";
@@ -21,6 +22,30 @@ export function ReservationDetailDrawer({
     return null;
   }
 
+  return (
+    <ReservationDetailDrawerContent
+      reservation={reservation}
+      open={open}
+      onClose={onClose}
+      onApprove={onApprove}
+      onReject={onReject}
+      onCancel={onCancel}
+    />
+  );
+}
+
+type ReservationDetailDrawerContentProps = Omit<ReservationDetailDrawerProps, "reservation"> & {
+  reservation: Reservation;
+};
+
+function ReservationDetailDrawerContent({
+  reservation,
+  open,
+  onClose,
+  onApprove,
+  onReject,
+  onCancel,
+}: ReservationDetailDrawerContentProps) {
   const {
     actionModal,
     setActionModal,
@@ -29,27 +54,18 @@ export function ReservationDetailDrawer({
     actionError,
     setActionError,
     isActionLoading,
-    setIsActionLoading,
     isApproving,
-    setIsApproving,
     approveError,
-    setApproveError,
     isOpeningReceipt,
-    setIsOpeningReceipt,
     receiptError,
-    setReceiptError,
     roomModalOpen,
     setRoomModalOpen,
     availableRooms,
-    setAvailableRooms,
     selectedRoomId,
     setSelectedRoomId,
     isLoadingRooms,
-    setIsLoadingRooms,
     isChangingRoom,
-    setIsChangingRoom,
     roomError,
-    setRoomError,
     closeActionModal,
     handleOpenReceipt,
     handleApprove,
