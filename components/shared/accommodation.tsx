@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FiArrowRight } from "react-icons/fi";
 import { LuBedDouble, LuUsers } from "react-icons/lu";
 
-import type { HomeAccommodation } from "@/app/page";
+import type { HomeAccommodation } from "@/types/home-accommodation";
 import { formatPrice } from "@/lib/formatters/price";
 import type { HomepageContent } from "@/types/homepage-content";
 

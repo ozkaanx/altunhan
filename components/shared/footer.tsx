@@ -9,7 +9,7 @@ import {
   FiMessageCircle,
 } from "react-icons/fi";
 
-import type { HomeAccommodation } from "@/app/page";
+import type { HomeAccommodation } from "@/types/home-accommodation";
 import type { SiteSettings } from "@/types/site-settings";
 import type { HomepageContent } from "@/types/homepage-content";
 
