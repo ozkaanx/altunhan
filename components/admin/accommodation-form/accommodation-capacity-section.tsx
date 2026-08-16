@@ -1,9 +1,16 @@
-import { Baby, Users } from "lucide-react";
+import {
+  Baby,
+  Bath,
+  BedDouble,
+  Users,
+} from "lucide-react";
 
-import { CounterRow, SectionHeader } from "@/components/admin/accommodation-form/form-elements";
+import {
+  CounterRow,
+  SectionHeader,
+} from "@/components/admin/accommodation-form/form-elements";
 
 import type { AccommodationFormValues } from "@/types/accommodation";
-
 import type { AccommodationCounterKey } from "@/types/admin-accommodation-form";
 
 type AccommodationCapacitySectionProps = {
@@ -21,7 +28,7 @@ export function AccommodationCapacitySection({
     <section className="border border-[#E3E0D8] bg-white">
       <SectionHeader
         title="Konaklama Bilgileri"
-        description="Yetişkin, çocuk ve toplam misafir kapasitesini belirleyin."
+        description="Misafir kapasitesi, yatak ve banyo sayılarını belirleyin."
       />
 
       <div className="divide-y divide-[#EEEAE3] px-4 sm:px-5">
@@ -46,10 +53,28 @@ export function AccommodationCapacitySection({
         <CounterRow
           icon={Users}
           label="Toplam Misafir"
-          description="Yetişkin + çocuk toplam kapasitesi"
+          description="Yetişkin ve çocuk toplam kapasitesi"
           value={values.maxTotalGuests}
           onDecrease={() => onDecrease("maxTotalGuests")}
           onIncrease={() => onIncrease("maxTotalGuests")}
+        />
+
+        <CounterRow
+          icon={BedDouble}
+          label="Yatak Sayısı"
+          description="Konaklamada bulunan toplam yatak sayısı"
+          value={values.bedCount}
+          onDecrease={() => onDecrease("bedCount")}
+          onIncrease={() => onIncrease("bedCount")}
+        />
+
+        <CounterRow
+          icon={Bath}
+          label="Banyo Sayısı"
+          description="Konaklamada bulunan toplam banyo sayısı"
+          value={values.bathroomCount}
+          onDecrease={() => onDecrease("bathroomCount")}
+          onIncrease={() => onIncrease("bathroomCount")}
         />
       </div>
     </section>
