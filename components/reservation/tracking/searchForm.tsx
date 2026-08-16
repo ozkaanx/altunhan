@@ -42,7 +42,12 @@ export function TrackingSearchForm({
 
         <form onSubmit={onSubmit} className="mt-7 space-y-4">
           <div>
-            <label className="text-xs font-medium text-[#40463F]">Rezervasyon Numarası</label>
+            <label
+              htmlFor="tracking-reservation-code"
+              className="text-xs font-medium text-[#40463F]"
+            >
+              Rezervasyon Numarası
+            </label>
 
             <div className="relative mt-2">
               <Search
@@ -51,19 +56,29 @@ export function TrackingSearchForm({
               />
 
               <input
+                id="tracking-reservation-code"
+                name="reservationCode"
                 required
                 value={reservationCode}
                 onChange={(event) => onReservationCodeChange(event.target.value)}
                 placeholder="AF-XXXXXXXX"
                 autoComplete="off"
                 spellCheck={false}
+                maxLength={24}
+                aria-describedby="tracking-code-help"
                 className={`${inputClass} pl-10 uppercase`}
               />
             </div>
+
+            <p id="tracking-code-help" className="mt-1.5 text-[10px] leading-4 text-[#8A8F88]">
+              Rezervasyon numaranızı talep sonrası ekranda ve e-postanızda bulabilirsiniz.
+            </p>
           </div>
 
           <div>
-            <label className="text-xs font-medium text-[#40463F]">Telefon Numarası</label>
+            <label htmlFor="tracking-phone" className="text-xs font-medium text-[#40463F]">
+              Telefon Numarası
+            </label>
 
             <div className="relative mt-2">
               <Phone
@@ -72,6 +87,8 @@ export function TrackingSearchForm({
               />
 
               <input
+                id="tracking-phone"
+                name="phone"
                 required
                 type="tel"
                 value={phone}
@@ -79,13 +96,19 @@ export function TrackingSearchForm({
                 placeholder="+90 5__ ___ __ __"
                 autoComplete="tel"
                 inputMode="tel"
+                maxLength={20}
+                pattern="[0-9+()\s-]{10,20}"
+                title="Rezervasyonda kullandığınız telefon numarasını girin."
                 className={`${inputClass} pl-10`}
               />
             </div>
           </div>
 
           {error && (
-            <div className="border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs leading-5 text-[#98584E]">
+            <div
+              className="border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs leading-5 text-[#98584E]"
+              role="alert"
+            >
               {error}
             </div>
           )}

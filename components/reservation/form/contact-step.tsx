@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { Mail, Phone, ShieldCheck, UserRound } from "lucide-react";
 
 import { FieldLabel } from "@/components/shared/fieldLabel";
@@ -51,10 +53,12 @@ export function ContactStep({
 
       <div className="mt-6 space-y-4">
         <div>
-          <FieldLabel>Ad Soyad</FieldLabel>
+          <FieldLabel htmlFor="reservation-guest-name">Ad Soyad</FieldLabel>
 
           <InputShell icon={UserRound}>
             <input
+              id="reservation-guest-name"
+              name="guestName"
               required
               value={guestName}
               onChange={(event) => onGuestNameChange(event.target.value)}
@@ -67,10 +71,12 @@ export function ContactStep({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <FieldLabel>Telefon</FieldLabel>
+            <FieldLabel htmlFor="reservation-guest-phone">Telefon</FieldLabel>
 
             <InputShell icon={Phone}>
               <input
+                id="reservation-guest-phone"
+                name="guestPhone"
                 required
                 type="tel"
                 value={guestPhone}
@@ -78,16 +84,21 @@ export function ContactStep({
                 placeholder="+90 5__ ___ __ __"
                 autoComplete="tel"
                 inputMode="tel"
+                maxLength={20}
+                pattern="[0-9+()\s-]{10,20}"
+                title="Telefon numaranızı alan koduyla birlikte girin."
                 className={inputClass}
               />
             </InputShell>
           </div>
 
           <div>
-            <FieldLabel>E-posta</FieldLabel>
+            <FieldLabel htmlFor="reservation-guest-email">E-posta</FieldLabel>
 
             <InputShell icon={Mail}>
               <input
+                id="reservation-guest-email"
+                name="guestEmail"
                 required
                 type="email"
                 value={guestEmail}
@@ -95,6 +106,7 @@ export function ContactStep({
                 placeholder="ornek@mail.com"
                 autoComplete="email"
                 inputMode="email"
+                maxLength={254}
                 className={inputClass}
               />
             </InputShell>
@@ -120,8 +132,16 @@ export function ContactStep({
               text-[#747A72]
             "
           >
-            Rezervasyon bilgileri e-posta adresinize gönderilir. Rezervasyon takibinde telefon
-            numaranız kullanılır.
+            Rezervasyon bilgileri e-posta adresinize gönderilir ve takipte telefon numaranız
+            kullanılır. Talep oluşturarak{" "}
+            <Link href="/kvkk" className="font-semibold underline underline-offset-2">
+              KVKK Aydınlatma Metni
+            </Link>{" "}
+            ve{" "}
+            <Link href="/gizlilik" className="font-semibold underline underline-offset-2">
+              Gizlilik Politikası
+            </Link>
+            &apos;nı okuduğunuzu kabul edersiniz.
           </p>
         </div>
       </div>

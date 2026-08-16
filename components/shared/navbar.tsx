@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 
 const navItems = [
@@ -17,6 +17,28 @@ export default function Navbar() {
   const closeMenu = () => {
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
 
   return (
     <>
@@ -58,6 +80,7 @@ export default function Navbar() {
             type="button"
             aria-label={isOpen ? "Menüyü kapat" : "Menüyü aç"}
             aria-expanded={isOpen}
+            aria-controls="mobile-navigation"
             onClick={() => setIsOpen((current) => !current)}
             className="flex h-11 w-11 items-center justify-center text-[#263A2D] lg:hidden"
           >
@@ -75,7 +98,13 @@ export default function Navbar() {
             className="fixed inset-0 z-40 bg-black/35 lg:hidden"
           />
 
-          <aside className="fixed right-0 top-0 z-50 flex h-dvh w-[85%] max-w-[360px] flex-col bg-[#F5F1E8] shadow-2xl lg:hidden">
+          <aside
+            id="mobile-navigation"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobil menü"
+            className="fixed right-0 top-0 z-50 flex h-dvh w-[85%] max-w-[360px] flex-col bg-[#F5F1E8] shadow-2xl lg:hidden"
+          >
             <div className="flex h-20 items-center justify-between border-b border-[#DDD8CC] px-5">
               <Link href="/" onClick={closeMenu} className="flex flex-col leading-none">
                 <span className="font-serif text-[18px] tracking-[0.24em] text-[#263A2D]">

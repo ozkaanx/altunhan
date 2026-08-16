@@ -17,6 +17,7 @@ import { AccommodationDetailsSection } from "@/components/accommodation/accommod
 import { AccommodationReservationCta } from "@/components/accommodation/accommodation-reservation-cta";
 import { sortAccommodationImages } from "@/lib/accommodation/accommodation-images";
 import { AccommodationGuestInformation } from "@/components/accommodation/accommodation-guest-information";
+import { AccommodationMobileReservationBar } from "@/components/accommodation/accommodation-mobile-reservation-bar";
 
 type AccommodationDetailPageProps = {
   params: Promise<{
@@ -98,6 +99,11 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
         <AccommodationGuestInformation settings={settings} />
         <AccommodationReservationCta reservationHref={reservationHref} />
       </main>
+
+      <AccommodationMobileReservationBar
+        price={accommodation.price}
+        reservationHref={reservationHref}
+      />
 
       <Footer settings={settings} accommodations={accommodations} content={homepageContent} />
     </>

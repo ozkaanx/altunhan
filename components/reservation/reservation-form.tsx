@@ -83,7 +83,6 @@ export function ReservationForm({
           border-[#D9D4CA]
           bg-[#FAF8F2]
           md:grid
-          sm : hidden
         "
       >
         <ProgressItem number="01" title="Konaklama" text="Odanızı seçin" />

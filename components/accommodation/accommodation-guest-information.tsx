@@ -1,5 +1,7 @@
 import { CircleHelp, MessageCircle } from "lucide-react";
 
+import { getPhoneHref, getWhatsAppHref } from "@/lib/contact-links";
+
 import type { SiteSettings } from "@/types/site-settings";
 import { faqItems, informationItems } from "@/types/accommodation-guest";
 
@@ -11,11 +13,8 @@ export function AccommodationGuestInformation({ settings }: AccommodationGuestIn
   const whatsapp = settings?.whatsapp?.trim() || "";
   const phone = settings?.phone?.trim() || "";
 
-  const contactHref = whatsapp
-    ? `https://wa.me/${whatsapp.replace(/\D/g, "")}`
-    : phone
-      ? `tel:${phone.replace(/[^\d+]/g, "")}`
-      : null;
+  const whatsappHref = getWhatsAppHref(whatsapp);
+  const contactHref = whatsappHref ?? getPhoneHref(phone);
 
   return (
     <section className="border-y border-[#DDD8CC] bg-[#FAF8F2] px-5 py-14 sm:px-6 sm:py-16 md:px-12 lg:px-16 lg:py-20">
@@ -114,11 +113,11 @@ export function AccommodationGuestInformation({ settings }: AccommodationGuestIn
 
                 <a
                   href={contactHref}
-                  target={whatsapp ? "_blank" : undefined}
-                  rel={whatsapp ? "noopener noreferrer" : undefined}
+                  target={whatsappHref ? "_blank" : undefined}
+                  rel={whatsappHref ? "noopener noreferrer" : undefined}
                   className="inline-flex h-11 shrink-0 items-center justify-center bg-[#263A2D] px-5 text-[9px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#354A3B]"
                 >
-                  {whatsapp ? "WhatsApp'tan Sor" : "Bizi Arayın"}
+                  {whatsappHref ? "WhatsApp'tan Sor" : "Bizi Arayın"}
                 </a>
               </div>
             )}

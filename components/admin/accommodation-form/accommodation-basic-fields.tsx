@@ -33,14 +33,34 @@ export function AccommodationBasicFields({ values, onChange }: AccommodationBasi
             />
           </Field>
 
-          <Field label="Kısa Açıklama">
+          <div>
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="accommodation-short-description"
+                className="text-xs font-medium text-[#40463F]"
+              >
+                Kısa Açıklama
+              </label>
+
+              <span className="text-[10px] text-[#A0A39C]">
+                {values.shortDescription.length}/180
+              </span>
+            </div>
+
             <input
+              id="accommodation-short-description"
               value={values.shortDescription}
+              minLength={10}
+              maxLength={180}
               onChange={(event) => onChange("shortDescription", event.target.value)}
               placeholder="Kartlarda gösterilecek kısa açıklama"
-              className={inputClass}
+              className={`${inputClass} mt-2`}
             />
-          </Field>
+
+            <p className="mt-1.5 text-[10px] leading-4 text-[#8A8F88]">
+              Yayına alınacak konaklamalarda müşteriye anlaşılır bir açıklama yazın.
+            </p>
+          </div>
 
           <div>
             <div className="flex items-center justify-between">

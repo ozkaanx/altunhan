@@ -1,6 +1,5 @@
 "use client";
 
-import { Save } from "lucide-react";
 
 import { useAccommodationForm } from "@/hooks/admin/use-accommodation-form";
 
@@ -59,24 +58,6 @@ export function AccommodationForm({
         submitLabel={submitLabel}
         onActiveChange={(active) => updateValue("isActive", active)}
       />
-
-      <div className="sticky bottom-0 z-20 -mx-4 border-t border-[#DDD9D1] bg-[#F3F1EC]/95 p-4 backdrop-blur-md sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0">
-        {submitError && (
-          <div className="mb-3 border border-[#E7D6D1] bg-[#F8EEEA] px-4 py-3 text-xs text-[#8A5147]">
-            {submitError}
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="flex h-12 w-full items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white disabled:opacity-60 sm:ml-auto sm:w-auto sm:px-8"
-        >
-          <Save size={16} />
-
-          {isSubmitting ? "Kaydediliyor..." : submitLabel}
-        </button>
-      </div>
     </form>
   );
 }

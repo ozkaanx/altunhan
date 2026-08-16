@@ -37,13 +37,34 @@ function createSlug(value: string) {
 
 function validateAccommodationInput(values: AccommodationInput) {
   const title = values.title.trim();
+  const shortDescription = values.shortDescription.trim();
 
   if (!title) {
     return "Konaklama adı zorunludur.";
   }
 
+  if (title.length > 100) {
+    return "Konaklama adı en fazla 100 karakter olabilir.";
+  }
+
+  if (shortDescription && shortDescription.length < 10) {
+    return "Kısa açıklama en az 10 karakter olmalıdır.";
+  }
+
+  if (shortDescription.length > 180) {
+    return "Kısa açıklama en fazla 180 karakter olabilir.";
+  }
+
+  if (values.isActive && !shortDescription) {
+    return "Yayındaki konaklamalar için kısa açıklama zorunludur.";
+  }
+
   if (!Number.isFinite(values.price) || values.price < 0) {
     return "Gecelik fiyat geçerli olmalıdır.";
+  }
+
+  if (values.isActive && values.price <= 0) {
+    return "Yayındaki konaklamaların gecelik fiyatı 0'dan büyük olmalıdır.";
   }
 
   if (!Number.isInteger(values.maxAdults) || values.maxAdults < 1) {

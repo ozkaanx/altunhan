@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { ReservationForm } from "@/components/reservation/reservation-form";
+import { ReservationTrustPanel } from "@/components/reservation/reservation-trust-panel";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -272,6 +273,8 @@ export default async function ReservationPage({ searchParams }: ReservationPageP
               Müsaitlik rezervasyon oluşturulmadan önce tekrar kontrol edilir.
             </p>
           </div>
+
+          <ReservationTrustPanel />
         </div>
       </section>
 
