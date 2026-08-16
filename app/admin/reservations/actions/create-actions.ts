@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/auth/admin";
 import { getTurkeyToday } from "@/lib/admin/reservation-form-utils";
+import { normalizeTurkishMobilePhone } from "@/lib/phone";
 
 export type CreateAdminReservationInput = {
   accommodationId: number;
@@ -22,6 +23,7 @@ export type CreateAdminReservationInput = {
 
 export async function createAdminReservation(values: CreateAdminReservationInput) {
   const today = getTurkeyToday();
+  const normalizedGuestPhone = normalizeTurkishMobilePhone(values.guestPhone);
 
   if (!values.checkIn || !values.checkOut) {
     return {
@@ -58,6 +60,13 @@ export async function createAdminReservation(values: CreateAdminReservationInput
     };
   }
 
+  if (!normalizedGuestPhone) {
+    return {
+      success: false as const,
+      message: "Telefon numarasını 5XX XXX XX XX biçiminde girin.",
+    };
+  }
+
   const auth = await requireAdmin();
 
   if (!auth.success) {
@@ -78,7 +87,7 @@ export async function createAdminReservation(values: CreateAdminReservationInput
     p_child_count: values.childCount,
 
     p_guest_name: values.guestName.trim(),
-    p_guest_phone: values.guestPhone.trim(),
+    p_guest_phone: normalizedGuestPhone,
 
     p_guest_email: values.guestEmail.trim() || null,
 

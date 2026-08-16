@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 
 import type { ReservationStatus } from "@/types/reservation";
 import type { ReservationTrackingResponse } from "@/types/reservation-tracking";
+import { normalizeTurkishMobilePhone } from "@/lib/phone";
 
 type ReservationTrackingRpcRow = {
   reservation_code: string;
@@ -41,7 +42,7 @@ export async function findReservation(
 ): Promise<ReservationTrackingResponse> {
   const code = reservationCode.trim();
 
-  const normalizedPhone = phone.trim();
+  const normalizedPhone = normalizeTurkishMobilePhone(phone);
 
   if (!code) {
     return {
@@ -53,7 +54,7 @@ export async function findReservation(
   if (!normalizedPhone) {
     return {
       success: false,
-      message: "Telefon numaranızı girin.",
+      message: "Telefon numaranızı 5XX XXX XX XX biçiminde girin.",
     };
   }
 

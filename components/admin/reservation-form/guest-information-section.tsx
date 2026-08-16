@@ -6,6 +6,7 @@ import {
   SectionTitle,
   inputClass,
 } from "@/components/admin/reservation-form/form-elements";
+import { TurkishMobileInput } from "@/components/shared/turkish-mobile-input";
 
 type GuestInformationSectionProps = {
   guestName: string;
@@ -62,12 +63,13 @@ export function GuestInformationSection({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Telefon">
-            <input
-              type="tel"
+            <TurkishMobileInput
               value={guestPhone}
-              onChange={(event) => onGuestPhoneChange(event.target.value)}
-              placeholder="+90 5__ ___ __ __"
-              className={inputClass}
+              onValueChange={onGuestPhoneChange}
+              required
+              containerClassName={inputClass}
+              prefixClassName="border-r border-[#DDD9D1] pr-3"
+              inputClassName="h-full min-w-0 flex-1 border-0 bg-transparent px-3 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] sm:text-sm"
             />
           </Field>
 

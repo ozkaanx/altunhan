@@ -8,6 +8,8 @@ import { ReservationPayment } from "@/components/reservation/payment/reservation
 
 import { useReservationForm } from "@/hooks/reservation/use-reservation-form";
 
+import { normalizeTurkishMobilePhone } from "@/lib/phone";
+
 import type { PublicAccommodation } from "@/types/public-reservation";
 import type { SiteSettings } from "@/types/site-settings";
 
@@ -69,7 +71,9 @@ export function ReservationForm({
     return <ReservationPayment reservation={createdReservation} settings={settings} />;
   }
 
-  const isContactComplete = Boolean(guestName.trim() && guestPhone.trim() && guestEmail.trim());
+  const isContactComplete = Boolean(
+    guestName.trim() && normalizeTurkishMobilePhone(guestPhone) && guestEmail.trim(),
+  );
 
   return (
     <form onSubmit={handleSubmit} className="mx-auto max-w-[1280px]">
