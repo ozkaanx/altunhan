@@ -7,9 +7,7 @@ import { ReservationFormFooter } from "@/components/admin/reservation-form/reser
 import { useAdminReservationForm } from "@/hooks/admin/use-admin-reservation-form";
 import type { AdminReservationFormProps } from "@/types/admin-reservation";
 
-export function AdminReservationForm({
-  accommodations,
-}: AdminReservationFormProps) {
+export function AdminReservationForm({ accommodations }: AdminReservationFormProps) {
   const {
     accommodationId,
     checkIn,

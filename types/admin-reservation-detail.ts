@@ -1,6 +1,4 @@
-import type {
-  Reservation,
-} from "@/types/reservation";
+import type { Reservation } from "@/types/reservation";
 
 export type ReservationRoomOption = {
   id: number;
@@ -10,9 +8,7 @@ export type ReservationRoomOption = {
   isAvailable: boolean;
 };
 
-export type ReservationDrawerAction =
-  | "reject"
-  | "cancel";
+export type ReservationDrawerAction = "reject" | "cancel";
 
 export type ReservationActionResult = {
   success: boolean;
@@ -23,15 +19,7 @@ export type ReservationDetailDrawerProps = {
   reservation: Reservation | null;
   open: boolean;
   onClose: () => void;
-  onApprove: (
-    reservation: Reservation,
-  ) => Promise<ReservationActionResult>;
-  onReject: (
-    reservation: Reservation,
-    reason: string,
-  ) => Promise<ReservationActionResult>;
-  onCancel: (
-    reservation: Reservation,
-    reason: string,
-  ) => Promise<ReservationActionResult>;
+  onApprove: (reservation: Reservation) => Promise<ReservationActionResult>;
+  onReject: (reservation: Reservation, reason: string) => Promise<ReservationActionResult>;
+  onCancel: (reservation: Reservation, reason: string) => Promise<ReservationActionResult>;
 };

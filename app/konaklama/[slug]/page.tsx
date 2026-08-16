@@ -16,6 +16,7 @@ import { AccommodationOverview } from "@/components/accommodation/accommodation-
 import { AccommodationDetailsSection } from "@/components/accommodation/accommodation-details-section";
 import { AccommodationReservationCta } from "@/components/accommodation/accommodation-reservation-cta";
 import { sortAccommodationImages } from "@/lib/accommodation/accommodation-images";
+import { AccommodationGuestInformation } from "@/components/accommodation/accommodation-guest-information";
 
 type AccommodationDetailPageProps = {
   params: Promise<{
@@ -70,9 +71,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function AccommodationDetailPage({
-  params,
-}: AccommodationDetailPageProps) {
+export default async function AccommodationDetailPage({ params }: AccommodationDetailPageProps) {
   const { slug } = await params;
 
   const { accommodation, settings, accommodations, homepageContent } =
@@ -94,22 +93,13 @@ export default async function AccommodationDetailPage({
 
       <main className="bg-[#F5F1E8] pb-[88px] lg:pb-0">
         <AccommodationDetailHero title={accommodation.title} images={images} />
-
-        <AccommodationOverview
-          accommodation={accommodation}
-          reservationHref={reservationHref}
-        />
-
+        <AccommodationOverview accommodation={accommodation} reservationHref={reservationHref} />
         <AccommodationDetailsSection accommodation={accommodation} />
-
+        <AccommodationGuestInformation settings={settings} />
         <AccommodationReservationCta reservationHref={reservationHref} />
       </main>
 
-      <Footer
-        settings={settings}
-        accommodations={accommodations}
-        content={homepageContent}
-      />
+      <Footer settings={settings} accommodations={accommodations} content={homepageContent} />
     </>
   );
 }

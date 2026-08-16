@@ -4,22 +4,21 @@
 
 Proje yalnızca bir tanıtım sitesi değildir. Aynı kod tabanı içerisinde:
 
-* Public web sitesi
-* Konaklama detay sayfaları
-* Online rezervasyon oluşturma
-* Tarih / müsaitlik kontrolü
-* Havale / EFT ödeme ve dekont yükleme
-* Rezervasyon takip sistemi
-* Admin paneli
-* Konaklama ve görsel yönetimi
-* Rezervasyon operasyonları
-* Ana sayfa içerik yönetimi
-* Misafir yorumları yönetimi
-* İletişim ve banka bilgileri yönetimi
-* Opsiyonel e-posta bildirim sistemi
-* SEO, sitemap ve robots yapılandırması
-bulunmaktadır.
-
+- Public web sitesi
+- Konaklama detay sayfaları
+- Online rezervasyon oluşturma
+- Tarih / müsaitlik kontrolü
+- Havale / EFT ödeme ve dekont yükleme
+- Rezervasyon takip sistemi
+- Admin paneli
+- Konaklama ve görsel yönetimi
+- Rezervasyon operasyonları
+- Ana sayfa içerik yönetimi
+- Misafir yorumları yönetimi
+- İletişim ve banka bilgileri yönetimi
+- Opsiyonel e-posta bildirim sistemi
+- SEO, sitemap ve robots yapılandırması
+  bulunmaktadır.
 
 | Teknoloji                | Kullanım                       |
 | ------------------------ | ------------------------------ |
@@ -110,12 +109,12 @@ Her konaklama kendi `slug` değeri üzerinden erişilir.
 
 Bu sayfada konaklamanın:
 
-* Görselleri
-* Açıklaması
-* Özellikleri
-* Kapasitesi
-* Fiyatı
-* Rezervasyon CTA'ları
+- Görselleri
+- Açıklaması
+- Özellikleri
+- Kapasitesi
+- Fiyatı
+- Rezervasyon CTA'ları
 
 gösterilir.
 
@@ -262,10 +261,10 @@ create_public_reservation_v2
 
 RPC aşağıdaki kritik işlemleri database tarafında gerçekleştirir:
 
-* Rezervasyonun oluşturulması
-* Rezervasyon kodunun üretilmesi
-* Gecelik / toplam fiyat bilgilerinin belirlenmesi
-* Tarih ve müsaitlik kurallarının uygulanması
+- Rezervasyonun oluşturulması
+- Rezervasyon kodunun üretilmesi
+- Gecelik / toplam fiyat bilgilerinin belirlenmesi
+- Tarih ve müsaitlik kurallarının uygulanması
 
 Frontend bu RPC'den oluşturulan rezervasyonun özet bilgisini alır.
 
@@ -293,13 +292,13 @@ kaydı üzerinden yönetilir.
 
 Burada:
 
-* Hesap sahibi
-* Banka
-* IBAN
-* Telefon
-* WhatsApp
-* E-posta
-* Adres
+- Hesap sahibi
+- Banka
+- IBAN
+- Telefon
+- WhatsApp
+- E-posta
+- Adres
 
 bilgileri saklanmaktadır.
 
@@ -417,14 +416,14 @@ Dashboard üzerinde operasyon için özet bilgiler gösterilir.
 
 Örnek metrikler:
 
-* Toplam rezervasyon
-* Onay bekleyen rezervasyon sayısı
-* Aktif konaklama sayısı
-* Aylık gelir
-* Bugünkü girişler
-* Yaklaşan rezervasyonlar
-* Son rezervasyonlar
-* Operasyon uyarıları
+- Toplam rezervasyon
+- Onay bekleyen rezervasyon sayısı
+- Aktif konaklama sayısı
+- Aylık gelir
+- Bugünkü girişler
+- Yaklaşan rezervasyonlar
+- Son rezervasyonlar
+- Operasyon uyarıları
 
 ---
 
@@ -566,13 +565,13 @@ homepage_content
 
 Başlıca yönetilebilir alanlar:
 
-* Hero
-* Experience
-* Feature alanları
-* Konaklama bölümü
-* Lokasyon
-* Yorum başlıkları
-* Footer CTA
+- Hero
+- Experience
+- Feature alanları
+- Konaklama bölümü
+- Lokasyon
+- Yorum başlıkları
+- Footer CTA
 
 Ana sayfada metin değiştirmek için mümkün olduğunca component içerisine hard-code eklemek yerine mevcut içerik yönetimi yapısını kullanın.
 
@@ -592,11 +591,11 @@ reviews
 
 Admin:
 
-* Yorum ekleyebilir
-* Düzenleyebilir
-* Silebilir
-* Aktif / pasif yapabilir
-* Gösterim sırasını değiştirebilir
+- Yorum ekleyebilir
+- Düzenleyebilir
+- Silebilir
+- Aktif / pasif yapabilir
+- Gösterim sırasını değiştirebilir
 
 ---
 
@@ -614,13 +613,13 @@ site_settings
 
 Buradan:
 
-* Banka bilgileri
-* IBAN
-* Telefon
-* WhatsApp
-* E-posta
-* Adres
-* Siteye ait bazı operasyonel bilgiler
+- Banka bilgileri
+- IBAN
+- Telefon
+- WhatsApp
+- E-posta
+- Adres
+- Siteye ait bazı operasyonel bilgiler
 
 yönetilir.
 
@@ -822,9 +821,9 @@ Mail altyapısı aktif olduğunda rezervasyon süreçlerindeki bazı olaylarda b
 
 Örnek:
 
-* Dekont gönderilmesi
-* Rezervasyon onayı
-* Rezervasyon reddi
+- Dekont gönderilmesi
+- Rezervasyon onayı
+- Rezervasyon reddi
 
 Notification kodları:
 
@@ -1390,7 +1389,7 @@ Dosya silme / güncelleme işlemlerinde yalnızca database veya yalnızca Storag
 Yeni kritik Server Action geliştirirken:
 
 ```ts
-requireAdmin()
+requireAdmin();
 ```
 
 kontrol modelini kullanın.
