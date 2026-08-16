@@ -14,6 +14,7 @@ import type { HomepageContent } from "@/types/homepage-content";
 import Restaurant from "@/components/shared/restaurant";
 
 import type { HomeAccommodation } from "@/types/home-accommodation";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export default async function Home() {
   const supabase = await createClient();
@@ -90,9 +91,7 @@ export default async function Home() {
   return (
     <>
       <Header settings={siteSettings} />
-
       <Navbar />
-
       <main>
         <Hero content={content} settings={settings as SiteSettings | null} />
 
@@ -109,12 +108,12 @@ export default async function Home() {
           content={content}
         />
       </main>
-
       <Footer
         settings={siteSettings}
         accommodations={(accommodations ?? []) as HomeAccommodation[]}
         content={content}
       />
+        <SpeedInsights />
     </>
   );
 }
