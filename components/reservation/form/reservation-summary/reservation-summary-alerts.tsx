@@ -14,7 +14,10 @@ export function ReservationSummaryAlerts({ dateError, error }: ReservationSummar
 
 function SummaryAlert({ children }: { children: string }) {
   return (
-    <div className="mt-4 border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-[10px] leading-5 text-[#98584E]">
+    <div
+      className="mt-4 border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-[10px] leading-5 text-[#98584E]"
+      role="alert"
+    >
       {children}
     </div>
   );

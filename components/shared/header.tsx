@@ -1,5 +1,7 @@
 import { CiLocationOn, CiPhone } from "react-icons/ci";
 
+import { getPhoneHref } from "@/lib/contact-links";
+
 import type { SiteSettings } from "@/types/site-settings";
 
 type HeaderProps = {
@@ -8,6 +10,8 @@ type HeaderProps = {
 
 export const Header = ({ settings }: HeaderProps) => {
   const phone = settings?.phone?.trim() || "";
+
+  const phoneHref = getPhoneHref(phone);
 
   const address = settings?.address?.trim() || "";
 
@@ -40,9 +44,9 @@ export const Header = ({ settings }: HeaderProps) => {
               </div>
             )}
 
-            {phone && (
+            {phoneHref && (
               <a
-                href={`tel:${phone.replace(/\s/g, "")}`}
+                href={phoneHref}
                 className="flex items-center gap-2 transition-opacity hover:opacity-80"
               >
                 <CiPhone />

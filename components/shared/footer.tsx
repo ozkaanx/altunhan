@@ -13,6 +13,8 @@ import type { HomeAccommodation } from "@/types/home-accommodation";
 import type { SiteSettings } from "@/types/site-settings";
 import type { HomepageContent } from "@/types/homepage-content";
 
+import { getPhoneHref, getWhatsAppHref } from "@/lib/contact-links";
+
 type FooterProps = {
   settings: SiteSettings | null;
   accommodations: HomeAccommodation[];
@@ -28,9 +30,9 @@ export default function Footer({ settings, accommodations, content }: FooterProp
 
   const address = settings?.address?.trim() || "";
 
-  const phoneHref = phone ? `tel:${phone.replace(/[^\d+]/g, "")}` : null;
+  const phoneHref = getPhoneHref(phone);
 
-  const whatsappHref = whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, "")}` : null;
+  const whatsappHref = getWhatsAppHref(whatsapp);
 
   const mapsUrl = address
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
