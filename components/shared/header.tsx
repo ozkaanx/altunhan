@@ -4,6 +4,8 @@ import { getPhoneHref } from "@/lib/contact-links";
 
 import type { SiteSettings } from "@/types/site-settings";
 
+import { WhatsAppSupport } from "@/components/shared/whatsapp-support";
+
 type HeaderProps = {
   settings: SiteSettings | null;
 };
@@ -57,6 +59,7 @@ export const Header = ({ settings }: HeaderProps) => {
           </div>
         )}
       </div>
+      <WhatsAppSupport whatsapp={settings?.whatsapp} />
     </header>
   );
 };
