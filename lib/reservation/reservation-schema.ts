@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getTurkeyToday } from "@/lib/reservation/date-utils";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -50,6 +51,16 @@ export const publicReservationSchema = z
       .transform((value) => value.toLowerCase()),
   })
   .superRefine((values, context) => {
+    const today = getTurkeyToday();
+
+    if (values.checkIn < today) {
+      context.addIssue({
+        code: "custom",
+        path: ["checkIn"],
+        message: "Geçmiş bir tarih için rezervasyon oluşturulamaz.",
+      });
+    }
+
     if (values.checkOut <= values.checkIn) {
       context.addIssue({
         code: "custom",
