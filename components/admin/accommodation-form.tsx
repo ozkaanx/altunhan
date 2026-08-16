@@ -6,9 +6,7 @@ import { useAccommodationForm } from "@/hooks/admin/use-accommodation-form";
 
 import { AccommodationBasicFields } from "@/components/admin/accommodation-form/accommodation-basic-fields";
 
-import type {
-  AccommodationFormProps,
-} from "@/types/admin-accommodation-form";
+import type { AccommodationFormProps } from "@/types/admin-accommodation-form";
 
 import { AccommodationCapacitySection } from "@/components/admin/accommodation-form/accommodation-capacity-section";
 import { AccommodationImagesSection } from "@/components/admin/accommodation-form/accommodation-images-section";
@@ -40,11 +38,7 @@ export function AccommodationForm({
   return (
     <form onSubmit={handleSubmit} className="mx-auto max-w-[900px] space-y-5">
       <AccommodationBasicFields values={values} onChange={updateValue} />
-      <AccommodationCapacitySection
-        values={values}
-        onDecrease={decrement}
-        onIncrease={increment}
-      />
+      <AccommodationCapacitySection values={values} onDecrease={decrement} onIncrease={increment} />
 
       <AccommodationImagesSection
         images={values.images}

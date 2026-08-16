@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import Link from "next/link";
 
-import { ArrowLeft  } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { ReservationForm } from "@/components/reservation/reservation-form";
 

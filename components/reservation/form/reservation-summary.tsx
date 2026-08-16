@@ -327,6 +327,12 @@ export function ReservationSummary({
               <p className="pb-0.5 text-[9px] text-white/50">{estimatedNightCount} gece</p>
             )}
           </div>
+          {estimatedNightCount > 0 && (
+            <p className="mt-3 text-[9px] leading-5 text-white/55">
+              Gösterilen tutar seçtiğiniz konaklama ve gece sayısına göre hesaplanan toplam
+              konaklama bedelidir. Rezervasyon, ödeme ve işletme onayından sonra kesinleşir.
+            </p>
+          )}
 
           <button
             type="submit"
@@ -395,15 +401,10 @@ export function ReservationSummary({
         >
           <ShieldCheck size={15} strokeWidth={1.5} className="mt-0.5 shrink-0 text-[#526048]" />
 
-          <p
-            className="
-              text-[9px]
-              leading-5
-              text-[#81867F]
-            "
-          >
-            Talebiniz oluşturulduğunda uygun oda 1 saat boyunca geçici olarak sizin için ayrılır.
-            Rezervasyon ödeme ve yönetici onayından sonra kesinleşir.
+          <p className="text-[9px] leading-5 text-[#81867F]">
+            Rezervasyon talebiniz oluşturulduğunda seçtiğiniz konaklama 1 saat boyunca geçici olarak
+            sizin için ayrılır. Ödeme/dekont işlemini tamamladıktan sonra talebiniz işletme
+            tarafından kontrol edilir ve onaylandığında rezervasyonunuz kesinleşir.
           </p>
         </div>
 
