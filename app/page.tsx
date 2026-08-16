@@ -7,6 +7,8 @@ import LocationReviews from "@/components/shared/locationReviews";
 import Footer from "@/components/shared/footer";
 
 import { createClient } from "@/lib/supabase/server";
+import { Analytics } from "@vercel/analytics/next"
+
 
 import type { SiteSettings } from "@/types/site-settings";
 import type { Review } from "@/types/review";
@@ -90,6 +92,7 @@ export default async function Home() {
 
   return (
     <>
+    
       <Header settings={siteSettings} />
       <Navbar />
       <main>
@@ -114,6 +117,7 @@ export default async function Home() {
         content={content}
       />
         <SpeedInsights />
+        <Analytics />
     </>
   );
 }
