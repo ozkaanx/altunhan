@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { getTurkeyToday } from "@/lib/reservation/date-utils";
+import { normalizeTurkishMobilePhone } from "@/lib/phone";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -40,8 +41,11 @@ export const publicReservationSchema = z
     guestPhone: z
       .string()
       .trim()
-      .min(10, "Lütfen geçerli bir telefon numarası girin.")
-      .max(20, "Telefon numarası en fazla 20 karakter olabilir."),
+      .refine(
+        (value) => normalizeTurkishMobilePhone(value) !== null,
+        "Telefon numaranızı 5XX XXX XX XX biçiminde girin.",
+      )
+      .transform((value) => normalizeTurkishMobilePhone(value)!),
 
     guestEmail: z
       .string()

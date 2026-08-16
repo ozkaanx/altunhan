@@ -3,6 +3,7 @@ import { BedDouble, CalendarDays, ExternalLink, Loader2, Mail, Phone, User } fro
 import { InfoRow, MiniInfo } from "@/components/admin/reservation-detail/detail-info";
 
 import { formatPrice } from "@/lib/formatters/price";
+import { formatTurkishPhoneForDisplay } from "@/lib/phone";
 
 import type { Reservation } from "@/types/reservation";
 
@@ -43,7 +44,11 @@ export function ReservationInformation({
 
         <InfoRow icon={User} label="Ad Soyad" value={reservation.guest_name} />
 
-        <InfoRow icon={Phone} label="Telefon" value={reservation.guest_phone} />
+        <InfoRow
+          icon={Phone}
+          label="Telefon"
+          value={formatTurkishPhoneForDisplay(reservation.guest_phone)}
+        />
 
         {reservation.guest_email && (
           <InfoRow icon={Mail} label="E-posta" value={reservation.guest_email} />

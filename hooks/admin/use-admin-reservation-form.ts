@@ -8,6 +8,8 @@ import { createAdminReservation, getAvailableRoomsForDates } from "@/app/admin/r
 
 import { useAdminReservationFormState } from "@/hooks/admin/use-admin-reservation-form-state";
 
+import { normalizeTurkishMobilePhone } from "@/lib/phone";
+
 import type { AdminReservationAccommodation } from "@/types/admin-reservation";
 
 export function useAdminReservationForm(accommodations: AdminReservationAccommodation[]) {
@@ -198,8 +200,8 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
       return;
     }
 
-    if (!guestPhone.trim()) {
-      setError("Telefon numarası zorunludur.");
+    if (!normalizeTurkishMobilePhone(guestPhone)) {
+      setError("Telefon numarasını 5XX XXX XX XX biçiminde girin.");
 
       return;
     }

@@ -2,6 +2,8 @@
 
 import { Loader2, Phone, Search } from "lucide-react";
 
+import { TurkishMobileInput } from "@/components/shared/turkish-mobile-input";
+
 type TrackingSearchFormProps = {
   reservationCode: string;
   phone: string;
@@ -86,20 +88,15 @@ export function TrackingSearchForm({
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9B9E98]"
               />
 
-              <input
+              <TurkishMobileInput
                 id="tracking-phone"
                 name="phone"
                 required
-                type="tel"
                 value={phone}
-                onChange={(event) => onPhoneChange(event.target.value)}
-                placeholder="+90 5__ ___ __ __"
-                autoComplete="tel"
-                inputMode="tel"
-                maxLength={20}
-                pattern="[0-9+()\s-]{10,20}"
-                title="Rezervasyonda kullandığınız telefon numarasını girin."
-                className={`${inputClass} pl-10`}
+                onValueChange={onPhoneChange}
+                containerClassName={`${inputClass} pl-10`}
+                prefixClassName="border-r border-[#DDD9D1] pr-3"
+                inputClassName="h-full min-w-0 flex-1 border-0 bg-transparent px-3 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] sm:text-sm"
               />
             </div>
           </div>

@@ -9,6 +9,7 @@ import { getReservationStatusClass } from "@/lib/admin/reservation-list-utils";
 
 import { formatPrice } from "@/lib/formatters/price";
 import { formatReservationDate } from "@/lib/reservation/date-utils";
+import { formatTurkishPhoneForDisplay } from "@/lib/phone";
 import { getReservationStatusLabel } from "@/lib/reservation/status-utils";
 
 import type { Reservation } from "@/types/reservation";
@@ -46,7 +47,9 @@ export function ReservationResults({ reservations, onSelect }: ReservationResult
                   {reservation.guest_name}
                 </h2>
 
-                <p className="mt-1 text-[11px] text-[#8B8E87]">{reservation.guest_phone}</p>
+                <p className="mt-1 text-[11px] text-[#8B8E87]">
+                  {formatTurkishPhoneForDisplay(reservation.guest_phone)}
+                </p>
               </div>
 
               <span
@@ -147,7 +150,9 @@ export function ReservationResults({ reservations, onSelect }: ReservationResult
                 <td className="px-5 py-4">
                   <p className="text-xs font-medium text-[#343A34]">{reservation.guest_name}</p>
 
-                  <p className="mt-1 text-[10px] text-[#969990]">{reservation.guest_phone}</p>
+                  <p className="mt-1 text-[10px] text-[#969990]">
+                    {formatTurkishPhoneForDisplay(reservation.guest_phone)}
+                  </p>
                 </td>
 
                 <td className="px-5 py-4 text-xs text-[#646A63]">

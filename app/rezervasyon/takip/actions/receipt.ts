@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 
 import { notifyReceiptSubmitted } from "@/lib/notifications/reservation-emails";
+import { normalizeTurkishMobilePhone } from "@/lib/phone";
 
 type SubmitTrackedReceiptResult =
   | {
@@ -20,7 +21,7 @@ export async function submitTrackedReceipt(
 ): Promise<SubmitTrackedReceiptResult> {
   const code = reservationCode.trim();
 
-  const normalizedPhone = phone.trim();
+  const normalizedPhone = normalizeTurkishMobilePhone(phone);
 
   const path = storagePath.trim();
 
@@ -34,7 +35,7 @@ export async function submitTrackedReceipt(
   if (!normalizedPhone) {
     return {
       success: false,
-      message: "Telefon numarası bulunamadı.",
+      message: "Telefon numarası geçersiz.",
     };
   }
 

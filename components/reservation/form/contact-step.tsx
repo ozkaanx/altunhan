@@ -6,6 +6,7 @@ import { Mail, Phone, ShieldCheck, UserRound } from "lucide-react";
 
 import { FieldLabel } from "@/components/shared/fieldLabel";
 import { SectionTitle } from "@/components/shared/sectionTitle";
+import { TurkishMobileInput } from "@/components/shared/turkish-mobile-input";
 
 type ContactStepProps = {
   guestName: string;
@@ -74,20 +75,15 @@ export function ContactStep({
             <FieldLabel htmlFor="reservation-guest-phone">Telefon</FieldLabel>
 
             <InputShell icon={Phone}>
-              <input
+              <TurkishMobileInput
                 id="reservation-guest-phone"
                 name="guestPhone"
                 required
-                type="tel"
                 value={guestPhone}
-                onChange={(event) => onGuestPhoneChange(event.target.value)}
-                placeholder="+90 5__ ___ __ __"
-                autoComplete="tel"
-                inputMode="tel"
-                maxLength={20}
-                pattern="[0-9+()\s-]{10,20}"
-                title="Telefon numaranızı alan koduyla birlikte girin."
-                className={inputClass}
+                onValueChange={onGuestPhoneChange}
+                containerClassName="h-full flex-1"
+                prefixClassName="border-r border-[#EEEAE3] px-3"
+                inputClassName={inputClass}
               />
             </InputShell>
           </div>
