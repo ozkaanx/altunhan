@@ -59,6 +59,18 @@ export function useReservationDetail({
       return;
     }
 
+    const receiptWindow = window.open("about:blank", "_blank");
+
+    if (!receiptWindow) {
+      setReceiptError(
+        "Dekont penceresi tarayıcı tarafından engellendi. Lütfen açılır pencerelere izin verin.",
+      );
+
+      return;
+    }
+
+    receiptWindow.opener = null;
+
     setReceiptError(null);
     setIsOpeningReceipt(true);
 
@@ -66,14 +78,18 @@ export function useReservationDetail({
       const result = await getReceiptSignedUrl(reservation.receipt_storage_path);
 
       if (!result.success || !result.url) {
+        receiptWindow.close();
+
         setReceiptError(result.message ?? "Dekont açılamadı.");
 
         return;
       }
 
-      window.open(result.url, "_blank", "noopener,noreferrer");
+      receiptWindow.location.replace(result.url);
     } catch (error) {
       console.error(error);
+
+      receiptWindow.close();
 
       setReceiptError("Dekont açılırken beklenmeyen bir hata oluştu.");
     } finally {

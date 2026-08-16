@@ -54,7 +54,32 @@ export default function Hero({ content, settings }: HeroProps) {
           <div className="mt-9 grid max-w-[360px] gap-3 sm:flex sm:max-w-none sm:flex-wrap sm:items-center sm:gap-4">
             <Link
               href="/#konaklama"
-              className="group inline-flex h-12 items-center gap-3 border border-white bg-white px-7 text-[11px] font-semibold uppercase tracking-[0.15em] text-[#263A2D] transition-all duration-300 hover:bg-transparent hover:text-white"
+              className="
+  group
+  inline-flex
+  h-11
+  w-fit
+  justify-self-start
+  items-center
+  gap-2.5
+  border
+  border-white
+  bg-white
+  px-5
+  text-[10px]
+  font-semibold
+  uppercase
+  tracking-[0.13em]
+  text-[#263A2D]
+  transition-all
+  duration-300
+  hover:bg-transparent
+  hover:text-white
+  sm:h-12
+  sm:px-7
+  sm:text-[11px]
+  sm:tracking-[0.15em]
+"
             >
               Konaklamayı Keşfet
               <FiArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />

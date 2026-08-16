@@ -11,16 +11,21 @@ export function AccommodationInfoCard({ icon: Icon, label, value }: Accommodatio
     <div
       className="
         flex
+        min-w-0
+        flex-col
         items-center
-        gap-4
+        justify-center
+        gap-2
+        overflow-hidden
         border
         border-[#DDD8CC]
         bg-[#F8F4EB]
-        px-4
-        py-4
-        sm:flex-col
-        sm:justify-center
-        sm:text-center
+        px-2
+        py-3
+        text-center
+        sm:gap-3
+        sm:px-4
+        sm:py-4
       "
     >
       <div
@@ -37,13 +42,16 @@ export function AccommodationInfoCard({ icon: Icon, label, value }: Accommodatio
         <Icon size={21} strokeWidth={1.3} />
       </div>
 
-      <div>
+      <div className="min-w-0">
         <p
           className="
-            text-[9px]
+            text-[8px]
             uppercase
-            tracking-[0.14em]
+            leading-none
+            tracking-[0.1em]
             text-[#969A93]
+            sm:text-[9px]
+            sm:tracking-[0.14em]
           "
         >
           {label}
@@ -51,10 +59,13 @@ export function AccommodationInfoCard({ icon: Icon, label, value }: Accommodatio
 
         <p
           className="
-            mt-1
-            text-xs
+            mt-1.5
+            text-[11px]
             font-semibold
+            leading-4
             text-[#263A2D]
+            sm:text-xs
+            sm:leading-5
           "
         >
           {value}
