@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useAccommodationForm } from "@/hooks/admin/use-accommodation-form";
 
 import { AccommodationBasicFields } from "@/components/admin/accommodation-form/accommodation-basic-fields";
