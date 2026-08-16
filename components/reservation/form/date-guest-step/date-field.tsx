@@ -53,7 +53,15 @@ export function DateField({ label, value, min, disabled, onChange }: DateFieldPr
           required
           disabled={disabled}
           value={value}
-          onChange={(event) => onChange(event.currentTarget.value)}
+          onChange={(event) => {
+            const value = event.currentTarget.value;
+
+            if (value && value < min) {
+              return;
+            }
+
+            onChange(value);
+          }}
           onClick={(event) => {
             try {
               event.currentTarget.showPicker?.();

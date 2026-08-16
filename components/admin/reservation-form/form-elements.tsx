@@ -98,7 +98,7 @@ type FieldProps = {
 
 export function Field({ label, children }: FieldProps) {
   return (
-    <div>
+    <div className="min-w-0">
       <label className="mb-2 block text-xs font-medium text-[#40463F]">{label}</label>
 
       {children}
@@ -122,4 +122,4 @@ export function SummaryItem({ label, value }: SummaryItemProps) {
 }
 
 export const inputClass =
-  "h-11 w-full min-w-0 border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:text-sm";
+  "block box-border h-11 w-full min-w-0 max-w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:text-sm";

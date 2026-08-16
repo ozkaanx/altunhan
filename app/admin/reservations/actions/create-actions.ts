@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/auth/admin";
+import { getTurkeyToday } from "@/lib/admin/reservation-form-utils";
 
 export type CreateAdminReservationInput = {
   accommodationId: number;
@@ -20,6 +21,29 @@ export type CreateAdminReservationInput = {
 };
 
 export async function createAdminReservation(values: CreateAdminReservationInput) {
+  const today = getTurkeyToday();
+
+  if (!values.checkIn || !values.checkOut) {
+    return {
+      success: false as const,
+      message: "Giriş ve çıkış tarihleri zorunludur.",
+    };
+  }
+
+  if (values.checkIn < today) {
+    return {
+      success: false as const,
+      message: "Geçmiş bir tarih için rezervasyon oluşturulamaz.",
+    };
+  }
+
+  if (values.checkOut <= values.checkIn) {
+    return {
+      success: false as const,
+      message: "Çıkış tarihi giriş tarihinden sonra olmalıdır.",
+    };
+  }
+
   if (!Number.isInteger(values.adultCount) || values.adultCount < 1) {
     return {
       success: false as const,

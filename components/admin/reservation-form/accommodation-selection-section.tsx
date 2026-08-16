@@ -97,7 +97,15 @@ export function AccommodationSelectionSection({
               type="date"
               min={today}
               value={checkIn}
-              onChange={(event) => onCheckInChange(event.target.value)}
+              onChange={(event) => {
+                const value = event.currentTarget.value;
+
+                if (value && value < today) {
+                  return;
+                }
+
+                onCheckInChange(value);
+              }}
               className={inputClass}
             />
           </Field>
@@ -107,7 +115,16 @@ export function AccommodationSelectionSection({
               type="date"
               min={checkIn || today}
               value={checkOut}
-              onChange={(event) => onCheckOutChange(event.target.value)}
+              onChange={(event) => {
+                const value = event.currentTarget.value;
+                const minimumDate = checkIn || today;
+
+                if (value && value < minimumDate) {
+                  return;
+                }
+
+                onCheckOutChange(value);
+              }}
               className={inputClass}
             />
           </Field>

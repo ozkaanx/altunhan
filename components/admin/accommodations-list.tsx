@@ -95,21 +95,42 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
       <div className="mt-5 space-y-4 md:hidden">
         {filteredItems.map((item) => (
           <article key={item.id} className="border border-[#E3E0D8] bg-white">
-            <div className="relative flex aspect-[16/8] items-center justify-center bg-[#E9E6DE]">
-              <BedDouble size={34} strokeWidth={1.3} className="text-[#AAA69B]" />
+            <div
+              className="
+    relative
+    flex
+    aspect-[16/8]
+    items-center
+    justify-center
+    overflow-hidden
+    bg-[#E9E6DE]
+  "
+            >
+              {getCoverImage(item) ? (
+                <Image
+                  src={getCoverImage(item)!}
+                  alt={item.title}
+                  fill
+                  sizes="(max-width: 767px) calc(100vw - 48px), 0px"
+                  className="object-cover"
+                />
+              ) : (
+                <BedDouble size={34} strokeWidth={1.3} className="text-[#AAA69B]" />
+              )}
 
               <span
                 className={`
-                  absolute
-                  left-3
-                  top-3
-                  inline-flex
-                  px-2.5
-                  py-1.5
-                  text-[10px]
-                  font-semibold
-                  ${item.is_active ? "bg-[#263A2D] text-white" : "bg-[#D9D6CF] text-[#666B65]"}
-                `}
+      absolute
+      left-3
+      top-3
+      z-10
+      inline-flex
+      px-2.5
+      py-1.5
+      text-[10px]
+      font-semibold
+      ${item.is_active ? "bg-[#263A2D] text-white" : "bg-[#D9D6CF] text-[#666B65]"}
+    `}
               >
                 {item.is_active ? "Yayında" : "Pasif"}
               </span>
