@@ -5,6 +5,7 @@ import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import type { SiteSettings } from "@/types/site-settings";
 
 import { formatReservationDate } from "@/lib/reservation/date-utils";
+import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
 
 import type { CreatedReservation } from "@/types/reservation-ui";
 
@@ -58,11 +59,14 @@ export function ReservationPayment({ reservation, settings }: ReservationPayment
 
           <ReservationDetailCard label="Konaklama" value={reservation.accommodationTitle} />
 
-          <ReservationDetailCard label="Giriş" value={formatReservationDate(reservation.checkIn)} />
+          <ReservationDetailCard
+            label="Giriş"
+            value={`${formatReservationDate(reservation.checkIn)} · ${CHECK_IN_POLICY_TEXT}`}
+          />
 
           <ReservationDetailCard
             label="Çıkış"
-            value={formatReservationDate(reservation.checkOut)}
+            value={`${formatReservationDate(reservation.checkOut)} · ${CHECK_OUT_POLICY_TEXT}`}
           />
 
           <ReservationDetailCard

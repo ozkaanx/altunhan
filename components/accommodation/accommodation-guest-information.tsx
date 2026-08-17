@@ -105,7 +105,7 @@ export function AccommodationGuestInformation({ settings }: AccommodationGuestIn
                     </p>
 
                     <p className="mt-1 text-[11px] leading-5 text-[#747A72]">
-                      Giriş-çıkış saatleri, özel talepler ve güncel konaklama koşulları için bize
+                      Erken giriş, geç çıkış, özel talepler ve güncel konaklama koşulları için bize
                       ulaşabilirsiniz.
                     </p>
                   </div>

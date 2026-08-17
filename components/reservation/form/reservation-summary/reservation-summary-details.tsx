@@ -1,5 +1,6 @@
 import { formatPrice } from "@/lib/formatters/price";
 import { formatReservationDate } from "@/lib/reservation/date-utils";
+import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
 
 import type { PublicAccommodation } from "@/types/public-reservation";
 
@@ -28,11 +29,17 @@ export function ReservationSummaryDetails({
       <div className="space-y-3">
         <SummaryRow
           label="Giriş"
-          value={checkIn ? formatReservationDate(checkIn) : "Tarih seçin"}
+          value={
+            checkIn ? `${formatReservationDate(checkIn)} · ${CHECK_IN_POLICY_TEXT}` : "Tarih seçin"
+          }
         />
         <SummaryRow
           label="Çıkış"
-          value={checkOut ? formatReservationDate(checkOut) : "Tarih seçin"}
+          value={
+            checkOut
+              ? `${formatReservationDate(checkOut)} · ${CHECK_OUT_POLICY_TEXT}`
+              : "Tarih seçin"
+          }
         />
         <SummaryRow label="Misafir" value={guestText} />
         <SummaryRow

@@ -10,6 +10,7 @@ import { getReservationStatusClass } from "@/lib/admin/reservation-list-utils";
 import { formatPrice } from "@/lib/formatters/price";
 import { formatReservationDate } from "@/lib/reservation/date-utils";
 import { formatTurkishPhoneForDisplay } from "@/lib/phone";
+import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
 import { getReservationStatusLabel } from "@/lib/reservation/status-utils";
 
 import type { Reservation } from "@/types/reservation";
@@ -70,7 +71,7 @@ export function ReservationResults({ reservations, onSelect }: ReservationResult
 
               <div className="mt-3 grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[10px] text-[#969990]">Giriş</p>
+                  <p className="text-[10px] text-[#969990]">Giriş · {CHECK_IN_POLICY_TEXT}</p>
 
                   <p className="mt-1 text-xs font-medium text-[#4C524B]">
                     {formatReservationDate(reservation.check_in)}
@@ -78,7 +79,7 @@ export function ReservationResults({ reservations, onSelect }: ReservationResult
                 </div>
 
                 <div>
-                  <p className="text-[10px] text-[#969990]">Çıkış</p>
+                  <p className="text-[10px] text-[#969990]">Çıkış · {CHECK_OUT_POLICY_TEXT}</p>
 
                   <p className="mt-1 text-xs font-medium text-[#4C524B]">
                     {formatReservationDate(reservation.check_out)}
