@@ -5,6 +5,7 @@ import { ArrowLeft, CalendarDays, Home, Phone, ShieldCheck, Users } from "lucide
 import { useTrackingReceiptUpload } from "@/hooks/reservation/use-tracking-receipt-upload";
 
 import { formatReservationDate } from "@/lib/reservation/date-utils";
+import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
 
 import { formatPrice } from "@/lib/formatters/price";
 
@@ -110,13 +111,13 @@ export function TrackingResult({
             <InfoCard
               icon={CalendarDays}
               label="Giriş"
-              value={formatReservationDate(reservation.checkIn)}
+              value={`${formatReservationDate(reservation.checkIn)} · ${CHECK_IN_POLICY_TEXT}`}
             />
 
             <InfoCard
               icon={CalendarDays}
               label="Çıkış"
-              value={formatReservationDate(reservation.checkOut)}
+              value={`${formatReservationDate(reservation.checkOut)} · ${CHECK_OUT_POLICY_TEXT}`}
             />
 
             <InfoCard

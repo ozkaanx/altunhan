@@ -1,5 +1,7 @@
 import { BadgeCheck, Banknote, Clock3, UsersRound } from "lucide-react";
 
+import { STAY_TIME_POLICY_SUMMARY } from "@/lib/reservation/stay-policy";
+
 export const informationItems = [
   {
     icon: Banknote,
@@ -45,8 +47,7 @@ export const faqItems = [
   },
   {
     question: "Giriş ve çıkış saatlerini nereden öğrenebilirim?",
-    answer:
-      "Giriş-çıkış saatleri ile erken giriş veya geç çıkış gibi özel taleplerinizi rezervasyon öncesinde işletmeyle iletişime geçerek netleştirebilirsiniz.",
+    answer: `${STAY_TIME_POLICY_SUMMARY}. Erken giriş veya geç çıkış talepleri müsaitliğe bağlıdır; rezervasyon öncesinde işletmeyle iletişime geçebilirsiniz.`,
   },
   {
     question: "Rezervasyonumu iptal etmek veya değiştirmek istersem ne yapmalıyım?",

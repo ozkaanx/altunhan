@@ -4,6 +4,7 @@ import { InfoRow, MiniInfo } from "@/components/admin/reservation-detail/detail-
 
 import { formatPrice } from "@/lib/formatters/price";
 import { formatTurkishPhoneForDisplay } from "@/lib/phone";
+import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
 
 import type { Reservation } from "@/types/reservation";
 
@@ -83,9 +84,9 @@ export function ReservationInformation({
         </button>
 
         <div className="mt-4 grid grid-cols-2 gap-4">
-          <MiniInfo label="Giriş" value={reservation.check_in} />
+          <MiniInfo label={`Giriş · ${CHECK_IN_POLICY_TEXT}`} value={reservation.check_in} />
 
-          <MiniInfo label="Çıkış" value={reservation.check_out} />
+          <MiniInfo label={`Çıkış · ${CHECK_OUT_POLICY_TEXT}`} value={reservation.check_out} />
 
           <MiniInfo label="Gece" value={`${reservation.night_count}`} />
 

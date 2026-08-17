@@ -7,6 +7,8 @@ import {
   inputClass,
 } from "@/components/admin/reservation-form/form-elements";
 
+import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
+
 import type { AdminAvailableRoom, AdminReservationAccommodation } from "@/types/admin-reservation";
 
 type AccommodationSelectionSectionProps = {
@@ -92,7 +94,7 @@ export function AccommodationSelectionSection({
         )}
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Giriş Tarihi">
+          <Field label={`Giriş Tarihi · ${CHECK_IN_POLICY_TEXT}`}>
             <input
               type="date"
               min={today}
@@ -110,7 +112,7 @@ export function AccommodationSelectionSection({
             />
           </Field>
 
-          <Field label="Çıkış Tarihi">
+          <Field label={`Çıkış Tarihi · ${CHECK_OUT_POLICY_TEXT}`}>
             <input
               type="date"
               min={checkIn || today}

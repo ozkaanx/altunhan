@@ -1,9 +1,10 @@
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock3 } from "lucide-react";
 
 import { AvailabilityInfo } from "@/components/reservation/form/date-guest-step/availability-info";
 import { DateField } from "@/components/reservation/form/date-guest-step/date-field";
 
 import { getTurkeyToday } from "@/lib/reservation/date-utils";
+import { STAY_TIME_POLICY_SUMMARY } from "@/lib/reservation/stay-policy";
 
 import type { AccommodationBusyRange } from "@/types/public-reservation";
 
@@ -54,6 +55,11 @@ export function DateSelection({
           disabled={isLoadingAvailability}
           onChange={onCheckOutChange}
         />
+      </div>
+
+      <div className="mt-3 flex items-center gap-2 bg-[#F3F0E9] px-3 py-2.5 text-[10px] leading-5 text-[#6D736C]">
+        <Clock3 size={14} className="shrink-0 text-[#A8754F]" aria-hidden="true" />
+        {STAY_TIME_POLICY_SUMMARY}
       </div>
 
       {dateError ? (

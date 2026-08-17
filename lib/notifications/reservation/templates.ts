@@ -1,3 +1,5 @@
+import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
+
 export function escapeHtml(value: string | number | null | undefined) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -227,12 +229,12 @@ export function reservationDetailsHtml({
           "
         >
           <strong>Giriş:</strong>
-          ${escapeHtml(formatDate(checkIn))}
+          ${escapeHtml(formatDate(checkIn))} · ${escapeHtml(CHECK_IN_POLICY_TEXT)}
 
           &nbsp;&nbsp;
 
           <strong>Çıkış:</strong>
-          ${escapeHtml(formatDate(checkOut))}
+          ${escapeHtml(formatDate(checkOut))} · ${escapeHtml(CHECK_OUT_POLICY_TEXT)}
         </td>
       </tr>
 

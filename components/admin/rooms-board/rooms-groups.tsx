@@ -1,11 +1,16 @@
 import Link from "next/link";
 
-import { BedDouble, DoorClosed } from "lucide-react";
+import { BedDouble, Clock3, DoorClosed } from "lucide-react";
 
 import { StatusBadge } from "@/components/admin/rooms-board/room-board-elements";
 
 import { getReservationForDate } from "@/lib/admin/room-board-utils";
 import { formatReservationDate } from "@/lib/reservation/date-utils";
+import {
+  CHECK_IN_TIME,
+  CHECK_OUT_TIME,
+  STAY_TIME_POLICY_SUMMARY,
+} from "@/lib/reservation/stay-policy";
 
 import type { AdminRoom } from "@/types/admin-room";
 
@@ -23,6 +28,15 @@ type RoomsGroupsProps = {
 export function RoomsGroups({ groupedRooms, selectedDate, filteredRoomCount }: RoomsGroupsProps) {
   return (
     <div className="mt-7 space-y-8">
+      <div className="flex items-start gap-3 border border-[#E3E0D8] bg-white px-4 py-3 text-[11px] leading-5 text-[#6D726B]">
+        <Clock3 size={15} className="mt-0.5 shrink-0 text-[#A8754F]" aria-hidden="true" />
+
+        <p>
+          {STAY_TIME_POLICY_SUMMARY}. Çıkış günü oda {CHECK_OUT_TIME}’de boşalır ve aynı gün{" "}
+          {CHECK_IN_TIME}’ten itibaren yeni rezervasyon için müsait kabul edilir.
+        </p>
+      </div>
+
       {Object.entries(groupedRooms).map(([groupKey, group]) => {
         const occupiedCount = group.rooms.filter((room) =>
           getReservationForDate(room, selectedDate),
@@ -103,8 +117,9 @@ export function RoomsGroups({ groupedRooms, selectedDate, filteredRoomCount }: R
 
                         <p className="mt-2 text-[11px] text-[#8B8E87]">
                           {formatReservationDate(activeReservation.check_in)}
-                          {" → "}
+                          {` ${CHECK_IN_TIME} → `}
                           {formatReservationDate(activeReservation.check_out)}
+                          {` ${CHECK_OUT_TIME}`}
                         </p>
                       </div>
                     ) : (
