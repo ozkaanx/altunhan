@@ -6,16 +6,10 @@ type WhatsAppSupportProps = {
   whatsapp: string | null | undefined;
 };
 
-const DEFAULT_MESSAGE =
-  "Merhaba, Altunhan Farm hakkında bilgi almak istiyorum.";
+const DEFAULT_MESSAGE = "Merhaba, Altunhan Farm hakkında bilgi almak istiyorum.";
 
-export function WhatsAppSupport({
-  whatsapp,
-}: WhatsAppSupportProps) {
-  const whatsappHref = getWhatsAppHref(
-    whatsapp,
-    DEFAULT_MESSAGE,
-  );
+export function WhatsAppSupport({ whatsapp }: WhatsAppSupportProps) {
+  const whatsappHref = getWhatsAppHref(whatsapp, DEFAULT_MESSAGE);
 
   if (!whatsappHref) {
     return null;
@@ -65,13 +59,9 @@ export function WhatsAppSupport({
           sm:block
         "
       >
-        <span className="block text-[10px] font-medium text-white/80">
-          Bir sorunuz mu var?
-        </span>
+        <span className="block text-[10px] font-medium text-white/80">Bir sorunuz mu var?</span>
 
-        <span className="mt-0.5 block text-xs font-semibold">
-          WhatsApp&apos;tan bize yazın
-        </span>
+        <span className="mt-0.5 block text-xs font-semibold">WhatsApp&apos;tan bize yazın</span>
       </span>
 
       <span

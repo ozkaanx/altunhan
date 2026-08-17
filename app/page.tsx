@@ -7,8 +7,7 @@ import LocationReviews from "@/components/shared/locationReviews";
 import Footer from "@/components/shared/footer";
 
 import { createClient } from "@/lib/supabase/server";
-import { Analytics } from "@vercel/analytics/next"
-
+import { Analytics } from "@vercel/analytics/next";
 
 import type { SiteSettings } from "@/types/site-settings";
 import type { Review } from "@/types/review";
@@ -16,7 +15,7 @@ import type { HomepageContent } from "@/types/homepage-content";
 import Restaurant from "@/components/shared/restaurant";
 
 import type { HomeAccommodation } from "@/types/home-accommodation";
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -92,7 +91,6 @@ export default async function Home() {
 
   return (
     <>
-    
       <Header settings={siteSettings} />
       <Navbar />
       <main>
@@ -116,8 +114,8 @@ export default async function Home() {
         accommodations={(accommodations ?? []) as HomeAccommodation[]}
         content={content}
       />
-        <SpeedInsights />
-        <Analytics />
+      <SpeedInsights />
+      <Analytics />
     </>
   );
 }
