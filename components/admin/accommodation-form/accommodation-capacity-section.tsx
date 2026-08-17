@@ -1,14 +1,6 @@
-import {
-  Baby,
-  Bath,
-  BedDouble,
-  Users,
-} from "lucide-react";
+import { Baby, Bath, BedDouble, Users } from "lucide-react";
 
-import {
-  CounterRow,
-  SectionHeader,
-} from "@/components/admin/accommodation-form/form-elements";
+import { CounterRow, SectionHeader } from "@/components/admin/accommodation-form/form-elements";
 
 import type { AccommodationFormValues } from "@/types/accommodation";
 import type { AccommodationCounterKey } from "@/types/admin-accommodation-form";
