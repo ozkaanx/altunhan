@@ -26,7 +26,7 @@ export function TurkishMobileInput({
   return (
     <div className={`flex min-w-0 items-center ${containerClassName}`}>
       <span
-        className={`flex self-stretch shrink-0 select-none items-center text-sm font-medium text-[#626860] ${prefixClassName}`}
+        className={`flex shrink-0 select-none items-center self-stretch text-sm font-medium text-[#626860] ${prefixClassName}`}
         aria-hidden="true"
       >
         +90

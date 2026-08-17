@@ -31,38 +31,11 @@ export function AdminMobileSidebar({ open, onClose }: AdminMobileSidebarProps) {
         type="button"
         aria-label="Menüyü kapat"
         onClick={onClose}
-        className={`
-          fixed
-          inset-0
-          z-40
-          bg-black/30
-          backdrop-blur-[1px]
-          transition-opacity
-          duration-300
-          lg:hidden
-          ${open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}
-        `}
+        className={`fixed inset-0 z-40 bg-black/30 backdrop-blur-[1px] transition-opacity duration-300 lg:hidden ${open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} `}
       />
 
       <aside
-        className={`
-          fixed
-          left-0
-          top-0
-          z-50
-          flex
-          h-[100dvh]
-          w-[85%]
-          max-w-[320px]
-          flex-col
-          bg-[#F8F6F1]
-          shadow-2xl
-          transition-transform
-          duration-300
-          ease-out
-          lg:hidden
-          ${open ? "translate-x-0" : "-translate-x-full"}
-        `}
+        className={`fixed left-0 top-0 z-50 flex h-[100dvh] w-[85%] max-w-[320px] flex-col bg-[#F8F6F1] shadow-2xl transition-transform duration-300 ease-out lg:hidden ${open ? "translate-x-0" : "-translate-x-full"} `}
       >
         <div className="flex items-center justify-between border-b border-[#E5E1D8] px-5 py-5">
           <Link href="/admin" onClick={onClose} className="block">
@@ -100,16 +73,7 @@ export function AdminMobileSidebar({ open, onClose }: AdminMobileSidebarProps) {
                   key={item.href}
                   href={item.href}
                   onClick={onClose}
-                  className={`
-                    flex
-                    min-h-12
-                    items-center
-                    gap-3
-                    px-3
-                    text-sm
-                    transition-colors
-                    ${isActive ? "bg-[#263A2D] text-white" : "text-[#5F655E] active:bg-[#ECE9E1]"}
-                  `}
+                  className={`flex min-h-12 items-center gap-3 px-3 text-sm transition-colors ${isActive ? "bg-[#263A2D] text-white" : "text-[#5F655E] active:bg-[#ECE9E1]"} `}
                 >
                   <Icon size={18} strokeWidth={1.7} />
 

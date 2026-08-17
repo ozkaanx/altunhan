@@ -84,24 +84,11 @@ function ReservationDetailDrawerContent({
       <button
         type="button"
         onClick={onClose}
-        className={`
-          fixed inset-0 z-40 bg-black/30
-          ${open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}
-        `}
+        className={`fixed inset-0 z-40 bg-black/30 ${open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} `}
       />
 
       <aside
-        className={`
-          fixed right-0 top-0 z-50
-          h-[100dvh] w-full
-          overflow-y-auto
-          bg-[#F8F6F1]
-          shadow-2xl
-          transition-transform
-          duration-300
-          sm:max-w-[520px]
-          ${open ? "translate-x-0" : "translate-x-full"}
-        `}
+        className={`fixed right-0 top-0 z-50 h-[100dvh] w-full overflow-y-auto bg-[#F8F6F1] shadow-2xl transition-transform duration-300 sm:max-w-[520px] ${open ? "translate-x-0" : "translate-x-full"} `}
       >
         <ReservationDrawerHeader
           reservationCode={reservation.reservation_code}

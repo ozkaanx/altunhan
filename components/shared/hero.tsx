@@ -4,6 +4,8 @@ import Link from "next/link";
 import { CiLocationOn } from "react-icons/ci";
 import { FiArrowDown, FiArrowRight } from "react-icons/fi";
 
+import { Button } from "@/components/ui/button";
+
 import type { HomepageContent } from "@/types/homepage-content";
 import type { SiteSettings } from "@/types/site-settings";
 
@@ -25,7 +27,6 @@ export default function Hero({ content, settings }: HeroProps) {
 
   return (
     <section className="relative h-[calc(100svh-112px)] min-h-[560px] w-full overflow-hidden md:h-[calc(100svh-128px)] md:min-h-[600px]">
-      {" "}
       <Image
         src={settings?.hero_image_url || "/images/hero/altunhan-farm.jpg"}
         alt="Altunhan Farm - Saros Körfezi"
@@ -43,7 +44,6 @@ export default function Hero({ content, settings }: HeroProps) {
           </p>
 
           <h1 className="font-serif text-4xl leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            {" "}
             {title}
           </h1>
 
@@ -52,45 +52,21 @@ export default function Hero({ content, settings }: HeroProps) {
           </p>
 
           <div className="mt-9 grid max-w-[360px] gap-3 sm:flex sm:max-w-none sm:flex-wrap sm:items-center sm:gap-4">
-            <Link
-              href="/#konaklama"
-              className="
-  group
-  inline-flex
-  h-11
-  w-fit
-  justify-self-start
-  items-center
-  gap-2.5
-  border
-  border-white
-  bg-white
-  px-5
-  text-[10px]
-  font-semibold
-  uppercase
-  tracking-[0.13em]
-  text-[#263A2D]
-  transition-all
-  duration-300
-  hover:bg-transparent
-  hover:text-white
-  sm:h-12
-  sm:px-7
-  sm:text-[11px]
-  sm:tracking-[0.15em]
-"
+            <Button
+              asChild
+              variant="farmLight"
+              size="farm"
+              className="group h-11 w-fit justify-self-start px-5 text-[10px] tracking-[0.13em] transition-all duration-300 sm:h-12 sm:px-7 sm:text-[11px] sm:tracking-[0.15em]"
             >
-              Konaklamayı Keşfet
-              <FiArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
+              <Link href="/#konaklama">
+                Konaklamayı Keşfet
+                <FiArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+            </Button>
 
-            <Link
-              href="/rezervasyon"
-              className="inline-flex h-12 items-center justify-center border border-white/70 bg-transparent px-7 text-[11px] font-semibold uppercase tracking-[0.15em] text-white transition-all duration-300 hover:bg-white hover:text-[#263A2D]"
-            >
-              Rezervasyon Yap
-            </Link>
+            <Button asChild variant="farmOutlineLight" size="farm">
+              <Link href="/rezervasyon">Rezervasyon Yap</Link>
+            </Button>
           </div>
         </div>
       </div>

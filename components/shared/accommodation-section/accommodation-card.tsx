@@ -23,23 +23,7 @@ export function AccommodationCard({ accommodation }: AccommodationCardProps) {
   const shortDescription = getHomeAccommodationDescription(accommodation);
 
   return (
-    <article
-      className="
-        group
-        flex
-        h-full
-        min-w-0
-        flex-col
-        overflow-hidden
-        border
-        border-[#DDD8CC]
-        bg-[#FAF8F2]
-        transition-all
-        duration-500
-        hover:-translate-y-1
-        hover:shadow-[0_18px_45px_rgba(38,58,45,0.10)]
-      "
-    >
+    <article className="group flex h-full min-w-0 flex-col overflow-hidden border border-[#DDD8CC] bg-[#FAF8F2] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(38,58,45,0.10)]">
       <Link href={href} className="relative block aspect-[4/3] overflow-hidden bg-[#E8E2D7]">
         {image ? (
           <Image

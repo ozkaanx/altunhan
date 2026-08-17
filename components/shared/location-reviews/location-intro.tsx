@@ -16,18 +16,7 @@ export function LocationIntro({ address, mapsSearchUrl, label, title }: Location
         {label}
       </span>
 
-      <h2
-        className="
-          mt-4
-          max-w-[460px]
-          font-serif
-          text-[30px]
-          leading-[1.05]
-          text-[#263A2D]
-          sm:text-[34px]
-          md:text-[38px]
-        "
-      >
+      <h2 className="mt-4 max-w-[460px] font-serif text-[30px] leading-[1.05] text-[#263A2D] sm:text-[34px] md:text-[38px]">
         {title}
       </h2>
 
@@ -46,18 +35,7 @@ export function LocationIntro({ address, mapsSearchUrl, label, title }: Location
         href={mapsSearchUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="
-          group
-          mt-5
-          inline-flex
-          items-center
-          gap-3
-          text-[9px]
-          font-semibold
-          uppercase
-          tracking-[0.17em]
-          text-[#263A2D]
-        "
+        className="group mt-5 inline-flex items-center gap-3 text-[9px] font-semibold uppercase tracking-[0.17em] text-[#263A2D]"
       >
         Nasıl Gidilir?
         <FiArrowRight

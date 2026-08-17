@@ -47,21 +47,11 @@ export function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`
-                group
-                flex
-                items-center
-                gap-3
-                px-3
-                py-2.5
-                text-sm
-                transition-colors
-                ${
-                  isActive
-                    ? "bg-[#263A2D] text-white"
-                    : "text-[#5F655E] hover:bg-[#ECE9E1] hover:text-[#263A2D]"
-                }
-              `}
+              className={`group flex items-center gap-3 px-3 py-2.5 text-sm transition-colors ${
+                isActive
+                  ? "bg-[#263A2D] text-white"
+                  : "text-[#5F655E] hover:bg-[#ECE9E1] hover:text-[#263A2D]"
+              } `}
             >
               <Icon size={17} strokeWidth={1.7} />
 

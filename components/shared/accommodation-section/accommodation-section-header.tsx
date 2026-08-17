@@ -15,17 +15,7 @@ export function AccommodationSectionHeader({
         {label}
       </span>
 
-      <h2
-        className="
-          font-serif
-          text-[34px]
-          leading-[1.05]
-          text-[#263A2D]
-          sm:text-4xl
-          md:text-5xl
-          lg:text-6xl
-        "
-      >
+      <h2 className="font-serif text-[34px] leading-[1.05] text-[#263A2D] sm:text-4xl md:text-5xl lg:text-6xl">
         {title}
       </h2>
 

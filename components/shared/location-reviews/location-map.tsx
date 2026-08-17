@@ -4,18 +4,7 @@ type LocationMapProps = {
 
 export function LocationMap({ mapsEmbedUrl }: LocationMapProps) {
   return (
-    <div
-      className="
-        relative
-        min-h-[260px]
-        overflow-hidden
-        border
-        border-[#DDD8CC]
-        bg-[#E8E4DB]
-        sm:min-h-[300px]
-        lg:min-h-[340px]
-      "
-    >
+    <div className="relative min-h-[260px] overflow-hidden border border-[#DDD8CC] bg-[#E8E4DB] sm:min-h-[300px] lg:min-h-[340px]">
       <iframe
         src={mapsEmbedUrl}
         title="Altunhan Farm konumu"

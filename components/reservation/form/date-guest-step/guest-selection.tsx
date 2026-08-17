@@ -33,17 +33,7 @@ export function GuestSelection({
     <div className="mt-7 border-t border-[#E3DED5] pt-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex items-center gap-3">
-          <div
-            className="
-              flex
-              h-9
-              w-9
-              items-center
-              justify-center
-              bg-[#E9EDE6]
-              text-[#526048]
-            "
-          >
+          <div className="flex h-9 w-9 items-center justify-center bg-[#E9EDE6] text-[#526048]">
             <Users size={17} strokeWidth={1.5} aria-hidden="true" />
           </div>
 

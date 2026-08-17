@@ -18,19 +18,7 @@ export function AccommodationDetailHero({ title, images }: AccommodationDetailHe
         <div className="mx-auto max-w-[1500px]">
           <Link
             href="/#konaklama"
-            className="
-              group
-              inline-flex
-              items-center
-              gap-2
-              text-[10px]
-              font-semibold
-              uppercase
-              tracking-[0.14em]
-              text-[#5F675E]
-              transition-colors
-              hover:text-[#263A2D]
-            "
+            className="group inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#5F675E] transition-colors hover:text-[#263A2D]"
           >
             <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" />
             Konaklamalara Dön

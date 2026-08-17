@@ -17,17 +17,7 @@ export default function Accommodation({ accommodations, content }: Accommodation
   return (
     <section
       id="konaklama"
-      className="
-        w-full
-        bg-[#F5F1E8]
-        px-5
-        py-16
-        sm:px-6
-        sm:py-20
-        md:px-12
-        md:py-24
-        lg:px-16
-      "
+      className="w-full bg-[#F5F1E8] px-5 py-16 sm:px-6 sm:py-20 md:px-12 md:py-24 lg:px-16"
     >
       <div className="mx-auto max-w-[1500px]">
         <AccommodationSectionHeader

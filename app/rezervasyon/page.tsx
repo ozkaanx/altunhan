@@ -97,106 +97,31 @@ export default async function ReservationPage({ searchParams }: ReservationPageP
 
   return (
     <main className="min-h-screen bg-[#F5F1E8]">
-      <header
-        className="
-          border-b
-          border-[#DDD8CC]
-          bg-[#FAF8F2]
-        "
-      >
-        <div
-          className="
-            relative
-            mx-auto
-            flex
-            h-[68px]
-            max-w-[1280px]
-            items-center
-            justify-between
-            px-4
-            sm:px-6
-            lg:px-8
-          "
-        >
+      <header className="border-b border-[#DDD8CC] bg-[#FAF8F2]">
+        <div className="relative mx-auto flex h-[68px] max-w-[1280px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="
-              group
-              inline-flex
-              items-center
-              gap-2
-              text-[10px]
-              font-semibold
-              uppercase
-              tracking-[0.12em]
-              text-[#636A62]
-              transition-colors
-              hover:text-[#263A2D]
-            "
+            className="group inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#636A62] transition-colors hover:text-[#263A2D]"
           >
-            <ArrowLeft
-              size={14}
-              className="
-                transition-transform
-                group-hover:-translate-x-1
-              "
-            />
+            <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" />
 
             <span className="hidden sm:inline">Ana Sayfa</span>
             <span className="sm:hidden">Geri</span>
           </Link>
 
-          <div
-            className="
-              absolute
-              left-1/2
-              top-1/2
-              -translate-x-1/2
-              -translate-y-1/2
-              text-center
-            "
-          >
-            <p
-              className="
-                whitespace-nowrap
-                font-serif
-                text-lg
-                tracking-[0.04em]
-                text-[#263A2D]
-                sm:text-xl
-              "
-            >
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+            <p className="whitespace-nowrap font-serif text-lg tracking-[0.04em] text-[#263A2D] sm:text-xl">
               Altunhan Farm
             </p>
 
-            <p
-              className="
-                mt-0.5
-                hidden
-                text-[7px]
-                font-semibold
-                uppercase
-                tracking-[0.25em]
-                text-[#A8754F]
-                sm:block
-              "
-            >
+            <p className="mt-0.5 hidden text-[7px] font-semibold uppercase tracking-[0.25em] text-[#A8754F] sm:block">
               Rezervasyon
             </p>
           </div>
 
           <Link
             href="/rezervasyon/takip"
-            className="
-              text-[9px]
-              font-semibold
-              uppercase
-              tracking-[0.12em]
-              text-[#636A62]
-              transition-colors
-              hover:text-[#263A2D]
-              sm:text-[10px]
-            "
+            className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#636A62] transition-colors hover:text-[#263A2D] sm:text-[10px]"
           >
             <span className="hidden sm:inline">Rezervasyon Takibi</span>
             <span className="sm:hidden">Takip</span>
@@ -204,71 +129,22 @@ export default async function ReservationPage({ searchParams }: ReservationPageP
         </div>
       </header>
 
-      <section
-        className="
-          border-b
-          border-[#DDD8CC]
-          px-4
-          py-10
-          sm:px-6
-          sm:py-14
-          lg:px-8
-          lg:py-16
-        "
-      >
-        <div
-          className="
-            mx-auto
-            grid
-            max-w-[1280px]
-            gap-9
-            lg:grid-cols-[minmax(0,1fr)_420px]
-            lg:items-end
-            lg:gap-20
-          "
-        >
+      <section className="border-b border-[#DDD8CC] px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
+        <div className="mx-auto grid max-w-[1280px] gap-9 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end lg:gap-20">
           <div>
             <div className="flex items-center gap-3">
               <div className="h-px w-8 bg-[#A8754F]" />
 
-              <p
-                className="
-                  text-[9px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.25em]
-                  text-[#A8754F]
-                "
-              >
+              <p className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#A8754F]">
                 Online Rezervasyon
               </p>
             </div>
 
-            <h1
-              className="
-                mt-5
-                max-w-[750px]
-                font-serif
-                text-[40px]
-                leading-[1.03]
-                text-[#263A2D]
-                sm:text-5xl
-                md:text-[58px]
-              "
-            >
+            <h1 className="mt-5 max-w-[750px] font-serif text-[40px] leading-[1.03] text-[#263A2D] sm:text-5xl md:text-[58px]">
               Saros&apos;ta yerinizi birkaç adımda ayırın.
             </h1>
 
-            <p
-              className="
-                mt-5
-                max-w-[650px]
-                text-sm
-                leading-7
-                text-[#636A62]
-                sm:text-[15px]
-              "
-            >
+            <p className="mt-5 max-w-[650px] text-sm leading-7 text-[#636A62] sm:text-[15px]">
               Konaklamanızı seçin, tarihlerinizi belirleyin ve iletişim bilgilerinizi tamamlayın.
               Müsaitlik rezervasyon oluşturulmadan önce tekrar kontrol edilir.
             </p>
@@ -278,16 +154,7 @@ export default async function ReservationPage({ searchParams }: ReservationPageP
         </div>
       </section>
 
-      <section
-        className="
-          px-4
-          py-8
-          sm:px-6
-          sm:py-10
-          lg:px-8
-          lg:py-12
-        "
-      >
+      <section className="px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         {publicAccommodations.length > 0 ? (
           <ReservationForm
             accommodations={publicAccommodations}
@@ -295,58 +162,19 @@ export default async function ReservationPage({ searchParams }: ReservationPageP
             initialAccommodationId={initialAccommodationId}
           />
         ) : (
-          <div
-            className="
-              mx-auto
-              max-w-[760px]
-              border
-              border-[#DDD8CC]
-              bg-[#FAF8F2]
-              px-6
-              py-16
-              text-center
-            "
-          >
-            <p
-              className="
-                font-serif
-                text-2xl
-                text-[#263A2D]
-              "
-            >
+          <div className="mx-auto max-w-[760px] border border-[#DDD8CC] bg-[#FAF8F2] px-6 py-16 text-center">
+            <p className="font-serif text-2xl text-[#263A2D]">
               Şu anda rezervasyona açık konaklama bulunmuyor.
             </p>
 
-            <p
-              className="
-                mx-auto
-                mt-3
-                max-w-md
-                text-sm
-                leading-6
-                text-[#737971]
-              "
-            >
+            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#737971]">
               Konaklama seçeneklerimiz yeniden açıldığında bu sayfadan rezervasyon
               oluşturabilirsiniz.
             </p>
 
             <Link
               href="/"
-              className="
-                mt-7
-                inline-flex
-                h-11
-                items-center
-                justify-center
-                bg-[#263A2D]
-                px-6
-                text-[10px]
-                font-semibold
-                uppercase
-                tracking-[0.14em]
-                text-white
-              "
+              className="mt-7 inline-flex h-11 items-center justify-center bg-[#263A2D] px-6 text-[10px] font-semibold uppercase tracking-[0.14em] text-white"
             >
               Ana Sayfaya Dön
             </Link>

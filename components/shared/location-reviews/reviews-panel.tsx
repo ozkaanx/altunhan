@@ -18,21 +18,7 @@ export function ReviewsPanel({ reviews, sliderRef, onPrevious, onNext }: Reviews
   if (reviews.length === 0) {
     return (
       <div className="flex min-w-0 flex-col">
-        <div
-          className="
-            flex
-            min-h-[320px]
-            flex-1
-            items-center
-            justify-center
-            border
-            border-[#DDD8CC]
-            bg-[#FAF8F2]
-            p-8
-            text-center
-            lg:min-h-[440px]
-          "
-        >
+        <div className="flex min-h-[320px] flex-1 items-center justify-center border border-[#DDD8CC] bg-[#FAF8F2] p-8 text-center lg:min-h-[440px]">
           <p className="max-w-[300px] text-xs leading-6 text-[#747972]">
             Henüz yayınlanmış misafir yorumu bulunmuyor.
           </p>
@@ -45,19 +31,7 @@ export function ReviewsPanel({ reviews, sliderRef, onPrevious, onNext }: Reviews
     <div className="flex min-w-0 flex-col">
       <div
         ref={sliderRef}
-        className="
-          flex
-          flex-1
-          snap-x
-          snap-mandatory
-          gap-4
-          overflow-x-auto
-          scroll-smooth
-          overscroll-x-contain
-          pb-1
-          [scrollbar-width:none]
-          [&::-webkit-scrollbar]:hidden
-        "
+        className="flex flex-1 snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {reviews.map((review) => (
           <ReviewCard key={review.id} review={review} />

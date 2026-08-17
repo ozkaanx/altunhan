@@ -5,8 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { BedDouble, Eye, Plus, Search, Users } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
 import type { Accommodation } from "@/types/accommodation";
 import { formatPrice } from "@/lib/formatters/price";
+import { cn } from "@/lib/utils";
 
 type AccommodationsListProps = {
   accommodations: Accommodation[];
@@ -50,7 +54,7 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
         <div>
           <p className="text-xs text-[#8B8E87]">Konaklama Yönetimi</p>
 
-          <h2 className="mt-1 text-2xl font-semibold tracking-tight text-[#263A2D]">
+          <h2 className="mt-1 text-2xl font-semibold tracking-tight text-farm-forest">
             Konaklamalar
           </h2>
 
@@ -59,32 +63,32 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
           </p>
         </div>
 
-        <Link
-          href="/admin/accommodations/new"
-          className="inline-flex h-11 w-full items-center justify-center gap-2 bg-[#263A2D] px-5 text-xs font-semibold text-white transition-colors hover:bg-[#344B3A] sm:w-auto"
-        >
-          <Plus size={16} />
-          Yeni Konaklama
-        </Link>
+        <Button asChild variant="farmPrimary" size="farmSm" className="w-full sm:w-auto">
+          <Link href="/admin/accommodations/new">
+            <Plus size={16} />
+            Yeni Konaklama
+          </Link>
+        </Button>
       </div>
 
       <div className="mt-6">
         <div className="relative w-full sm:max-w-[380px]">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#92968E]" />
 
-          <input
+          <Input
+            variant="farm"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Konaklama ara..."
-            className="h-11 w-full border border-[#DDD9D1] bg-white pl-10 pr-4 text-sm text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D]"
+            className="pl-10 pr-4"
           />
         </div>
       </div>
       {filteredItems.length === 0 && (
-        <div className="mt-6 border border-[#E3E0D8] bg-white px-5 py-12 text-center">
+        <div className="mt-6 border border-farm-line-soft bg-white px-5 py-12 text-center">
           <BedDouble size={32} strokeWidth={1.2} className="mx-auto text-[#AAA69B]" />
 
-          <p className="mt-4 text-sm font-semibold text-[#263A2D]">Konaklama bulunamadı</p>
+          <p className="mt-4 text-sm font-semibold text-farm-forest">Konaklama bulunamadı</p>
 
           <p className="mt-2 text-xs text-[#92968E]">
             Arama kriterinize uygun konaklama bulunmuyor.
@@ -94,18 +98,8 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
 
       <div className="mt-5 space-y-4 md:hidden">
         {filteredItems.map((item) => (
-          <article key={item.id} className="border border-[#E3E0D8] bg-white">
-            <div
-              className="
-    relative
-    flex
-    aspect-[16/8]
-    items-center
-    justify-center
-    overflow-hidden
-    bg-[#E9E6DE]
-  "
-            >
+          <article key={item.id} className="border border-farm-line-soft bg-white">
+            <div className="relative flex aspect-[16/8] items-center justify-center overflow-hidden bg-[#E9E6DE]">
               {getCoverImage(item) ? (
                 <Image
                   src={getCoverImage(item)!}
@@ -119,25 +113,17 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
               )}
 
               <span
-                className={`
-      absolute
-      left-3
-      top-3
-      z-10
-      inline-flex
-      px-2.5
-      py-1.5
-      text-[10px]
-      font-semibold
-      ${item.is_active ? "bg-[#263A2D] text-white" : "bg-[#D9D6CF] text-[#666B65]"}
-    `}
+                className={cn(
+                  "absolute left-3 top-3 z-10 inline-flex px-2.5 py-1.5 text-[10px] font-semibold",
+                  item.is_active ? "bg-farm-forest text-white" : "bg-[#D9D6CF] text-[#666B65]",
+                )}
               >
                 {item.is_active ? "Yayında" : "Pasif"}
               </span>
             </div>
 
             <div className="p-4">
-              <h3 className="text-lg font-semibold text-[#263A2D]">{item.title}</h3>
+              <h3 className="text-lg font-semibold text-farm-forest">{item.title}</h3>
 
               {item.short_description && (
                 <p className="mt-1 line-clamp-2 text-xs leading-5 text-[#777B74]">
@@ -147,7 +133,7 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
 
               <div className="mt-4 grid grid-cols-3 gap-3 border-y border-[#EEEAE3] py-4">
                 <div>
-                  <div className="flex items-center gap-1.5 text-[#A8754F]">
+                  <div className="flex items-center gap-1.5 text-farm-clay">
                     <Users size={14} />
 
                     <span className="text-[10px] text-[#969990]">Kapasite</span>
@@ -157,7 +143,7 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-1.5 text-[#A8754F]">
+                  <div className="flex items-center gap-1.5 text-farm-clay">
                     <BedDouble size={14} />
 
                     <span className="text-[10px] text-[#969990]">Yatak</span>
@@ -177,18 +163,17 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.1em] text-[#969990]">Gecelik</p>
 
-                  <p className="mt-1 text-xl font-semibold text-[#263A2D]">
+                  <p className="mt-1 text-xl font-semibold text-farm-forest">
                     {formatPrice(Number(item.price))}
                   </p>
                 </div>
 
-                <Link
-                  href={`/admin/accommodations/${item.id}`}
-                  className="inline-flex h-10 items-center gap-2 border border-[#DAD6CE] px-4 text-xs font-medium text-[#263A2D]"
-                >
-                  <Eye size={15} />
-                  Düzenle
-                </Link>
+                <Button asChild variant="farmOutline" size="farmSm" className="h-10 px-4">
+                  <Link href={`/admin/accommodations/${item.id}`}>
+                    <Eye size={15} />
+                    Düzenle
+                  </Link>
+                </Button>
               </div>
             </div>
           </article>
@@ -196,7 +181,7 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
       </div>
 
       {filteredItems.length > 0 && (
-        <div className="mt-6 hidden overflow-hidden border border-[#E3E0D8] bg-white md:block">
+        <div className="mt-6 hidden overflow-hidden border border-farm-line-soft bg-white md:block">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[850px]">
               <thead>
@@ -235,7 +220,7 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
                         </div>
 
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-[#263A2D]">{item.title}</p>
+                          <p className="text-sm font-semibold text-farm-forest">{item.title}</p>
 
                           <p className="mt-1 max-w-[300px] truncate text-[11px] text-[#92968E]">
                             {item.short_description ?? "—"}
@@ -246,36 +231,32 @@ export function AccommodationsList({ accommodations }: AccommodationsListProps) 
 
                     <td className="px-5 py-4 text-xs text-[#626860]">{item.capacity} kişi</td>
 
-                    <td className="px-5 py-4 text-xs font-semibold text-[#263A2D]">
+                    <td className="px-5 py-4 text-xs font-semibold text-farm-forest">
                       {Number(item.price).toLocaleString("tr-TR")} TL
                     </td>
 
                     <td className="px-5 py-4">
                       <span
-                        className={`
-                          inline-flex
-                          px-2.5
-                          py-1.5
-                          text-[10px]
-                          font-medium
-                          ${
-                            item.is_active
-                              ? "bg-[#E6EFE6] text-[#496249]"
-                              : "bg-[#E7E9EA] text-[#686D68]"
-                          }
-                        `}
+                        className={cn(
+                          "inline-flex px-2.5 py-1.5 text-[10px] font-medium",
+                          item.is_active
+                            ? "bg-[#E6EFE6] text-[#496249]"
+                            : "bg-[#E7E9EA] text-[#686D68]",
+                        )}
                       >
                         {item.is_active ? "Yayında" : "Pasif"}
                       </span>
                     </td>
 
                     <td className="px-5 py-4 text-right">
-                      <Link
-                        href={`/admin/accommodations/${item.id}`}
-                        className="inline-flex h-9 items-center border border-[#DDD9D1] px-3 text-xs text-[#263A2D] transition-colors hover:border-[#263A2D]"
+                      <Button
+                        asChild
+                        variant="farmOutline"
+                        size="farmSm"
+                        className="h-9 px-3 font-normal"
                       >
-                        Düzenle
-                      </Link>
+                        <Link href={`/admin/accommodations/${item.id}`}>Düzenle</Link>
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -297,9 +278,10 @@ function TableHead({
 }) {
   return (
     <th
-      className={`px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#969990] ${
-        align === "right" ? "text-right" : "text-left"
-      }`}
+      className={cn(
+        "px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-farm-muted",
+        align === "right" ? "text-right" : "text-left",
+      )}
     >
       {children}
     </th>
