@@ -38,26 +38,10 @@ export function DateGuestStep({
   onChildCountChange,
 }: DateGuestStepProps) {
   return (
-    <section
-      className="
-        border
-        border-[#DDD8CC]
-        bg-[#FAF8F2]
-        p-4
-        sm:p-6
-      "
-    >
+    <section className="border border-[#DDD8CC] bg-[#FAF8F2] p-4 sm:p-6">
       <SectionTitle number="02" title="Tarih ve Misafir" />
 
-      <p
-        className="
-          mt-3
-          max-w-[580px]
-          text-[11px]
-          leading-5
-          text-[#81867F]
-        "
-      >
+      <p className="mt-3 max-w-[580px] text-[11px] leading-5 text-[#81867F]">
         Giriş ve çıkış tarihlerinizi belirleyin, ardından konaklayacak misafir sayısını seçin.
       </p>
 

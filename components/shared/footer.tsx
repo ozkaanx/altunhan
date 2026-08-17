@@ -9,11 +9,17 @@ import {
   FiMessageCircle,
 } from "react-icons/fi";
 
+import { Button } from "@/components/ui/button";
+
 import type { HomeAccommodation } from "@/types/home-accommodation";
 import type { SiteSettings } from "@/types/site-settings";
 import type { HomepageContent } from "@/types/homepage-content";
 
 import { getPhoneHref, getWhatsAppHref } from "@/lib/contact-links";
+
+const footerLinkClass = "text-xs text-white/65 transition-colors hover:text-white";
+const footerHeadingClass = "text-farm-gold text-[9px] font-semibold uppercase tracking-[0.2em]";
+const footerIconClass = "text-farm-gold";
 
 type FooterProps = {
   settings: SiteSettings | null;
@@ -39,11 +45,10 @@ export default function Footer({ settings, accommodations, content }: FooterProp
     : null;
 
   return (
-    <footer id="footer" className="w-full bg-[#263A2D] text-[#F5F1E8]">
+    <footer id="footer" className="w-full bg-farm-forest text-farm-cream">
       <section className="border-b border-white/10 px-6 py-16 md:px-12 md:py-20 lg:px-16">
-        {" "}
         <div className="mx-auto max-w-[1500px] text-center">
-          <span className="block text-[9px] font-medium uppercase tracking-[0.35em] text-[#C59A6A]">
+          <span className="block text-[9px] font-medium uppercase tracking-[0.35em] text-farm-gold">
             {content?.footer_label || "ALTUNHAN FARM"}
           </span>
 
@@ -56,16 +61,17 @@ export default function Footer({ settings, accommodations, content }: FooterProp
               "Doğanın içinde, denizin kıyısında unutulmaz bir konaklama deneyimi için yerinizi ayırın."}
           </p>
 
-          <Link
-            href="/rezervasyon"
-            className="group mt-8 inline-flex items-center gap-4 bg-[#F5F1E8] px-7 py-4 text-[9px] font-semibold uppercase tracking-[0.18em] text-[#263A2D] transition-all duration-300 hover:bg-[#C59A6A] hover:text-white"
+          <Button
+            asChild
+            variant="farmCream"
+            size="farm"
+            className="group mt-8 gap-4 text-[9px] tracking-[0.18em] transition-all duration-300"
           >
-            Rezervasyon Yap
-            <FiArrowUpRight
-              size={14}
-              className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
-            />
-          </Link>
+            <Link href="/rezervasyon">
+              Rezervasyon Yap
+              <FiArrowUpRight className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" />
+            </Link>
+          </Button>
         </div>
       </section>
 
@@ -84,61 +90,41 @@ export default function Footer({ settings, accommodations, content }: FooterProp
             </div>
 
             <div>
-              <h3 className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C59A6A]">
-                Keşfet
-              </h3>
+              <h3 className={footerHeadingClass}>Keşfet</h3>
 
               <ul className="mt-6 space-y-3">
                 <li>
-                  <Link
-                    href="/#konaklama"
-                    className="text-xs text-white/65 transition-colors hover:text-white"
-                  >
+                  <Link href="/#konaklama" className={footerLinkClass}>
                     Konaklama
                   </Link>
                 </li>
 
                 <li>
-                  <Link
-                    href="/#deneyim"
-                    className="text-xs text-white/65 transition-colors hover:text-white"
-                  >
+                  <Link href="/#deneyim" className={footerLinkClass}>
                     Deneyim
                   </Link>
                 </li>
 
                 <li>
-                  <Link
-                    href="/#restoran"
-                    className="text-xs text-white/65 transition-colors hover:text-white"
-                  >
+                  <Link href="/#restoran" className={footerLinkClass}>
                     Restoran
                   </Link>
                 </li>
 
                 <li>
-                  <Link
-                    href="/rezervasyon"
-                    className="text-xs text-white/65 transition-colors hover:text-white"
-                  >
+                  <Link href="/rezervasyon" className={footerLinkClass}>
                     Rezervasyon
                   </Link>
                 </li>
 
                 <li>
-                  <Link
-                    href="/rezervasyon/takip"
-                    className="text-xs text-white/65 transition-colors hover:text-white"
-                  >
+                  <Link href="/rezervasyon/takip" className={footerLinkClass}>
                     Rezervasyon Takip
                   </Link>
                 </li>
 
                 <li>
-                  <Link
-                    href="/#iletisim"
-                    className="text-xs text-white/65 transition-colors hover:text-white"
-                  >
+                  <Link href="/#iletisim" className={footerLinkClass}>
                     İletişim
                   </Link>
                 </li>
@@ -146,9 +132,7 @@ export default function Footer({ settings, accommodations, content }: FooterProp
             </div>
 
             <div>
-              <h3 className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C59A6A]">
-                Konaklama
-              </h3>
+              <h3 className={footerHeadingClass}>Konaklama</h3>
 
               <ul className="mt-6 space-y-3">
                 {accommodations.length > 0 ? (
@@ -158,7 +142,7 @@ export default function Footer({ settings, accommodations, content }: FooterProp
                         href={
                           accommodation.slug ? `/konaklama/${accommodation.slug}` : "/rezervasyon"
                         }
-                        className="text-xs text-white/65 transition-colors hover:text-white"
+                        className={footerLinkClass}
                       >
                         {accommodation.title}
                       </Link>
@@ -171,9 +155,7 @@ export default function Footer({ settings, accommodations, content }: FooterProp
             </div>
 
             <div>
-              <h3 className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C59A6A]">
-                İletişim
-              </h3>
+              <h3 className={footerHeadingClass}>İletişim</h3>
 
               <div className="mt-6 space-y-4">
                 {mapsUrl && (
@@ -186,7 +168,7 @@ export default function Footer({ settings, accommodations, content }: FooterProp
                     <FiMapPin
                       size={15}
                       strokeWidth={1.2}
-                      className="mt-0.5 shrink-0 text-[#C59A6A]"
+                      className={`mt-0.5 shrink-0 ${footerIconClass}`}
                     />
 
                     <span className="text-xs leading-5 text-white/65 transition-colors group-hover:text-white">
@@ -197,7 +179,7 @@ export default function Footer({ settings, accommodations, content }: FooterProp
 
                 {phoneHref && (
                   <a href={phoneHref} className="group flex items-center gap-3">
-                    <FiPhone size={15} strokeWidth={1.2} className="text-[#C59A6A]" />
+                    <FiPhone size={15} strokeWidth={1.2} className={footerIconClass} />
 
                     <span className="text-xs text-white/65 transition-colors group-hover:text-white">
                       {phone}
@@ -212,7 +194,7 @@ export default function Footer({ settings, accommodations, content }: FooterProp
                     rel="noopener noreferrer"
                     className="group flex items-center gap-3"
                   >
-                    <FiMessageCircle size={15} strokeWidth={1.2} className="text-[#C59A6A]" />
+                    <FiMessageCircle size={15} strokeWidth={1.2} className={footerIconClass} />
 
                     <span className="text-xs text-white/65 transition-colors group-hover:text-white">
                       WhatsApp
@@ -222,7 +204,7 @@ export default function Footer({ settings, accommodations, content }: FooterProp
 
                 {email && (
                   <a href={`mailto:${email}`} className="group flex items-center gap-3">
-                    <FiMail size={15} strokeWidth={1.2} className="text-[#C59A6A]" />
+                    <FiMail size={15} strokeWidth={1.2} className={footerIconClass} />
 
                     <span className="break-all text-xs text-white/65 transition-colors group-hover:text-white">
                       {email}
@@ -265,7 +247,7 @@ export default function Footer({ settings, accommodations, content }: FooterProp
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="flex h-9 w-9 items-center justify-center border border-white/10 text-white/60 transition-all duration-300 hover:border-[#C59A6A] hover:bg-[#C59A6A] hover:text-white"
+                className="flex h-9 w-9 items-center justify-center border border-white/10 text-white/60 transition-all duration-300 hover:border-farm-gold hover:bg-farm-gold hover:text-white"
               >
                 <FiInstagram size={15} />
               </a>

@@ -25,18 +25,7 @@ export function ReviewsHeader({
             {label}
           </span>
 
-          <h2
-            className="
-              mt-4
-              max-w-[620px]
-              font-serif
-              text-[20px]
-              leading-[1.08]
-              text-[#263A2D]
-              sm:text-4xl
-              md:text-[32px]
-            "
-          >
+          <h2 className="mt-4 max-w-[620px] font-serif text-[20px] leading-[1.08] text-[#263A2D] sm:text-4xl md:text-[32px]">
             {title}
           </h2>
         </div>

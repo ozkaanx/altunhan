@@ -77,18 +77,7 @@ export function ReservationForm({
 
   return (
     <form onSubmit={handleSubmit} className="mx-auto max-w-[1280px]">
-      <div
-        className="
-          mb-6
-          hidden
-          grid-cols-3
-          overflow-hidden
-          border
-          border-[#D9D4CA]
-          bg-[#FAF8F2]
-          md:grid
-        "
-      >
+      <div className="mb-6 hidden grid-cols-3 overflow-hidden border border-[#D9D4CA] bg-[#FAF8F2] md:grid">
         <ProgressItem number="01" title="Konaklama" text="Odanızı seçin" />
 
         <ProgressItem number="02" title="Tarih & Misafir" text="Konaklama planınızı belirleyin" />
@@ -96,15 +85,7 @@ export function ReservationForm({
         <ProgressItem number="03" title="İletişim" text="Bilgilerinizi tamamlayın" last />
       </div>
 
-      <div
-        className="
-          grid
-          items-start
-          gap-6
-          lg:grid-cols-[minmax(0,1fr)_380px]
-          lg:gap-8
-        "
-      >
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-8">
         <div className="space-y-5">
           <AccommodationStep
             accommodations={accommodations}
@@ -171,25 +152,9 @@ function ProgressItem({
 }) {
   return (
     <div
-      className={`
-        flex
-        items-center
-        gap-4
-        px-5
-        py-4
-        ${last ? "" : "border-r border-[#D9D4CA]"}
-      `}
+      className={`flex items-center gap-4 px-5 py-4 ${last ? "" : "border-r border-[#D9D4CA]"} `}
     >
-      <span
-        className="
-          font-serif
-          text-lg
-          italic
-          text-[#A8754F]
-        "
-      >
-        {number}
-      </span>
+      <span className="font-serif text-lg italic text-[#A8754F]">{number}</span>
 
       <div>
         <p className="text-[11px] font-semibold text-[#263A2D]">{title}</p>

@@ -10,25 +10,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
   const rating = Number(review.rating);
 
   return (
-    <article
-      className="
-        flex
-        min-h-[260px]
-        w-[88%]
-        shrink-0
-        snap-start
-        flex-col
-        border
-        border-[#DDD8CC]
-        bg-[#FAF8F2]
-        p-6
-        sm:w-[70%]
-        sm:p-7
-        md:w-[55%]
-        lg:min-h-[340px]
-        lg:w-[calc((100%-16px)/2)]
-      "
-    >
+    <article className="flex min-h-[260px] w-[88%] shrink-0 snap-start flex-col border border-[#DDD8CC] bg-[#FAF8F2] p-6 sm:w-[70%] sm:p-7 md:w-[55%] lg:min-h-[340px] lg:w-[calc((100%-16px)/2)]">
       <div className="font-serif text-5xl leading-none text-[#C8B49C]" aria-hidden="true">
         “
       </div>

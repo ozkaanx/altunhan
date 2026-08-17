@@ -22,11 +22,7 @@ export const Header = ({ settings }: HeaderProps) => {
   return (
     <header className="w-full bg-header px-4 py-2 text-white sm:px-6 md:px-12 lg:px-16">
       <div
-        className={`
-          mx-auto flex max-w-[1600px]
-          items-center
-          ${hasContactInfo ? "justify-center lg:justify-between" : "justify-center"}
-        `}
+        className={`mx-auto flex max-w-[1600px] items-center ${hasContactInfo ? "justify-center lg:justify-between" : "justify-center"} `}
       >
         <div className="flex items-center gap-2">
           <CiLocationOn className="shrink-0" />

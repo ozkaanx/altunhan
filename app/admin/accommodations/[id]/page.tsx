@@ -108,14 +108,7 @@ export default async function EditAccommodationPage({ params }: EditAccommodatio
       <div className="mb-6">
         <Link
           href="/admin/accommodations"
-          className="
-            inline-flex
-            items-center
-            gap-2
-            text-xs
-            font-medium
-            text-[#71766F]
-          "
+          className="inline-flex items-center gap-2 text-xs font-medium text-[#71766F]"
         >
           <ArrowLeft size={15} />
           Konaklamalara Dön

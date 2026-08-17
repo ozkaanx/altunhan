@@ -16,12 +16,26 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        farmPrimary:
+          "rounded-none bg-farm-forest text-white shadow-none hover:bg-farm-forest-hover focus-visible:ring-farm-clay",
+        farmAccent:
+          "rounded-none bg-farm-clay text-white shadow-none hover:bg-farm-forest focus-visible:ring-farm-clay",
+        farmLight:
+          "rounded-none border border-white bg-white text-farm-forest shadow-none hover:bg-transparent hover:text-white focus-visible:ring-white",
+        farmCream:
+          "rounded-none bg-farm-cream text-farm-forest shadow-none hover:bg-farm-gold hover:text-white focus-visible:ring-farm-gold",
+        farmOutline:
+          "rounded-none border border-farm-line bg-transparent text-farm-forest shadow-none hover:border-farm-forest hover:bg-transparent",
+        farmOutlineLight:
+          "rounded-none border border-white/70 bg-transparent text-white shadow-none hover:bg-white hover:text-farm-forest focus-visible:ring-white",
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
+        farm: "h-12 rounded-none px-7 text-[11px] font-semibold uppercase tracking-[0.15em]",
+        farmSm: "h-11 rounded-none px-5 text-xs font-semibold",
       },
     },
     defaultVariants: {

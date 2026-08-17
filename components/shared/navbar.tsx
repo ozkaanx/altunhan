@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 
+import { Button } from "@/components/ui/button";
+
 const navItems = [
   { label: "Konaklama", href: "/#konaklama" },
   { label: "Deneyim", href: "/#deneyim" },
@@ -42,14 +44,14 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="relative z-40 w-full bg-[#F5F1E8]">
+      <nav className="relative z-40 w-full bg-farm-cream">
         <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-4 sm:px-6 md:h-24 md:px-12 lg:px-16">
           <Link href="/" onClick={closeMenu} className="flex flex-col leading-none">
-            <span className="font-serif text-[20px] tracking-[0.24em] text-[#263A2D] sm:text-[22px] sm:tracking-[0.28em]">
+            <span className="font-serif text-[20px] tracking-[0.24em] text-farm-forest sm:text-[22px] sm:tracking-[0.28em]">
               ALTUNHAN
             </span>
 
-            <span className="mt-1 text-center text-[9px] tracking-[0.5em] text-[#263A2D] sm:text-[10px] sm:tracking-[0.55em]">
+            <span className="mt-1 text-center text-[9px] tracking-[0.5em] text-farm-forest sm:text-[10px] sm:tracking-[0.55em]">
               FARM
             </span>
           </Link>
@@ -59,7 +61,7 @@ export default function Navbar() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="relative text-[12px] font-medium uppercase tracking-[0.12em] text-[#263A2D] transition-colors duration-300 hover:text-[#A8754F] after:absolute after:-bottom-2 after:left-0 after:h-px after:w-0 after:bg-[#A8754F] after:transition-all after:duration-300 hover:after:w-full"
+                  className="relative text-[12px] font-medium uppercase tracking-[0.12em] text-farm-forest transition-colors duration-300 after:absolute after:-bottom-2 after:left-0 after:h-px after:w-0 after:bg-farm-clay after:transition-all after:duration-300 hover:text-farm-clay hover:after:w-full"
                 >
                   {item.label}
                 </Link>
@@ -68,12 +70,14 @@ export default function Navbar() {
           </ul>
 
           <div className="hidden lg:block">
-            <Link
-              href="/rezervasyon"
-              className="inline-flex h-11 items-center justify-center bg-[#A8754F] px-7 text-[11px] font-semibold uppercase tracking-[0.15em] text-white transition-all duration-300 hover:bg-[#263A2D]"
+            <Button
+              asChild
+              variant="farmAccent"
+              size="farmSm"
+              className="px-7 text-[11px] uppercase tracking-[0.15em] transition-all duration-300"
             >
-              Rezervasyon
-            </Link>
+              <Link href="/rezervasyon">Rezervasyon</Link>
+            </Button>
           </div>
 
           <button
@@ -82,7 +86,7 @@ export default function Navbar() {
             aria-expanded={isOpen}
             aria-controls="mobile-navigation"
             onClick={() => setIsOpen((current) => !current)}
-            className="flex h-11 w-11 items-center justify-center text-[#263A2D] lg:hidden"
+            className="flex h-11 w-11 items-center justify-center text-farm-forest lg:hidden"
           >
             {isOpen ? <FiX size={25} /> : <FiMenu size={25} />}
           </button>
@@ -103,15 +107,15 @@ export default function Navbar() {
             role="dialog"
             aria-modal="true"
             aria-label="Mobil menü"
-            className="fixed right-0 top-0 z-50 flex h-dvh w-[85%] max-w-[360px] flex-col bg-[#F5F1E8] shadow-2xl lg:hidden"
+            className="fixed right-0 top-0 z-50 flex h-dvh w-[85%] max-w-[360px] flex-col bg-farm-cream shadow-2xl lg:hidden"
           >
-            <div className="flex h-20 items-center justify-between border-b border-[#DDD8CC] px-5">
+            <div className="flex h-20 items-center justify-between border-b border-farm-line px-5">
               <Link href="/" onClick={closeMenu} className="flex flex-col leading-none">
-                <span className="font-serif text-[18px] tracking-[0.24em] text-[#263A2D]">
+                <span className="font-serif text-[18px] tracking-[0.24em] text-farm-forest">
                   ALTUNHAN
                 </span>
 
-                <span className="mt-1 text-center text-[9px] tracking-[0.48em] text-[#263A2D]">
+                <span className="mt-1 text-center text-[9px] tracking-[0.48em] text-farm-forest">
                   FARM
                 </span>
               </Link>
@@ -120,7 +124,7 @@ export default function Navbar() {
                 type="button"
                 aria-label="Menüyü kapat"
                 onClick={closeMenu}
-                className="flex h-10 w-10 items-center justify-center text-[#263A2D]"
+                className="flex h-10 w-10 items-center justify-center text-farm-forest"
               >
                 <FiX size={24} />
               </button>
@@ -133,7 +137,7 @@ export default function Navbar() {
                     <Link
                       href={item.href}
                       onClick={closeMenu}
-                      className="flex min-h-12 items-center border-b border-[#E1DDD4] py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#263A2D]"
+                      className="flex min-h-12 items-center border-b border-[#E1DDD4] py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-farm-forest"
                     >
                       {item.label}
                     </Link>
@@ -142,14 +146,12 @@ export default function Navbar() {
               </ul>
             </nav>
 
-            <div className="border-t border-[#DDD8CC] p-5">
-              <Link
-                href="/rezervasyon"
-                onClick={closeMenu}
-                className="flex h-12 w-full items-center justify-center bg-[#A8754F] text-[11px] font-semibold uppercase tracking-[0.15em] text-white"
-              >
-                Rezervasyon Yap
-              </Link>
+            <div className="border-t border-farm-line p-5">
+              <Button asChild variant="farmAccent" size="farm" className="w-full">
+                <Link href="/rezervasyon" onClick={closeMenu}>
+                  Rezervasyon Yap
+                </Link>
+              </Button>
             </div>
           </aside>
         </>

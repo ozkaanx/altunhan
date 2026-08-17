@@ -14,7 +14,7 @@ export function AccommodationMobileReservationBar({
   reservationHref,
 }: AccommodationMobileReservationBarProps) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#D4CEC3] bg-[#FAF8F2]/95 px-4 pt-3 shadow-[0_-12px_30px_rgba(38,58,45,0.1)] backdrop-blur-md pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#D4CEC3] bg-[#FAF8F2]/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_rgba(38,58,45,0.1)] backdrop-blur-md lg:hidden">
       <div className="mx-auto flex max-w-lg items-center gap-4">
         <div className="min-w-0 shrink-0">
           <p className="text-[8px] font-semibold uppercase tracking-[0.14em] text-[#A8754F]">

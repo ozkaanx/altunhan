@@ -27,19 +27,7 @@ export default function LocationReviews({ settings, reviews, content }: Location
 
   return (
     <section id="iletisim" className="w-full border-y border-[#DDD8CC] bg-[#F5F1E8]">
-      <div
-        className="
-          mx-auto
-          max-w-[1500px]
-          px-5
-          py-12
-          sm:px-6
-          sm:py-14
-          md:px-12
-          md:py-16
-          lg:px-16
-        "
-      >
+      <div className="mx-auto max-w-[1500px] px-5 py-12 sm:px-6 sm:py-14 md:px-12 md:py-16 lg:px-16">
         <div className="mb-8 grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12 xl:gap-16">
           <LocationIntro
             address={address}

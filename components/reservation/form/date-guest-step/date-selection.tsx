@@ -64,16 +64,7 @@ export function DateSelection({
 
       {dateError ? (
         <div
-          className="
-            mt-4
-            flex
-            items-start
-            gap-3
-            border
-            border-[#E5C7C0]
-            bg-[#F8EEEA]
-            p-4
-          "
+          className="mt-4 flex items-start gap-3 border border-[#E5C7C0] bg-[#F8EEEA] p-4"
           role="alert"
         >
           <AlertTriangle size={17} className="mt-0.5 shrink-0 text-[#98584E]" aria-hidden="true" />
@@ -85,20 +76,7 @@ export function DateSelection({
         </div>
       ) : checkIn && checkOut ? (
         <div
-          className="
-            mt-4
-            flex
-            items-center
-            gap-2
-            border
-            border-[#D8E3D5]
-            bg-[#EEF4EC]
-            px-4
-            py-3
-            text-[11px]
-            font-medium
-            text-[#496449]
-          "
+          className="mt-4 flex items-center gap-2 border border-[#D8E3D5] bg-[#EEF4EC] px-4 py-3 text-[11px] font-medium text-[#496449]"
           role="status"
         >
           <CheckCircle2 size={15} aria-hidden="true" />

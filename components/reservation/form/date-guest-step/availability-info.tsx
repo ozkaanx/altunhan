@@ -14,19 +14,7 @@ export function AvailabilityInfo({ isLoading, busyRanges, error }: AvailabilityI
   if (isLoading) {
     return (
       <div
-        className="
-          mt-5
-          flex
-          items-center
-          gap-2
-          border
-          border-[#E4E1D9]
-          bg-[#F3F1EB]
-          px-4
-          py-3
-          text-[11px]
-          text-[#737871]
-        "
+        className="mt-5 flex items-center gap-2 border border-[#E4E1D9] bg-[#F3F1EB] px-4 py-3 text-[11px] text-[#737871]"
         role="status"
       >
         <Loader2 size={14} className="animate-spin" aria-hidden="true" />
@@ -38,19 +26,7 @@ export function AvailabilityInfo({ isLoading, busyRanges, error }: AvailabilityI
   if (error) {
     return (
       <div
-        className="
-          mt-5
-          flex
-          items-start
-          gap-2
-          border
-          border-[#E7D8C0]
-          bg-[#FAF5EA]
-          p-4
-          text-[11px]
-          leading-5
-          text-[#88662F]
-        "
+        className="mt-5 flex items-start gap-2 border border-[#E7D8C0] bg-[#FAF5EA] p-4 text-[11px] leading-5 text-[#88662F]"
         role="alert"
       >
         <AlertTriangle size={15} className="mt-0.5 shrink-0" aria-hidden="true" />
@@ -62,19 +38,7 @@ export function AvailabilityInfo({ isLoading, busyRanges, error }: AvailabilityI
   if (busyRanges.length === 0) {
     return (
       <div
-        className="
-          mt-5
-          flex
-          items-center
-          gap-2
-          border
-          border-[#D8E3D5]
-          bg-[#F1F6EF]
-          px-4
-          py-3
-          text-[11px]
-          text-[#526A51]
-        "
+        className="mt-5 flex items-center gap-2 border border-[#D8E3D5] bg-[#F1F6EF] px-4 py-3 text-[11px] text-[#526A51]"
         role="status"
       >
         <CheckCircle2 size={15} aria-hidden="true" />
@@ -106,16 +70,7 @@ export function AvailabilityInfo({ isLoading, busyRanges, error }: AvailabilityI
         {busyRanges.slice(0, 4).map((range) => (
           <span
             key={`${range.checkIn}-${range.checkOut}`}
-            className="
-              border
-              border-[#E7DAC5]
-              bg-white/70
-              px-2.5
-              py-1.5
-              text-[9px]
-              font-medium
-              text-[#765B35]
-            "
+            className="border border-[#E7DAC5] bg-white/70 px-2.5 py-1.5 text-[9px] font-medium text-[#765B35]"
           >
             {formatReservationDate(range.checkIn)} → {formatReservationDate(range.checkOut)}
           </span>
