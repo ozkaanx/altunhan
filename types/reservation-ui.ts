@@ -10,6 +10,7 @@ export type CreatedReservation = {
 
 export type ReservationContact = {
   guestName: string;
+  guestIdentityNumber: string;
   guestPhone: string;
   guestEmail: string;
 };

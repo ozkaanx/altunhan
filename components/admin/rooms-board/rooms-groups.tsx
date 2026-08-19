@@ -4,7 +4,7 @@ import { BedDouble, Clock3, DoorClosed } from "lucide-react";
 
 import { StatusBadge } from "@/components/admin/rooms-board/room-board-elements";
 
-import { getReservationForDate } from "@/lib/admin/room-board-utils";
+import { getReservationsForRange } from "@/lib/admin/room-board-utils";
 import { formatReservationDate } from "@/lib/reservation/date-utils";
 import {
   CHECK_IN_TIME,
@@ -21,11 +21,17 @@ type RoomGroup = {
 
 type RoomsGroupsProps = {
   groupedRooms: Record<string, RoomGroup>;
-  selectedDate: string;
+  checkIn: string;
+  checkOut: string;
   filteredRoomCount: number;
 };
 
-export function RoomsGroups({ groupedRooms, selectedDate, filteredRoomCount }: RoomsGroupsProps) {
+export function RoomsGroups({
+  groupedRooms,
+  checkIn,
+  checkOut,
+  filteredRoomCount,
+}: RoomsGroupsProps) {
   return (
     <div className="mt-7 space-y-8">
       <div className="flex items-start gap-3 border border-[#E3E0D8] bg-white px-4 py-3 text-[11px] leading-5 text-[#6D726B]">
@@ -38,8 +44,8 @@ export function RoomsGroups({ groupedRooms, selectedDate, filteredRoomCount }: R
       </div>
 
       {Object.entries(groupedRooms).map(([groupKey, group]) => {
-        const occupiedCount = group.rooms.filter((room) =>
-          getReservationForDate(room, selectedDate),
+        const occupiedCount = group.rooms.filter(
+          (room) => getReservationsForRange(room, checkIn, checkOut).length > 0,
         ).length;
 
         return (
@@ -58,9 +64,9 @@ export function RoomsGroups({ groupedRooms, selectedDate, filteredRoomCount }: R
 
             <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3">
               {group.rooms.map((room) => {
-                const activeReservation = getReservationForDate(room, selectedDate);
+                const activeReservations = getReservationsForRange(room, checkIn, checkOut);
 
-                const isOccupied = Boolean(activeReservation);
+                const isOccupied = activeReservations.length > 0;
 
                 return (
                   <article key={room.id} className="border border-[#E6E2DA] bg-[#FAF9F6] p-4">
@@ -98,29 +104,31 @@ export function RoomsGroups({ groupedRooms, selectedDate, filteredRoomCount }: R
                       )}
                     </div>
 
-                    {activeReservation ? (
-                      <div className="mt-4 border-t border-[#E8E4DC] pt-4">
+                    {isOccupied ? (
+                      <div className="mt-4 space-y-3 border-t border-[#E8E4DC] pt-4">
                         <p className="text-[10px] uppercase tracking-[0.1em] text-[#969990]">
-                          Aktif Rezervasyon
+                          Çakışan Rezervasyon{activeReservations.length > 1 ? "lar" : ""}
                         </p>
 
-                        <Link
-                          href={`/admin/reservations?reservation=${activeReservation.id}`}
-                          className="mt-2 inline-block break-all text-xs font-semibold text-[#263A2D] underline-offset-4 hover:underline"
-                        >
-                          {activeReservation.reservation_code}
-                        </Link>
+                        {activeReservations.map((reservation) => (
+                          <div key={reservation.id} className="border-l-2 border-[#D8C3A5] pl-3">
+                            <Link
+                              href={`/admin/reservations?reservation=${reservation.id}`}
+                              className="inline-block break-all text-xs font-semibold text-[#263A2D] underline-offset-4 hover:underline"
+                            >
+                              {reservation.reservation_code}
+                            </Link>
 
-                        <p className="mt-1 text-xs text-[#6D726B]">
-                          {activeReservation.guest_name}
-                        </p>
+                            <p className="mt-1 text-xs text-[#6D726B]">{reservation.guest_name}</p>
 
-                        <p className="mt-2 text-[11px] text-[#8B8E87]">
-                          {formatReservationDate(activeReservation.check_in)}
-                          {` ${CHECK_IN_TIME} → `}
-                          {formatReservationDate(activeReservation.check_out)}
-                          {` ${CHECK_OUT_TIME}`}
-                        </p>
+                            <p className="mt-2 text-[11px] text-[#8B8E87]">
+                              {formatReservationDate(reservation.check_in)}
+                              {` ${CHECK_IN_TIME} → `}
+                              {formatReservationDate(reservation.check_out)}
+                              {` ${CHECK_OUT_TIME}`}
+                            </p>
+                          </div>
+                        ))}
                       </div>
                     ) : (
                       <div className="mt-4 border-t border-[#E8E4DC] pt-4">

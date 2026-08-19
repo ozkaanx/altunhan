@@ -9,6 +9,7 @@ import { createAdminReservation, getAvailableRoomsForDates } from "@/app/admin/r
 import { useAdminReservationFormState } from "@/hooks/admin/use-admin-reservation-form-state";
 
 import { normalizeTurkishMobilePhone } from "@/lib/phone";
+import { isValidTckn } from "@/lib/identity/tckn";
 
 import type { AdminReservationAccommodation } from "@/types/admin-reservation";
 
@@ -27,6 +28,7 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
     childCount,
     setChildCount,
     guestName,
+    guestIdentityNumber,
     guestPhone,
     guestEmail,
     status,
@@ -200,6 +202,12 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
       return;
     }
 
+    if (!isValidTckn(guestIdentityNumber)) {
+      setError("Geçerli bir T.C. kimlik numarası girin.");
+
+      return;
+    }
+
     if (!normalizeTurkishMobilePhone(guestPhone)) {
       setError("Telefon numarasını 5XX XXX XX XX biçiminde girin.");
 
@@ -217,6 +225,7 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
         adultCount,
         childCount,
         guestName,
+        guestIdentityNumber,
         guestPhone,
         guestEmail,
         status,

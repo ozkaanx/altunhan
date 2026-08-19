@@ -22,4 +22,5 @@ export type ReservationDetailDrawerProps = {
   onApprove: (reservation: Reservation) => Promise<ReservationActionResult>;
   onReject: (reservation: Reservation, reason: string) => Promise<ReservationActionResult>;
   onCancel: (reservation: Reservation, reason: string) => Promise<ReservationActionResult>;
+  onAdminNoteChange: (adminNote: string | null) => void;
 };

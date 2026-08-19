@@ -62,6 +62,16 @@ export function ReservationsList({
         onApprove={handleApprove}
         onReject={handleReject}
         onCancel={handleCancel}
+        onAdminNoteChange={(adminNote) =>
+          setSelectedReservation((current) =>
+            current
+              ? {
+                  ...current,
+                  admin_note: adminNote,
+                }
+              : current,
+          )
+        }
       />
 
       <ReservationsPagination

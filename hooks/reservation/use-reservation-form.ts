@@ -51,6 +51,8 @@ export function useReservationForm({
 
   const [guestName, setGuestName] = useState("");
 
+  const [guestIdentityNumber, setGuestIdentityNumber] = useState("");
+
   const [guestPhone, setGuestPhone] = useState("");
 
   const [guestEmail, setGuestEmail] = useState("");
@@ -201,6 +203,7 @@ export function useReservationForm({
       childCount,
 
       guestName,
+      guestIdentityNumber,
       guestPhone,
       guestEmail,
     });
@@ -299,6 +302,7 @@ export function useReservationForm({
     guestCount,
 
     guestName,
+    guestIdentityNumber,
     guestPhone,
     guestEmail,
 
@@ -325,6 +329,7 @@ export function useReservationForm({
 
     // Simple setters
     setGuestName,
+    setGuestIdentityNumber,
     setGuestPhone,
     setGuestEmail,
   };

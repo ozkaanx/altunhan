@@ -5,12 +5,16 @@ import {
   type CreateAdminReservationInput,
 } from "@/app/admin/reservations/actions/create-actions";
 
+import { updateReservationAdminNote as updateReservationAdminNoteAction } from "@/app/admin/reservations/actions/note-actions";
+
 import { getReceiptSignedUrl as getReceiptSignedUrlAction } from "@/app/admin/reservations/actions/receipt-actions";
 
 import {
   changeReservationRoom as changeReservationRoomAction,
   getAvailableRooms as getAvailableRoomsAction,
   getAvailableRoomsForDates as getAvailableRoomsForDatesAction,
+  getAvailableRoomsForReservationDates as getAvailableRoomsForReservationDatesAction,
+  updateReservationDates as updateReservationDatesAction,
 } from "@/app/admin/reservations/actions/room-actions";
 
 import {
@@ -23,6 +27,10 @@ export type { CreateAdminReservationInput };
 
 export async function createAdminReservation(values: CreateAdminReservationInput) {
   return createAdminReservationAction(values);
+}
+
+export async function updateReservationAdminNote(reservationId: number, adminNote: string) {
+  return updateReservationAdminNoteAction(reservationId, adminNote);
 }
 
 export async function getReceiptSignedUrl(storagePath: string) {
@@ -43,6 +51,23 @@ export async function getAvailableRoomsForDates(
   checkOut: string,
 ) {
   return getAvailableRoomsForDatesAction(accommodationId, checkIn, checkOut);
+}
+
+export async function getAvailableRoomsForReservationDates(
+  reservationId: number,
+  checkIn: string,
+  checkOut: string,
+) {
+  return getAvailableRoomsForReservationDatesAction(reservationId, checkIn, checkOut);
+}
+
+export async function updateReservationDates(
+  reservationId: number,
+  checkIn: string,
+  checkOut: string,
+  roomId: number,
+) {
+  return updateReservationDatesAction(reservationId, checkIn, checkOut, roomId);
 }
 
 export async function approveReservation(id: number) {

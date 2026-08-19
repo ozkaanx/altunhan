@@ -7,9 +7,11 @@ import {
   inputClass,
 } from "@/components/admin/reservation-form/form-elements";
 import { TurkishMobileInput } from "@/components/shared/turkish-mobile-input";
+import { normalizeTckn } from "@/lib/identity/tckn";
 
 type GuestInformationSectionProps = {
   guestName: string;
+  guestIdentityNumber: string;
   guestPhone: string;
   guestEmail: string;
   adultCount: number;
@@ -20,6 +22,7 @@ type GuestInformationSectionProps = {
   canIncreaseAdult: boolean;
   canIncreaseChild: boolean;
   onGuestNameChange: (value: string) => void;
+  onGuestIdentityNumberChange: (value: string) => void;
   onGuestPhoneChange: (value: string) => void;
   onGuestEmailChange: (value: string) => void;
   onAdultCountChange: (value: number) => void;
@@ -28,6 +31,7 @@ type GuestInformationSectionProps = {
 
 export function GuestInformationSection({
   guestName,
+  guestIdentityNumber,
   guestPhone,
   guestEmail,
   adultCount,
@@ -38,6 +42,7 @@ export function GuestInformationSection({
   canIncreaseAdult,
   canIncreaseChild,
   onGuestNameChange,
+  onGuestIdentityNumberChange,
   onGuestPhoneChange,
   onGuestEmailChange,
   onAdultCountChange,
@@ -57,6 +62,22 @@ export function GuestInformationSection({
             value={guestName}
             onChange={(event) => onGuestNameChange(event.target.value)}
             placeholder="Misafir adı soyadı"
+            className={inputClass}
+          />
+        </Field>
+
+        <Field label="T.C. Kimlik Numarası">
+          <input
+            required
+            type="text"
+            inputMode="numeric"
+            autoComplete="off"
+            value={guestIdentityNumber}
+            onChange={(event) => onGuestIdentityNumberChange(normalizeTckn(event.target.value))}
+            minLength={11}
+            maxLength={11}
+            pattern="[1-9][0-9]{10}"
+            placeholder="11 haneli T.C. kimlik numarası"
             className={inputClass}
           />
         </Field>

@@ -2,6 +2,8 @@ import { BedDouble, CheckCircle2, Clock3, XCircle } from "lucide-react";
 
 import { StatCard } from "@/components/admin/rooms-board/room-board-elements";
 
+import { addDaysToDate } from "@/lib/admin/room-board-utils";
+
 import type { RoomStatusFilter } from "@/types/admin-room";
 
 type AccommodationOption = {
@@ -16,12 +18,14 @@ type RoomsBoardControlsProps = {
     available: number;
     inactive: number;
   };
-  selectedDate: string;
+  checkIn: string;
+  checkOut: string;
   accommodationFilter: number | "all";
   statusFilter: RoomStatusFilter;
   accommodationOptions: AccommodationOption[];
   roomCount: number;
-  onDateChange: (date: string) => void;
+  onCheckInChange: (date: string) => void;
+  onCheckOutChange: (date: string) => void;
   onAccommodationChange: (accommodationId: number | "all") => void;
   onStatusChange: (status: RoomStatusFilter) => void;
 };
@@ -50,12 +54,14 @@ const statusOptions: Array<{
 
 export function RoomsBoardControls({
   stats,
-  selectedDate,
+  checkIn,
+  checkOut,
   accommodationFilter,
   statusFilter,
   accommodationOptions,
   roomCount,
-  onDateChange,
+  onCheckInChange,
+  onCheckOutChange,
   onAccommodationChange,
   onStatusChange,
 }: RoomsBoardControlsProps) {
@@ -72,17 +78,33 @@ export function RoomsBoardControls({
       </div>
 
       <div className="mt-5 flex flex-col gap-3 border border-[#E3E0D8] bg-white p-4 lg:flex-row lg:items-center">
-        <div className="w-full lg:max-w-[210px]">
-          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#92968F]">
-            Doluluk Tarihi
-          </label>
+        <div className="grid w-full gap-3 sm:grid-cols-2 lg:max-w-[430px]">
+          <div>
+            <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#92968F]">
+              Giriş Tarihi
+            </label>
 
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(event) => onDateChange(event.target.value)}
-            className="h-11 w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-sm text-[#263A2D] outline-none"
-          />
+            <input
+              type="date"
+              value={checkIn}
+              onChange={(event) => onCheckInChange(event.target.value)}
+              className="h-11 w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-sm text-[#263A2D] outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#92968F]">
+              Çıkış Tarihi
+            </label>
+
+            <input
+              type="date"
+              value={checkOut}
+              min={addDaysToDate(checkIn, 1)}
+              onChange={(event) => onCheckOutChange(event.target.value)}
+              className="h-11 w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-sm text-[#263A2D] outline-none"
+            />
+          </div>
         </div>
 
         <div className="w-full lg:max-w-[280px]">

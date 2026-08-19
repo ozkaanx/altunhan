@@ -18,6 +18,16 @@ type AvailableRoomRpc = {
   room_number: string | null;
 };
 
+type UpdatedReservationDatesRpc = {
+  updated_check_in: string;
+  updated_check_out: string;
+  updated_night_count: number | string;
+  updated_total_price: number | string;
+  updated_room_id: number | string;
+  updated_room_name: string;
+  updated_room_number: string | null;
+};
+
 function isValidId(value: number) {
   return Number.isInteger(value) && value > 0;
 }
@@ -165,5 +175,139 @@ export async function getAvailableRoomsForDates(
   return {
     success: true as const,
     rooms,
+  };
+}
+
+export async function getAvailableRoomsForReservationDates(
+  reservationId: number,
+  checkIn: string,
+  checkOut: string,
+) {
+  if (!isValidId(reservationId) || !checkIn || !checkOut) {
+    return {
+      success: false as const,
+      message: "Rezervasyon ve tarihler zorunludur.",
+      rooms: [],
+    };
+  }
+
+  if (checkOut <= checkIn) {
+    return {
+      success: false as const,
+      message: "Çıkış tarihi giriş tarihinden sonra olmalıdır.",
+      rooms: [],
+    };
+  }
+
+  const auth = await requireAdmin();
+
+  if (!auth.success) {
+    return {
+      success: false as const,
+      message: auth.message,
+      rooms: [],
+    };
+  }
+
+  const { data, error } = await auth.supabase.rpc("get_available_rooms_for_reservation_dates", {
+    p_reservation_id: reservationId,
+    p_check_in: checkIn,
+    p_check_out: checkOut,
+  });
+
+  if (error) {
+    console.error("Tarih değişikliği için müsait odalar alınamadı:", error);
+
+    return {
+      success: false as const,
+      message: error.message ?? "Müsait odalar alınamadı.",
+      rooms: [],
+    };
+  }
+
+  const rooms = ((data ?? []) as AvailableReservationRoomRpc[]).map((room) => ({
+    id: Number(room.room_id),
+    roomName: room.room_name,
+    roomNumber: room.room_number,
+    isCurrent: Boolean(room.is_current),
+    isAvailable: Boolean(room.is_available),
+  }));
+
+  return {
+    success: true as const,
+    rooms,
+  };
+}
+
+export async function updateReservationDates(
+  reservationId: number,
+  checkIn: string,
+  checkOut: string,
+  roomId: number,
+) {
+  if (!isValidId(reservationId) || !isValidId(roomId) || !checkIn || !checkOut) {
+    return {
+      success: false as const,
+      message: "Rezervasyon, oda ve tarihler zorunludur.",
+    };
+  }
+
+  if (checkOut <= checkIn) {
+    return {
+      success: false as const,
+      message: "Çıkış tarihi giriş tarihinden sonra olmalıdır.",
+    };
+  }
+
+  const auth = await requireAdmin();
+
+  if (!auth.success) {
+    return {
+      success: false as const,
+      message: auth.message,
+    };
+  }
+
+  const { data, error } = await auth.supabase.rpc("update_admin_reservation_dates", {
+    p_reservation_id: reservationId,
+    p_check_in: checkIn,
+    p_check_out: checkOut,
+    p_room_id: roomId,
+  });
+
+  if (error) {
+    console.error("Rezervasyon tarihleri güncellenemedi:", error);
+
+    return {
+      success: false as const,
+      message: error.message ?? "Rezervasyon tarihleri güncellenemedi.",
+    };
+  }
+
+  const updatedReservation = ((data ?? []) as UpdatedReservationDatesRpc[])[0];
+
+  if (!updatedReservation) {
+    return {
+      success: false as const,
+      message: "Rezervasyon tarihleri güncellenemedi.",
+    };
+  }
+
+  revalidatePath("/admin/reservations");
+  revalidatePath("/admin/rooms");
+  revalidatePath("/admin");
+  revalidatePath("/rezervasyon");
+
+  return {
+    success: true as const,
+    reservation: {
+      checkIn: updatedReservation.updated_check_in,
+      checkOut: updatedReservation.updated_check_out,
+      nightCount: Number(updatedReservation.updated_night_count),
+      totalPrice: Number(updatedReservation.updated_total_price),
+      roomId: Number(updatedReservation.updated_room_id),
+      roomName: updatedReservation.updated_room_name,
+      roomNumber: updatedReservation.updated_room_number,
+    },
   };
 }

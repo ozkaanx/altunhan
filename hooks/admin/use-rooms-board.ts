@@ -2,7 +2,11 @@
 
 import { useMemo, useState } from "react";
 
-import { getReservationForDate, getTurkeyToday } from "@/lib/admin/room-board-utils";
+import {
+  addDaysToDate,
+  getReservationsForRange,
+  getTurkeyToday,
+} from "@/lib/admin/room-board-utils";
 
 import type { AdminRoom, RoomStatusFilter } from "@/types/admin-room";
 
@@ -11,7 +15,9 @@ export function useRoomsBoard(rooms: AdminRoom[]) {
 
   const [statusFilter, setStatusFilter] = useState<RoomStatusFilter>("all");
 
-  const [selectedDate, setSelectedDate] = useState(getTurkeyToday);
+  const [checkIn, setCheckIn] = useState(getTurkeyToday);
+
+  const [checkOut, setCheckOut] = useState(() => addDaysToDate(getTurkeyToday(), 1));
 
   const accommodationOptions = useMemo(() => {
     const map = new Map<number, string>();
@@ -32,11 +38,11 @@ export function useRoomsBoard(rooms: AdminRoom[]) {
     const inactive = rooms.filter((room) => !room.is_active).length;
 
     const occupied = rooms.filter(
-      (room) => room.is_active && Boolean(getReservationForDate(room, selectedDate)),
+      (room) => room.is_active && getReservationsForRange(room, checkIn, checkOut).length > 0,
     ).length;
 
     const available = rooms.filter(
-      (room) => room.is_active && !getReservationForDate(room, selectedDate),
+      (room) => room.is_active && getReservationsForRange(room, checkIn, checkOut).length === 0,
     ).length;
 
     return {
@@ -45,7 +51,7 @@ export function useRoomsBoard(rooms: AdminRoom[]) {
       available,
       inactive,
     };
-  }, [rooms, selectedDate]);
+  }, [rooms, checkIn, checkOut]);
 
   const filteredRooms = useMemo(() => {
     return rooms.filter((room) => {
@@ -53,13 +59,13 @@ export function useRoomsBoard(rooms: AdminRoom[]) {
         return false;
       }
 
-      const reservation = getReservationForDate(room, selectedDate);
+      const hasReservation = getReservationsForRange(room, checkIn, checkOut).length > 0;
 
-      if (statusFilter === "occupied" && !reservation) {
+      if (statusFilter === "occupied" && !hasReservation) {
         return false;
       }
 
-      if (statusFilter === "available" && (reservation || !room.is_active)) {
+      if (statusFilter === "available" && (hasReservation || !room.is_active)) {
         return false;
       }
 
@@ -69,7 +75,25 @@ export function useRoomsBoard(rooms: AdminRoom[]) {
 
       return true;
     });
-  }, [rooms, accommodationFilter, statusFilter, selectedDate]);
+  }, [rooms, accommodationFilter, statusFilter, checkIn, checkOut]);
+
+  const handleCheckInChange = (value: string) => {
+    if (!value) {
+      return;
+    }
+
+    setCheckIn(value);
+
+    if (value && (!checkOut || checkOut <= value)) {
+      setCheckOut(addDaysToDate(value, 1));
+    }
+  };
+
+  const handleCheckOutChange = (value: string) => {
+    if (value && value > checkIn) {
+      setCheckOut(value);
+    }
+  };
 
   const groupedRooms = useMemo(() => {
     return filteredRooms.reduce<
@@ -101,8 +125,10 @@ export function useRoomsBoard(rooms: AdminRoom[]) {
     setAccommodationFilter,
     statusFilter,
     setStatusFilter,
-    selectedDate,
-    setSelectedDate,
+    checkIn,
+    checkOut,
+    handleCheckInChange,
+    handleCheckOutChange,
     accommodationOptions,
     stats,
     filteredRooms,

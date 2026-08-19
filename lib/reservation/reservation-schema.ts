@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { getTurkeyToday } from "@/lib/reservation/date-utils";
 import { normalizeTurkishMobilePhone } from "@/lib/phone";
+import { isValidTckn, normalizeTckn } from "@/lib/identity/tckn";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -37,6 +38,12 @@ export const publicReservationSchema = z
       .trim()
       .min(2, "Ad soyad en az 2 karakter olmalıdır.")
       .max(100, "Ad soyad en fazla 100 karakter olabilir."),
+
+    guestIdentityNumber: z
+      .string()
+      .trim()
+      .refine(isValidTckn, "Geçerli bir T.C. kimlik numarası girin.")
+      .transform(normalizeTckn),
 
     guestPhone: z
       .string()
