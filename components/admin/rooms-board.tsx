@@ -13,8 +13,10 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
     setAccommodationFilter,
     statusFilter,
     setStatusFilter,
-    selectedDate,
-    setSelectedDate,
+    checkIn,
+    checkOut,
+    handleCheckInChange,
+    handleCheckOutChange,
     accommodationOptions,
     stats,
     filteredRooms,
@@ -25,19 +27,22 @@ export function RoomsBoard({ rooms }: { rooms: AdminRoom[] }) {
     <>
       <RoomsBoardControls
         stats={stats}
-        selectedDate={selectedDate}
+        checkIn={checkIn}
+        checkOut={checkOut}
         accommodationFilter={accommodationFilter}
         statusFilter={statusFilter}
         accommodationOptions={accommodationOptions}
         roomCount={filteredRooms.length}
-        onDateChange={setSelectedDate}
+        onCheckInChange={handleCheckInChange}
+        onCheckOutChange={handleCheckOutChange}
         onAccommodationChange={setAccommodationFilter}
         onStatusChange={setStatusFilter}
       />
 
       <RoomsGroups
         groupedRooms={groupedRooms}
-        selectedDate={selectedDate}
+        checkIn={checkIn}
+        checkOut={checkOut}
         filteredRoomCount={filteredRooms.length}
       />
     </>

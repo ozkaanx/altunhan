@@ -1,6 +1,7 @@
 "use client";
 
 import { ReservationActionModal } from "@/components/admin/reservation-detail/reservation-action-modal";
+import { ReservationDateModal } from "@/components/admin/reservation-detail/reservation-date-modal";
 import { ReservationRoomModal } from "@/components/admin/reservation-detail/reservation-room-modal";
 import { useReservationDetail } from "@/hooks/admin/use-reservation-detail";
 
@@ -9,6 +10,7 @@ import type { Reservation } from "@/types/reservation";
 import { ReservationDrawerHeader } from "@/components/admin/reservation-detail/reservation-drawer-header";
 import { ReservationInformation } from "@/components/admin/reservation-detail/reservation-information";
 import { ReservationStatusActions } from "@/components/admin/reservation-detail/reservation-status-actions";
+import { getTurkeyToday } from "@/lib/reservation/date-utils";
 
 export function ReservationDetailDrawer({
   reservation,
@@ -17,6 +19,7 @@ export function ReservationDetailDrawer({
   onApprove,
   onReject,
   onCancel,
+  onAdminNoteChange,
 }: ReservationDetailDrawerProps) {
   if (!reservation) {
     return null;
@@ -30,6 +33,7 @@ export function ReservationDetailDrawer({
       onApprove={onApprove}
       onReject={onReject}
       onCancel={onCancel}
+      onAdminNoteChange={onAdminNoteChange}
     />
   );
 }
@@ -45,6 +49,7 @@ function ReservationDetailDrawerContent({
   onApprove,
   onReject,
   onCancel,
+  onAdminNoteChange,
 }: ReservationDetailDrawerContentProps) {
   const {
     actionModal,
@@ -66,12 +71,28 @@ function ReservationDetailDrawerContent({
     isLoadingRooms,
     isChangingRoom,
     roomError,
+    dateModalOpen,
+    dateCheckIn,
+    dateCheckOut,
+    dateRooms,
+    selectedDateRoomId,
+    setSelectedDateRoomId,
+    checkedDateRange,
+    isLoadingDateRooms,
+    isUpdatingDates,
+    dateError,
     closeActionModal,
     handleOpenReceipt,
     handleApprove,
     handleModalAction,
     handleOpenRoomModal,
     handleChangeRoom,
+    handleOpenDateModal,
+    handleCloseDateModal,
+    handleDateCheckInChange,
+    handleDateCheckOutChange,
+    handleLoadDateRooms,
+    handleUpdateDates,
   } = useReservationDetail({
     reservation,
     onApprove,
@@ -104,7 +125,9 @@ function ReservationDetailDrawerContent({
             isOpeningReceipt={isOpeningReceipt}
             receiptError={receiptError}
             onOpenRoomModal={handleOpenRoomModal}
+            onOpenDateModal={handleOpenDateModal}
             onOpenReceipt={handleOpenReceipt}
+            onAdminNoteChange={onAdminNoteChange}
           />
 
           <ReservationStatusActions
@@ -139,6 +162,26 @@ function ReservationDetailDrawerContent({
         onSelectRoom={setSelectedRoomId}
         onClose={() => setRoomModalOpen(false)}
         onSubmit={handleChangeRoom}
+      />
+
+      <ReservationDateModal
+        open={dateModalOpen}
+        checkIn={dateCheckIn}
+        checkOut={dateCheckOut}
+        today={getTurkeyToday()}
+        nightlyPrice={Number(reservation.nightly_price)}
+        rooms={dateRooms}
+        selectedRoomId={selectedDateRoomId}
+        error={dateError}
+        isLoadingRooms={isLoadingDateRooms}
+        isUpdating={isUpdatingDates}
+        isAvailabilityCurrent={checkedDateRange === `${dateCheckIn}|${dateCheckOut}`}
+        onCheckInChange={handleDateCheckInChange}
+        onCheckOutChange={handleDateCheckOutChange}
+        onSelectRoom={setSelectedDateRoomId}
+        onCheckAvailability={handleLoadDateRooms}
+        onClose={handleCloseDateModal}
+        onSubmit={handleUpdateDates}
       />
     </>
   );

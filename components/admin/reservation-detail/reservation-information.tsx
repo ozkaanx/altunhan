@@ -1,10 +1,22 @@
-import { BedDouble, CalendarDays, ExternalLink, Loader2, Mail, Phone, User } from "lucide-react";
+import {
+  BedDouble,
+  CalendarClock,
+  CalendarDays,
+  CreditCard,
+  ExternalLink,
+  Loader2,
+  Mail,
+  Phone,
+  User,
+} from "lucide-react";
 
+import { ReservationAdminNote } from "@/components/admin/reservation-detail/reservation-admin-note";
 import { InfoRow, MiniInfo } from "@/components/admin/reservation-detail/detail-info";
 
 import { formatPrice } from "@/lib/formatters/price";
 import { formatTurkishPhoneForDisplay } from "@/lib/phone";
 import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
+import { formatTcknForDisplay } from "@/lib/identity/tckn";
 
 import type { Reservation } from "@/types/reservation";
 
@@ -14,7 +26,9 @@ type ReservationInformationProps = {
   isOpeningReceipt: boolean;
   receiptError: string | null;
   onOpenRoomModal: () => void;
+  onOpenDateModal: () => void;
   onOpenReceipt: () => void;
+  onAdminNoteChange: (adminNote: string | null) => void;
 };
 
 export function ReservationInformation({
@@ -23,7 +37,9 @@ export function ReservationInformation({
   isOpeningReceipt,
   receiptError,
   onOpenRoomModal,
+  onOpenDateModal,
   onOpenReceipt,
+  onAdminNoteChange,
 }: ReservationInformationProps) {
   const roomName = reservation.rooms
     ? reservation.rooms.room_number
@@ -36,6 +52,8 @@ export function ReservationInformation({
       ? `${reservation.adult_count} yetişkin · ${reservation.child_count} çocuk`
       : `${reservation.adult_count} yetişkin`;
 
+  const canEditDates = reservation.status !== "rejected" && reservation.status !== "cancelled";
+
   return (
     <>
       <section className="border border-[#E3E0D8] bg-white p-4">
@@ -44,6 +62,14 @@ export function ReservationInformation({
         </p>
 
         <InfoRow icon={User} label="Ad Soyad" value={reservation.guest_name} />
+
+        {reservation.guest_identity_number && (
+          <InfoRow
+            icon={CreditCard}
+            label="T.C. Kimlik Numarası"
+            value={formatTcknForDisplay(reservation.guest_identity_number)}
+          />
+        )}
 
         <InfoRow
           icon={Phone}
@@ -55,6 +81,13 @@ export function ReservationInformation({
           <InfoRow icon={Mail} label="E-posta" value={reservation.guest_email} />
         )}
       </section>
+
+      <ReservationAdminNote
+        key={reservation.id}
+        reservationId={reservation.id}
+        initialNote={reservation.admin_note}
+        onSaved={onAdminNoteChange}
+      />
 
       <section className="border border-[#E3E0D8] bg-white p-4">
         <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#969990]">
@@ -92,6 +125,17 @@ export function ReservationInformation({
 
           <MiniInfo label="Misafir" value={guestSummary} />
         </div>
+
+        {canEditDates && (
+          <button
+            type="button"
+            onClick={onOpenDateModal}
+            className="mt-4 flex h-10 w-full items-center justify-center gap-2 border border-[#D7D3CA] bg-white text-xs font-semibold text-[#263A2D]"
+          >
+            <CalendarClock size={15} />
+            Giriş–Çıkış Tarihlerini Düzenle
+          </button>
+        )}
       </section>
 
       <section className="border border-[#E3E0D8] bg-white p-4">

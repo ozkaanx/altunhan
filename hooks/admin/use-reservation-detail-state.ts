@@ -36,6 +36,24 @@ export function useReservationDetailState() {
 
   const [roomError, setRoomError] = useState<string | null>(null);
 
+  const [dateModalOpen, setDateModalOpen] = useState(false);
+
+  const [dateCheckIn, setDateCheckIn] = useState("");
+
+  const [dateCheckOut, setDateCheckOut] = useState("");
+
+  const [dateRooms, setDateRooms] = useState<ReservationRoomOption[]>([]);
+
+  const [selectedDateRoomId, setSelectedDateRoomId] = useState<number | null>(null);
+
+  const [checkedDateRange, setCheckedDateRange] = useState<string | null>(null);
+
+  const [isLoadingDateRooms, setIsLoadingDateRooms] = useState(false);
+
+  const [isUpdatingDates, setIsUpdatingDates] = useState(false);
+
+  const [dateError, setDateError] = useState<string | null>(null);
+
   return {
     actionModal,
     setActionModal,
@@ -65,5 +83,23 @@ export function useReservationDetailState() {
     setIsChangingRoom,
     roomError,
     setRoomError,
+    dateModalOpen,
+    setDateModalOpen,
+    dateCheckIn,
+    setDateCheckIn,
+    dateCheckOut,
+    setDateCheckOut,
+    dateRooms,
+    setDateRooms,
+    selectedDateRoomId,
+    setSelectedDateRoomId,
+    checkedDateRange,
+    setCheckedDateRange,
+    isLoadingDateRooms,
+    setIsLoadingDateRooms,
+    isUpdatingDates,
+    setIsUpdatingDates,
+    dateError,
+    setDateError,
   };
 }

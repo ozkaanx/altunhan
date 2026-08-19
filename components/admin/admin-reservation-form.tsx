@@ -18,6 +18,8 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
     childCount,
     guestName,
     setGuestName,
+    guestIdentityNumber,
+    setGuestIdentityNumber,
     guestPhone,
     setGuestPhone,
     guestEmail,
@@ -86,6 +88,7 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
 
       <GuestInformationSection
         guestName={guestName}
+        guestIdentityNumber={guestIdentityNumber}
         guestPhone={guestPhone}
         guestEmail={guestEmail}
         adultCount={adultCount}
@@ -96,6 +99,7 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
         canIncreaseAdult={canIncreaseAdult}
         canIncreaseChild={canIncreaseChild}
         onGuestNameChange={setGuestName}
+        onGuestIdentityNumberChange={setGuestIdentityNumber}
         onGuestPhoneChange={setGuestPhone}
         onGuestEmailChange={setGuestEmail}
         onAdultCountChange={handleAdultCountChange}

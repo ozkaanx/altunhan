@@ -3,7 +3,9 @@
 import {
   changeReservationRoom,
   getAvailableRooms,
+  getAvailableRoomsForReservationDates,
   getReceiptSignedUrl,
+  updateReservationDates,
 } from "@/app/admin/reservations/action";
 
 import { useReservationDetailState } from "@/hooks/admin/use-reservation-detail-state";
@@ -42,6 +44,19 @@ export function useReservationDetail({
     setIsLoadingRooms,
     setIsChangingRoom,
     setRoomError,
+    dateCheckIn,
+    setDateCheckIn,
+    dateCheckOut,
+    setDateCheckOut,
+    setDateModalOpen,
+    setDateRooms,
+    selectedDateRoomId,
+    setSelectedDateRoomId,
+    checkedDateRange,
+    setCheckedDateRange,
+    setIsLoadingDateRooms,
+    setIsUpdatingDates,
+    setDateError,
   } = state;
 
   const closeActionModal = () => {
@@ -219,6 +234,128 @@ export function useReservationDetail({
     }
   };
 
+  const clearDateAvailability = () => {
+    setDateRooms([]);
+    setSelectedDateRoomId(null);
+    setCheckedDateRange(null);
+    setDateError(null);
+  };
+
+  const handleDateCheckInChange = (value: string) => {
+    setDateCheckIn(value);
+    clearDateAvailability();
+
+    if (dateCheckOut && value >= dateCheckOut) {
+      setDateCheckOut("");
+    }
+  };
+
+  const handleDateCheckOutChange = (value: string) => {
+    setDateCheckOut(value);
+    clearDateAvailability();
+  };
+
+  const loadDateRooms = async (checkIn: string, checkOut: string) => {
+    if (!reservation) {
+      return;
+    }
+
+    if (!checkIn || !checkOut || checkOut <= checkIn) {
+      setDateError("Çıkış tarihi giriş tarihinden sonra olmalıdır.");
+      return;
+    }
+
+    setDateError(null);
+    setIsLoadingDateRooms(true);
+
+    try {
+      const result = await getAvailableRoomsForReservationDates(reservation.id, checkIn, checkOut);
+
+      if (!result.success) {
+        setDateError(result.message ?? "Müsait odalar alınamadı.");
+        return;
+      }
+
+      setDateRooms(result.rooms);
+      setCheckedDateRange(`${checkIn}|${checkOut}`);
+
+      const currentRoom = result.rooms.find((room) => room.isCurrent && room.isAvailable);
+      const firstAvailableRoom = result.rooms.find((room) => room.isAvailable);
+
+      setSelectedDateRoomId(currentRoom?.id ?? firstAvailableRoom?.id ?? null);
+
+      if (!firstAvailableRoom) {
+        setDateError("Seçilen tarihlerde bu oda tipinde müsait fiziksel oda bulunmuyor.");
+      }
+    } catch (error) {
+      console.error(error);
+      setDateError("Müsait odalar alınırken beklenmeyen bir hata oluştu.");
+    } finally {
+      setIsLoadingDateRooms(false);
+    }
+  };
+
+  const handleOpenDateModal = () => {
+    if (!reservation) {
+      return;
+    }
+
+    setDateCheckIn(reservation.check_in);
+    setDateCheckOut(reservation.check_out);
+    setDateRooms([]);
+    setSelectedDateRoomId(null);
+    setCheckedDateRange(null);
+    setDateError(null);
+    setDateModalOpen(true);
+
+    void loadDateRooms(reservation.check_in, reservation.check_out);
+  };
+
+  const handleCloseDateModal = () => {
+    setDateModalOpen(false);
+    clearDateAvailability();
+  };
+
+  const handleLoadDateRooms = async () => {
+    await loadDateRooms(dateCheckIn, dateCheckOut);
+  };
+
+  const handleUpdateDates = async () => {
+    if (!reservation || !selectedDateRoomId) {
+      return;
+    }
+
+    if (checkedDateRange !== `${dateCheckIn}|${dateCheckOut}`) {
+      setDateError("Önce seçilen tarihler için oda müsaitliğini kontrol edin.");
+      return;
+    }
+
+    setDateError(null);
+    setIsUpdatingDates(true);
+
+    try {
+      const result = await updateReservationDates(
+        reservation.id,
+        dateCheckIn,
+        dateCheckOut,
+        selectedDateRoomId,
+      );
+
+      if (!result.success) {
+        setDateError(result.message ?? "Rezervasyon tarihleri güncellenemedi.");
+        return;
+      }
+
+      setDateModalOpen(false);
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+      setDateError("Rezervasyon tarihleri güncellenirken beklenmeyen bir hata oluştu.");
+    } finally {
+      setIsUpdatingDates(false);
+    }
+  };
+
   return {
     ...state,
     closeActionModal,
@@ -227,5 +364,11 @@ export function useReservationDetail({
     handleModalAction,
     handleOpenRoomModal,
     handleChangeRoom,
+    handleOpenDateModal,
+    handleCloseDateModal,
+    handleDateCheckInChange,
+    handleDateCheckOutChange,
+    handleLoadDateRooms,
+    handleUpdateDates,
   };
 }

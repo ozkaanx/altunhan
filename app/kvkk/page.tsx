@@ -30,8 +30,9 @@ export default function KvkkPage() {
             <h2 className="font-semibold text-[#263A2D]">İşlenen Kişisel Veriler</h2>
 
             <p className="mt-2">
-              Rezervasyon işlemleri kapsamında ad-soyad, telefon numarası, e-posta adresi, konaklama
-              tarihleri, rezervasyon bilgileri ve ödeme/dekont bilgileri işlenebilir.
+              Rezervasyon işlemleri kapsamında ad-soyad, T.C. kimlik numarası, telefon numarası,
+              e-posta adresi, konaklama tarihleri, rezervasyon bilgileri ve ödeme/dekont bilgileri
+              işlenebilir.
             </p>
           </section>
 
@@ -40,8 +41,8 @@ export default function KvkkPage() {
 
             <p className="mt-2">
               Kişisel veriler; rezervasyon taleplerinin alınması, rezervasyon sürecinin yürütülmesi,
-              müşteriyle iletişim kurulması, ödeme kontrolü ve yasal yükümlülüklerin yerine
-              getirilmesi amacıyla kullanılabilir.
+              müşteriyle iletişim kurulması, ödeme kontrolü, kimlik ve konaklama kayıtlarının
+              tutulması ile yasal yükümlülüklerin yerine getirilmesi amacıyla kullanılabilir.
             </p>
           </section>
 

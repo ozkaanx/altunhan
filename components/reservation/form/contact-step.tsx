@@ -2,28 +2,33 @@
 
 import Link from "next/link";
 
-import { Mail, Phone, ShieldCheck, UserRound } from "lucide-react";
+import { CreditCard, Mail, Phone, ShieldCheck, UserRound } from "lucide-react";
 
 import { FieldLabel } from "@/components/shared/fieldLabel";
 import { SectionTitle } from "@/components/shared/sectionTitle";
 import { TurkishMobileInput } from "@/components/shared/turkish-mobile-input";
+import { normalizeTckn } from "@/lib/identity/tckn";
 
 type ContactStepProps = {
   guestName: string;
+  guestIdentityNumber: string;
   guestPhone: string;
   guestEmail: string;
 
   onGuestNameChange: (value: string) => void;
+  onGuestIdentityNumberChange: (value: string) => void;
   onGuestPhoneChange: (value: string) => void;
   onGuestEmailChange: (value: string) => void;
 };
 
 export function ContactStep({
   guestName,
+  guestIdentityNumber,
   guestPhone,
   guestEmail,
 
   onGuestNameChange,
+  onGuestIdentityNumberChange,
   onGuestPhoneChange,
   onGuestEmailChange,
 }: ContactStepProps) {
@@ -52,6 +57,33 @@ export function ContactStep({
               className={inputClass}
             />
           </InputShell>
+        </div>
+
+        <div>
+          <FieldLabel htmlFor="reservation-guest-identity-number">T.C. Kimlik Numarası</FieldLabel>
+
+          <InputShell icon={CreditCard}>
+            <input
+              id="reservation-guest-identity-number"
+              name="guestIdentityNumber"
+              required
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              value={guestIdentityNumber}
+              onChange={(event) => onGuestIdentityNumberChange(normalizeTckn(event.target.value))}
+              placeholder="11 haneli T.C. kimlik numarası"
+              minLength={11}
+              maxLength={11}
+              pattern="[1-9][0-9]{10}"
+              className={inputClass}
+            />
+          </InputShell>
+
+          <p className="mt-2 text-[9px] leading-4 text-[#81867F]">
+            Kimlik bilgisi yasal konaklama kaydı için alınır ve yalnızca yetkili personel tarafından
+            görüntülenir.
+          </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

@@ -9,6 +9,7 @@ import { ReservationPayment } from "@/components/reservation/payment/reservation
 import { useReservationForm } from "@/hooks/reservation/use-reservation-form";
 
 import { normalizeTurkishMobilePhone } from "@/lib/phone";
+import { isValidTckn } from "@/lib/identity/tckn";
 
 import type { PublicAccommodation } from "@/types/public-reservation";
 import type { SiteSettings } from "@/types/site-settings";
@@ -38,6 +39,7 @@ export function ReservationForm({
     childCount,
 
     guestName,
+    guestIdentityNumber,
     guestPhone,
     guestEmail,
 
@@ -60,6 +62,7 @@ export function ReservationForm({
     handleSubmit,
 
     setGuestName,
+    setGuestIdentityNumber,
     setGuestPhone,
     setGuestEmail,
   } = useReservationForm({
@@ -72,7 +75,10 @@ export function ReservationForm({
   }
 
   const isContactComplete = Boolean(
-    guestName.trim() && normalizeTurkishMobilePhone(guestPhone) && guestEmail.trim(),
+    guestName.trim() &&
+    isValidTckn(guestIdentityNumber) &&
+    normalizeTurkishMobilePhone(guestPhone) &&
+    guestEmail.trim(),
   );
 
   return (
@@ -111,9 +117,11 @@ export function ReservationForm({
 
           <ContactStep
             guestName={guestName}
+            guestIdentityNumber={guestIdentityNumber}
             guestPhone={guestPhone}
             guestEmail={guestEmail}
             onGuestNameChange={setGuestName}
+            onGuestIdentityNumberChange={setGuestIdentityNumber}
             onGuestPhoneChange={setGuestPhone}
             onGuestEmailChange={setGuestEmail}
           />

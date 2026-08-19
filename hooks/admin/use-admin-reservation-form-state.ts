@@ -26,6 +26,7 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
   const [childCount, setChildCount] = useState(0);
 
   const [guestName, setGuestName] = useState("");
+  const [guestIdentityNumber, setGuestIdentityNumber] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
 
@@ -102,6 +103,9 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
 
     guestName,
     setGuestName,
+
+    guestIdentityNumber,
+    setGuestIdentityNumber,
 
     guestPhone,
     setGuestPhone,

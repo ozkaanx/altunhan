@@ -8,6 +8,7 @@ export type Reservation = {
   reservation_code: string;
 
   guest_name: string;
+  guest_identity_number: string | null;
   guest_phone: string;
   guest_email: string | null;
 

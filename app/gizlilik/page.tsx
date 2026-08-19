@@ -30,8 +30,8 @@ export default function GizlilikPage() {
             <h2 className="font-semibold text-[#263A2D]">Toplanan Bilgiler</h2>
 
             <p className="mt-2">
-              Rezervasyon sürecinde ad-soyad, telefon, e-posta, rezervasyon tarihleri, konaklama
-              bilgileri ve ödeme/dekont bilgileri toplanabilir.
+              Rezervasyon sürecinde ad-soyad, T.C. kimlik numarası, telefon, e-posta, rezervasyon
+              tarihleri, konaklama bilgileri ve ödeme/dekont bilgileri toplanabilir.
             </p>
           </section>
 
@@ -39,8 +39,9 @@ export default function GizlilikPage() {
             <h2 className="font-semibold text-[#263A2D]">Bilgilerin Kullanımı</h2>
 
             <p className="mt-2">
-              Bu bilgiler yalnızca rezervasyon ve müşteri hizmetleri süreçlerinin yürütülmesi, ödeme
-              kontrolü ve gerekli bilgilendirmelerin yapılması amacıyla kullanılır.
+              Bu bilgiler yalnızca rezervasyon ve müşteri hizmetleri süreçlerinin yürütülmesi,
+              kimlik ve konaklama kayıtlarının tutulması, ödeme kontrolü, gerekli bilgilendirmelerin
+              yapılması ve yasal yükümlülüklerin yerine getirilmesi amacıyla kullanılır.
             </p>
           </section>
 

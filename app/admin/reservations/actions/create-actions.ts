@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/admin";
 import { getTurkeyToday } from "@/lib/admin/reservation-form-utils";
 import { normalizeTurkishMobilePhone } from "@/lib/phone";
+import { isValidTckn, normalizeTckn } from "@/lib/identity/tckn";
 
 export type CreateAdminReservationInput = {
   accommodationId: number;
@@ -14,6 +15,7 @@ export type CreateAdminReservationInput = {
   adultCount: number;
   childCount: number;
   guestName: string;
+  guestIdentityNumber: string;
   guestPhone: string;
   guestEmail: string;
   status: "pending_payment" | "pending_approval" | "confirmed";
@@ -24,6 +26,7 @@ export type CreateAdminReservationInput = {
 export async function createAdminReservation(values: CreateAdminReservationInput) {
   const today = getTurkeyToday();
   const normalizedGuestPhone = normalizeTurkishMobilePhone(values.guestPhone);
+  const normalizedIdentityNumber = normalizeTckn(values.guestIdentityNumber);
 
   if (!values.checkIn || !values.checkOut) {
     return {
@@ -67,6 +70,13 @@ export async function createAdminReservation(values: CreateAdminReservationInput
     };
   }
 
+  if (!isValidTckn(normalizedIdentityNumber)) {
+    return {
+      success: false as const,
+      message: "Geçerli bir T.C. kimlik numarası girin.",
+    };
+  }
+
   const auth = await requireAdmin();
 
   if (!auth.success) {
@@ -76,7 +86,7 @@ export async function createAdminReservation(values: CreateAdminReservationInput
     };
   }
 
-  const { data, error } = await auth.supabase.rpc("create_admin_reservation_v2", {
+  const { data, error } = await auth.supabase.rpc("create_admin_reservation_v3", {
     p_accommodation_id: values.accommodationId,
     p_room_id: values.roomId,
 
@@ -87,6 +97,7 @@ export async function createAdminReservation(values: CreateAdminReservationInput
     p_child_count: values.childCount,
 
     p_guest_name: values.guestName.trim(),
+    p_guest_identity_number: normalizedIdentityNumber,
     p_guest_phone: normalizedGuestPhone,
 
     p_guest_email: values.guestEmail.trim() || null,
