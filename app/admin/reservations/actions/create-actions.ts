@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { getTurkeyToday } from "@/lib/admin/reservation-form-utils";
 import { normalizeTurkishMobilePhone } from "@/lib/phone";
 import { isValidTckn, normalizeTckn } from "@/lib/identity/tckn";
+import type { ReservationPaymentPlan } from "@/types/reservation";
 
 export type CreateAdminReservationInput = {
   accommodationId: number;
@@ -20,6 +21,7 @@ export type CreateAdminReservationInput = {
   guestEmail: string;
   status: "pending_payment" | "pending_approval" | "confirmed";
   source: "phone" | "whatsapp" | "walk_in" | "admin";
+  paymentPlan: ReservationPaymentPlan;
   adminNote: string;
 };
 
@@ -86,7 +88,7 @@ export async function createAdminReservation(values: CreateAdminReservationInput
     };
   }
 
-  const { data, error } = await auth.supabase.rpc("create_admin_reservation_v3", {
+  const { data, error } = await auth.supabase.rpc("create_admin_reservation_v4", {
     p_accommodation_id: values.accommodationId,
     p_room_id: values.roomId,
 
@@ -106,6 +108,9 @@ export async function createAdminReservation(values: CreateAdminReservationInput
     p_source: values.source,
 
     p_admin_note: values.adminNote.trim() || null,
+
+    p_payment_plan: values.paymentPlan,
+    p_deposit_target_amount: null,
   });
 
   if (error) {

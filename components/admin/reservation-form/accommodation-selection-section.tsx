@@ -93,7 +93,7 @@ export function AccommodationSelectionSection({
           </div>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid min-w-0 gap-4 sm:grid-cols-2">
           <Field label={`Giriş Tarihi · ${CHECK_IN_POLICY_TEXT}`}>
             <input
               type="date"
@@ -108,7 +108,7 @@ export function AccommodationSelectionSection({
 
                 onCheckInChange(value);
               }}
-              className={inputClass}
+              className={`${inputClass} appearance-none`}
             />
           </Field>
 
@@ -127,7 +127,7 @@ export function AccommodationSelectionSection({
 
                 onCheckOutChange(value);
               }}
-              className={inputClass}
+              className={`${inputClass} appearance-none`}
             />
           </Field>
         </div>

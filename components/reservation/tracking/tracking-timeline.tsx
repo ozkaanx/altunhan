@@ -97,6 +97,8 @@ function getTimelineConfig(state: TimelineStep["state"]) {
 }
 
 function getTimeline(reservation: ReservationTrackingResult): TimelineStep[] {
+  const paymentLabel = reservation.paymentPlan === "deposit" ? "Kapora" : "Ödeme";
+
   switch (reservation.status) {
     case "confirmed":
       return [
@@ -111,8 +113,8 @@ function getTimeline(reservation: ReservationTrackingResult): TimelineStep[] {
           state: "completed",
         },
         {
-          title: "Ödeme Onaylandı",
-          description: "Ödemeniz kontrol edilerek onaylandı.",
+          title: `${paymentLabel} Onaylandı`,
+          description: `${paymentLabel} tutarınız kontrol edilerek onaylandı.`,
           state: "completed",
         },
         {
@@ -135,7 +137,7 @@ function getTimeline(reservation: ReservationTrackingResult): TimelineStep[] {
           state: "completed",
         },
         {
-          title: "Ödeme Kontrol Ediliyor",
+          title: `${paymentLabel} Kontrol Ediliyor`,
           description: "Dekontunuz Altunhan Farm tarafından kontrol ediliyor.",
           state: "active",
         },
@@ -199,8 +201,8 @@ function getTimeline(reservation: ReservationTrackingResult): TimelineStep[] {
           state: "completed",
         },
         {
-          title: "Ödeme Bekleniyor",
-          description: "Ödemenizi yaptıktan sonra dekontunuzu yükleyin.",
+          title: `${paymentLabel} Bekleniyor`,
+          description: `${paymentLabel} tutarını ödedikten sonra dekontunuzu yükleyin.`,
           state: "active",
         },
         {
@@ -210,7 +212,7 @@ function getTimeline(reservation: ReservationTrackingResult): TimelineStep[] {
         },
         {
           title: "Rezervasyon Onayı",
-          description: "Ödeme onayından sonra rezervasyonunuz kesinleşecek.",
+          description: `${paymentLabel} onayından sonra rezervasyonunuz kesinleşecek.`,
           state: "waiting",
         },
       ];

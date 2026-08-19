@@ -3,22 +3,27 @@ import { Phone } from "lucide-react";
 import { Field, SectionTitle, inputClass } from "@/components/admin/reservation-form/form-elements";
 
 import type { AdminReservationStatus, ReservationSource } from "@/types/admin-reservation";
+import type { ReservationPaymentPlan } from "@/types/reservation";
 
 type ReservationSettingsSectionProps = {
   source: ReservationSource;
   status: AdminReservationStatus;
+  paymentPlan: ReservationPaymentPlan;
   adminNote: string;
   onSourceChange: (source: ReservationSource) => void;
   onStatusChange: (status: AdminReservationStatus) => void;
+  onPaymentPlanChange: (paymentPlan: ReservationPaymentPlan) => void;
   onAdminNoteChange: (note: string) => void;
 };
 
 export function ReservationSettingsSection({
   source,
   status,
+  paymentPlan,
   adminNote,
   onSourceChange,
   onStatusChange,
+  onPaymentPlanChange,
   onAdminNoteChange,
 }: ReservationSettingsSectionProps) {
   return (
@@ -60,6 +65,19 @@ export function ReservationSettingsSection({
             </select>
           </Field>
         </div>
+
+        <Field label="Ödeme Planı">
+          <select
+            value={paymentPlan}
+            onChange={(event) =>
+              onPaymentPlanChange(event.target.value as ReservationPaymentPlan)
+            }
+            className={inputClass}
+          >
+            <option value="deposit">%50 Kapora</option>
+            <option value="full">Tam Ödeme</option>
+          </select>
+        </Field>
 
         {status === "pending_payment" && (
           <div className="border border-[#E3D5B8] bg-[#FAF5E9] p-3 text-xs leading-5 text-[#846B38]">

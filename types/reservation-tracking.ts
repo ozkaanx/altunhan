@@ -1,4 +1,8 @@
-import type { ReservationStatus } from "@/types/reservation";
+import type {
+  ReservationPaymentPlan,
+  ReservationPaymentStatus,
+  ReservationStatus,
+} from "@/types/reservation";
 
 export type ReservationTrackingResult = {
   reservationCode: string;
@@ -18,6 +22,16 @@ export type ReservationTrackingResult = {
   nightCount: number;
 
   totalPrice: number;
+
+  paymentPlan: ReservationPaymentPlan;
+
+  depositTargetAmount: number;
+
+  confirmedPaymentAmount: number;
+
+  remainingPaymentAmount: number;
+
+  paymentStatus: ReservationPaymentStatus;
 
   status: ReservationStatus;
 

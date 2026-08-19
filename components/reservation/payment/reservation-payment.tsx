@@ -33,6 +33,9 @@ export function ReservationPayment({ reservation, settings }: ReservationPayment
     Boolean(settings?.bank_name?.trim()) &&
     Boolean(settings?.bank_account_holder?.trim());
 
+  const isDepositPayment = reservation.paymentPlan === "deposit";
+  const remainingAtProperty = Math.max(reservation.totalPrice - reservation.amountDueNow, 0);
+
   return (
     <div className="mx-auto max-w-[760px]">
       <div className="border border-[#E1DED6] bg-white p-5 sm:p-8">
@@ -45,12 +48,18 @@ export function ReservationPayment({ reservation, settings }: ReservationPayment
         </p>
 
         <h1 className="mt-2 font-serif text-3xl text-[#263A2D] sm:text-4xl">
-          {hasBankInformation ? "Ödemenizi tamamlayın." : "Rezervasyon talebiniz oluşturuldu."}
+          {hasBankInformation
+            ? isDepositPayment
+              ? "Kapora ödemenizi tamamlayın."
+              : "Ödemenizi tamamlayın."
+            : "Rezervasyon talebiniz oluşturuldu."}
         </h1>
 
         <p className="mt-3 max-w-xl text-sm leading-6 text-[#70756F]">
           {hasBankInformation
-            ? "Rezervasyonunuz oluşturuldu. Havale/EFT işlemini tamamladıktan sonra dekontunuzu yükleyin."
+            ? isDepositPayment
+              ? "Rezervasyonunuzu kesinleştirmek için kapora tutarını Havale/EFT ile ödeyip dekontunuzu yükleyin. Kalan tutarı işletmede ödeyebilirsiniz."
+              : "Rezervasyonunuz oluşturuldu. Havale/EFT işlemini tamamladıktan sonra dekontunuzu yükleyin."
             : "Ödeme bilgileri henüz hazırlanmadığı için şu anda ödeme alınmamaktadır. Rezervasyon bilgileriniz aşağıda yer almaktadır."}
         </p>
 
@@ -75,6 +84,18 @@ export function ReservationPayment({ reservation, settings }: ReservationPayment
           />
 
           <ReservationDetailCard label="Toplam Tutar" value={formatPrice(reservation.totalPrice)} />
+
+          <ReservationDetailCard
+            label={isDepositPayment ? "Şimdi Ödenecek Kapora" : "Şimdi Ödenecek"}
+            value={formatPrice(reservation.amountDueNow)}
+          />
+
+          {isDepositPayment && (
+            <ReservationDetailCard
+              label="İşletmede Ödenecek"
+              value={formatPrice(remainingAtProperty)}
+            />
+          )}
         </div>
 
         {hasBankInformation ? (
@@ -105,6 +126,7 @@ export function ReservationPayment({ reservation, settings }: ReservationPayment
               onSelect={selectReceipt}
               onRemove={clearReceipt}
               onUpload={uploadReceipt}
+              paymentLabel={isDepositPayment ? "Kapora Dekontunu Gönder" : "Dekontu Gönder"}
             />
           </>
         ) : (

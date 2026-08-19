@@ -129,6 +129,29 @@ export function TrackingResult({
             <InfoCard icon={Phone} label="Toplam" value={formatPrice(reservation.totalPrice)} />
           </div>
 
+          <div className="mt-4 border border-[#E7DCCB] bg-[#FAF6EE] p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#A8754F]">
+              Ödeme Özeti
+            </p>
+
+            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <PaymentAmount
+                label={reservation.paymentPlan === "deposit" ? "Kapora Hedefi" : "Ödeme Hedefi"}
+                value={reservation.depositTargetAmount}
+              />
+
+              <PaymentAmount label="Alınan" value={reservation.confirmedPaymentAmount} />
+
+              <PaymentAmount label="Kalan" value={reservation.remainingPaymentAmount} />
+            </div>
+
+            {reservation.paymentPlan === "deposit" && reservation.confirmedPaymentAmount > 0 && (
+              <p className="mt-3 text-[11px] leading-5 text-[#777B74]">
+                Kaporanız alınmıştır. Kalan tutarı işletmede ödeyebilirsiniz.
+              </p>
+            )}
+          </div>
+
           <TrackingTimeline reservation={reservation} />
 
           {reservation.status === "pending_payment" && !reservation.hasReceipt && (
@@ -143,11 +166,25 @@ export function TrackingResult({
                 onSelect={selectReceipt}
                 onRemove={clearReceipt}
                 onUpload={uploadReceipt}
+                paymentLabel={
+                  reservation.paymentPlan === "deposit"
+                    ? "Kapora Dekontunu Gönder"
+                    : "Ödeme Dekontunu Gönder"
+                }
               />
             </>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function PaymentAmount({ label, value }: { label: string; value: number }) {
+  return (
+    <div>
+      <p className="text-[9px] uppercase tracking-[0.1em] text-[#969990]">{label}</p>
+      <p className="mt-1 text-sm font-semibold text-[#263A2D]">{formatPrice(value)}</p>
     </div>
   );
 }

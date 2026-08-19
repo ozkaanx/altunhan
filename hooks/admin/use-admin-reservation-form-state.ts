@@ -10,6 +10,7 @@ import type {
   AdminReservationStatus,
   ReservationSource,
 } from "@/types/admin-reservation";
+import type { ReservationPaymentPlan } from "@/types/reservation";
 
 export function useAdminReservationFormState(accommodations: AdminReservationAccommodation[]) {
   const initialAccommodation = accommodations[0] ?? null;
@@ -33,6 +34,8 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
   const [status, setStatus] = useState<AdminReservationStatus>("confirmed");
 
   const [source, setSource] = useState<ReservationSource>("phone");
+
+  const [paymentPlan, setPaymentPlan] = useState<ReservationPaymentPlan>("deposit");
 
   const [adminNote, setAdminNote] = useState("");
 
@@ -118,6 +121,9 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
 
     source,
     setSource,
+
+    paymentPlan,
+    setPaymentPlan,
 
     adminNote,
     setAdminNote,

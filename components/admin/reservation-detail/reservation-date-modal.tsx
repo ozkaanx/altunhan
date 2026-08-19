@@ -60,7 +60,7 @@ export function ReservationDateModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-end justify-center bg-black/40 sm:items-center sm:p-4">
+    <div className="fixed inset-0 z-[120] flex items-end justify-center overflow-hidden bg-black/40 sm:items-center sm:p-4">
       <button
         type="button"
         aria-label="Tarih düzenleme penceresini kapat"
@@ -72,7 +72,7 @@ export function ReservationDateModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="reservation-date-modal-title"
-        className="relative z-10 max-h-[92dvh] w-full overflow-y-auto bg-white p-5 shadow-2xl sm:max-w-[560px] sm:p-6"
+        className="relative z-10 max-h-[calc(100dvh-0.75rem)] w-full overflow-x-hidden overflow-y-auto overscroll-contain bg-white p-5 pb-0 shadow-2xl [-webkit-overflow-scrolling:touch] sm:max-h-[calc(100dvh-2rem)] sm:max-w-[560px] sm:p-6 sm:pb-0"
       >
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#F1EFEA] text-[#A8754F]">
@@ -98,8 +98,8 @@ export function ReservationDateModal({
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <label className="block">
+        <div className="mt-6 grid min-w-0 gap-4 sm:grid-cols-2">
+          <label className="block min-w-0">
             <span className="mb-2 block text-xs font-medium text-[#40463F]">Giriş Tarihi</span>
 
             <input
@@ -109,11 +109,11 @@ export function ReservationDateModal({
               value={checkIn}
               onChange={(event) => onCheckInChange(event.target.value)}
               disabled={isUpdating}
-              className="h-12 w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-sm text-[#263A2D] outline-none focus:border-[#263A2D] disabled:opacity-60"
+              className="block h-12 w-full min-w-0 max-w-full appearance-none border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-base text-[#263A2D] outline-none focus:border-[#263A2D] disabled:opacity-60 sm:text-sm"
             />
           </label>
 
-          <label className="block">
+          <label className="block min-w-0">
             <span className="mb-2 block text-xs font-medium text-[#40463F]">Çıkış Tarihi</span>
 
             <input
@@ -123,7 +123,7 @@ export function ReservationDateModal({
               value={checkOut}
               onChange={(event) => onCheckOutChange(event.target.value)}
               disabled={isUpdating}
-              className="h-12 w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-sm text-[#263A2D] outline-none focus:border-[#263A2D] disabled:opacity-60"
+              className="block h-12 w-full min-w-0 max-w-full appearance-none border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-base text-[#263A2D] outline-none focus:border-[#263A2D] disabled:opacity-60 sm:text-sm"
             />
           </label>
         </div>
@@ -136,7 +136,9 @@ export function ReservationDateModal({
 
           <div>
             <p className="text-[9px] uppercase tracking-[0.12em] text-[#969990]">Yeni Toplam</p>
-            <p className="mt-1 text-sm font-semibold text-[#263A2D]">{formatPrice(totalPrice)}</p>
+            <p className="mt-1 text-sm font-semibold text-[#263A2D]">
+              {formatPrice(totalPrice)}
+            </p>
           </div>
         </div>
 
@@ -146,7 +148,11 @@ export function ReservationDateModal({
           disabled={isLoadingRooms || isUpdating || !checkIn || !checkOut || checkOut <= checkIn}
           className="mt-4 flex h-11 w-full items-center justify-center gap-2 border border-[#263A2D] text-xs font-semibold text-[#263A2D] disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {isLoadingRooms ? <Loader2 size={15} className="animate-spin" /> : <Search size={15} />}
+          {isLoadingRooms ? (
+            <Loader2 size={15} className="animate-spin" />
+          ) : (
+            <Search size={15} />
+          )}
           {isLoadingRooms ? "Kontrol Ediliyor..." : "Oda Müsaitliğini Kontrol Et"}
         </button>
 
@@ -195,7 +201,7 @@ export function ReservationDateModal({
           </div>
         )}
 
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="sticky bottom-0 -mx-5 mt-6 grid grid-cols-2 gap-3 border-t border-[#EEEAE3] bg-white px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-4 sm:-mx-6 sm:px-6 sm:pb-6">
           <button
             type="button"
             onClick={handleClose}

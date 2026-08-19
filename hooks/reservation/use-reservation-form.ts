@@ -267,6 +267,12 @@ export function useReservationForm({
         nightCount: result.reservation.nightCount,
 
         totalPrice: result.reservation.totalPrice,
+
+        paymentPlan: result.reservation.paymentPlan,
+
+        depositTargetAmount: result.reservation.depositTargetAmount,
+
+        amountDueNow: result.reservation.amountDueNow,
       };
 
       setCreatedReservation(reservationData);

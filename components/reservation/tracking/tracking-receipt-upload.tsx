@@ -17,6 +17,8 @@ type TrackingReceiptUploadProps = {
   onRemove: () => void;
 
   onUpload: () => void;
+
+  paymentLabel?: string;
 };
 
 export function TrackingReceiptUpload({
@@ -27,6 +29,7 @@ export function TrackingReceiptUpload({
   onSelect,
   onRemove,
   onUpload,
+  paymentLabel = "Dekontu Gönder",
 }: TrackingReceiptUploadProps) {
   return (
     <div className="mt-7 border-t border-[#EEEAE3] pt-6">
@@ -105,7 +108,7 @@ export function TrackingReceiptUpload({
         ) : (
           <>
             <Upload size={16} />
-            Dekontu Gönder
+            {paymentLabel}
           </>
         )}
       </button>

@@ -1,6 +1,29 @@
 export type ReservationStatus =
   "pending_payment" | "pending_approval" | "confirmed" | "rejected" | "cancelled";
 
+export type ReservationPaymentPlan = "deposit" | "full";
+
+export type ReservationPaymentStatus = "unpaid" | "pending" | "partial" | "paid";
+
+export type ReservationPaymentMethod = "bank_transfer" | "cash" | "card" | "other";
+
+export type ReservationPaymentType = "deposit" | "balance" | "full" | "refund";
+
+export type ReservationPaymentRecordStatus = "pending" | "confirmed" | "rejected";
+
+export type ReservationPayment = {
+  id: number;
+  reservation_id: number;
+  amount: number;
+  payment_type: ReservationPaymentType;
+  payment_method: ReservationPaymentMethod;
+  status: ReservationPaymentRecordStatus;
+  receipt_storage_path: string | null;
+  admin_note: string | null;
+  paid_at: string | null;
+  created_at: string;
+};
+
 export type Reservation = {
   id: number;
   accommodation_id: number;
@@ -24,6 +47,13 @@ export type Reservation = {
   total_price: number;
 
   payment_method: string;
+
+  payment_plan: ReservationPaymentPlan;
+  deposit_percentage: number;
+  deposit_target_amount: number;
+  payment_status: ReservationPaymentStatus;
+
+  reservation_payments?: ReservationPayment[];
 
   receipt_url: string | null;
   receipt_storage_path: string | null;

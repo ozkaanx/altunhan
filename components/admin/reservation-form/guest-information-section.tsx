@@ -73,7 +73,9 @@ export function GuestInformationSection({
             inputMode="numeric"
             autoComplete="off"
             value={guestIdentityNumber}
-            onChange={(event) => onGuestIdentityNumberChange(normalizeTckn(event.target.value))}
+            onChange={(event) =>
+              onGuestIdentityNumberChange(normalizeTckn(event.target.value))
+            }
             minLength={11}
             maxLength={11}
             pattern="[1-9][0-9]{10}"

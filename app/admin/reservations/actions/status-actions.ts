@@ -34,17 +34,9 @@ export async function approveReservation(id: number) {
 
   const { supabase } = auth;
 
-  const { data, error } = await supabase
-    .from("reservations")
-    .update({
-      status: "confirmed",
-      rejection_reason: null,
-      cancellation_reason: null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id)
-    .eq("status", "pending_approval")
-    .select("id");
+  const { data, error } = await supabase.rpc("approve_admin_reservation_with_payment", {
+    p_reservation_id: id,
+  });
 
   if (error) {
     console.error("Rezervasyon onaylanamadı:", error);
@@ -55,7 +47,7 @@ export async function approveReservation(id: number) {
     };
   }
 
-  if (!data?.length) {
+  if (!data) {
     return {
       success: false as const,
       message: "Rezervasyon bulunamadı veya artık onay beklemiyor.",
@@ -136,6 +128,19 @@ export async function rejectReservation(id: number, reason: string) {
       success: false as const,
       message: "Rezervasyon bulunamadı veya artık onay beklemiyor.",
     };
+  }
+
+  const { error: paymentError } = await supabase
+    .from("reservation_payments")
+    .update({
+      status: "rejected",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("reservation_id", id)
+    .eq("status", "pending");
+
+  if (paymentError) {
+    console.error("Bekleyen ödeme kaydı reddedilemedi:", paymentError);
   }
 
   try {

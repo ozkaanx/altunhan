@@ -42,7 +42,7 @@ export function DateField({ label, value, min, disabled, onChange }: DateFieldPr
               // Bazı tarayıcılar showPicker çağrısını desteklemez.
             }
           }}
-          className="h-full w-0 min-w-0 flex-1 border-0 bg-transparent px-3 text-base text-[#263A2D] outline-none disabled:cursor-not-allowed sm:text-sm"
+          className="h-full w-0 min-w-0 max-w-full flex-1 appearance-none border-0 bg-transparent px-3 text-base text-[#263A2D] outline-none disabled:cursor-not-allowed sm:text-sm"
         />
       </span>
     </label>

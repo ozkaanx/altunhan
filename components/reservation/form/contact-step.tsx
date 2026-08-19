@@ -60,7 +60,9 @@ export function ContactStep({
         </div>
 
         <div>
-          <FieldLabel htmlFor="reservation-guest-identity-number">T.C. Kimlik Numarası</FieldLabel>
+          <FieldLabel htmlFor="reservation-guest-identity-number">
+            T.C. Kimlik Numarası
+          </FieldLabel>
 
           <InputShell icon={CreditCard}>
             <input

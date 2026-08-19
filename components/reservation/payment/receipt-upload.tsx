@@ -16,6 +16,8 @@ type ReceiptUploadProps = {
   onRemove: () => void;
 
   onUpload: () => void;
+
+  paymentLabel?: string;
 };
 
 export function ReceiptUpload({
@@ -25,6 +27,7 @@ export function ReceiptUpload({
   onSelect,
   onRemove,
   onUpload,
+  paymentLabel = "Dekontu Gönder",
 }: ReceiptUploadProps) {
   return (
     <div className="mt-7">
@@ -97,7 +100,7 @@ export function ReceiptUpload({
         ) : (
           <>
             <Upload size={16} />
-            Ödemeyi Tamamla ve Dekontu Gönder
+            {paymentLabel}
           </>
         )}
       </button>

@@ -33,6 +33,7 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
     guestEmail,
     status,
     source,
+    paymentPlan,
     adminNote,
     setAvailableRooms,
     selectedRoomId,
@@ -230,6 +231,7 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
         guestEmail,
         status,
         source,
+        paymentPlan,
         adminNote,
       });
 

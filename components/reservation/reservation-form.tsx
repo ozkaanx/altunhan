@@ -76,9 +76,9 @@ export function ReservationForm({
 
   const isContactComplete = Boolean(
     guestName.trim() &&
-    isValidTckn(guestIdentityNumber) &&
-    normalizeTurkishMobilePhone(guestPhone) &&
-    guestEmail.trim(),
+      isValidTckn(guestIdentityNumber) &&
+      normalizeTurkishMobilePhone(guestPhone) &&
+      guestEmail.trim(),
   );
 
   return (

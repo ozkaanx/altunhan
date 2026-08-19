@@ -78,8 +78,8 @@ export function RoomsBoardControls({
       </div>
 
       <div className="mt-5 flex flex-col gap-3 border border-[#E3E0D8] bg-white p-4 lg:flex-row lg:items-center">
-        <div className="grid w-full gap-3 sm:grid-cols-2 lg:max-w-[430px]">
-          <div>
+        <div className="grid min-w-0 w-full gap-3 sm:grid-cols-2 lg:max-w-[430px]">
+          <div className="min-w-0">
             <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#92968F]">
               Giriş Tarihi
             </label>
@@ -88,11 +88,11 @@ export function RoomsBoardControls({
               type="date"
               value={checkIn}
               onChange={(event) => onCheckInChange(event.target.value)}
-              className="h-11 w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-sm text-[#263A2D] outline-none"
+              className="block h-11 w-full min-w-0 max-w-full appearance-none border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-base text-[#263A2D] outline-none sm:text-sm"
             />
           </div>
 
-          <div>
+          <div className="min-w-0">
             <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#92968F]">
               Çıkış Tarihi
             </label>
@@ -102,7 +102,7 @@ export function RoomsBoardControls({
               value={checkOut}
               min={addDaysToDate(checkIn, 1)}
               onChange={(event) => onCheckOutChange(event.target.value)}
-              className="h-11 w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-sm text-[#263A2D] outline-none"
+              className="block h-11 w-full min-w-0 max-w-full appearance-none border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-base text-[#263A2D] outline-none sm:text-sm"
             />
           </div>
         </div>

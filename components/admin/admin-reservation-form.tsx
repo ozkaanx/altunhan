@@ -28,6 +28,8 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
     setStatus,
     source,
     setSource,
+    paymentPlan,
+    setPaymentPlan,
     adminNote,
     setAdminNote,
     availableRooms,
@@ -109,9 +111,11 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
       <ReservationSettingsSection
         source={source}
         status={status}
+        paymentPlan={paymentPlan}
         adminNote={adminNote}
         onSourceChange={setSource}
         onStatusChange={setStatus}
+        onPaymentPlanChange={setPaymentPlan}
         onAdminNoteChange={setAdminNote}
       />
       <ReservationFormFooter

@@ -6,6 +6,9 @@ export type CreatedReservation = {
   checkOut: string;
   nightCount: number;
   totalPrice: number;
+  paymentPlan: "deposit" | "full";
+  depositTargetAmount: number;
+  amountDueNow: number;
 };
 
 export type ReservationContact = {

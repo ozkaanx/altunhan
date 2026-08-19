@@ -100,6 +100,18 @@ export default async function ReservationsPage({ searchParams }: ReservationsPag
             id,
             room_name,
             room_number
+          ),
+          reservation_payments (
+            id,
+            reservation_id,
+            amount,
+            payment_type,
+            payment_method,
+            status,
+            receipt_storage_path,
+            admin_note,
+            paid_at,
+            created_at
           )
         `,
     {

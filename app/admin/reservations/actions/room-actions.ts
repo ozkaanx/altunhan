@@ -209,11 +209,14 @@ export async function getAvailableRoomsForReservationDates(
     };
   }
 
-  const { data, error } = await auth.supabase.rpc("get_available_rooms_for_reservation_dates", {
-    p_reservation_id: reservationId,
-    p_check_in: checkIn,
-    p_check_out: checkOut,
-  });
+  const { data, error } = await auth.supabase.rpc(
+    "get_available_rooms_for_reservation_dates",
+    {
+      p_reservation_id: reservationId,
+      p_check_in: checkIn,
+      p_check_out: checkOut,
+    },
+  );
 
   if (error) {
     console.error("Tarih değişikliği için müsait odalar alınamadı:", error);

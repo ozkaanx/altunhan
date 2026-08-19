@@ -2,7 +2,11 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-import type { ReservationStatus } from "@/types/reservation";
+import type {
+  ReservationPaymentPlan,
+  ReservationPaymentStatus,
+  ReservationStatus,
+} from "@/types/reservation";
 import type { ReservationTrackingResponse } from "@/types/reservation-tracking";
 import { normalizeTurkishMobilePhone } from "@/lib/phone";
 
@@ -26,6 +30,16 @@ type ReservationTrackingRpcRow = {
   night_count: number;
 
   total_price: number;
+
+  payment_plan: ReservationPaymentPlan;
+
+  deposit_target_amount: number;
+
+  confirmed_payment_amount: number;
+
+  remaining_payment_amount: number;
+
+  payment_status: ReservationPaymentStatus;
 
   status: ReservationStatus;
 
@@ -60,7 +74,7 @@ export async function findReservation(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.rpc("get_public_reservation_status_v2", {
+  const { data, error } = await supabase.rpc("get_public_reservation_status_v3", {
     p_reservation_code: code,
 
     p_guest_phone: normalizedPhone,
@@ -105,6 +119,16 @@ export async function findReservation(
       nightCount: Number(reservation.night_count),
 
       totalPrice: Number(reservation.total_price),
+
+      paymentPlan: reservation.payment_plan,
+
+      depositTargetAmount: Number(reservation.deposit_target_amount),
+
+      confirmedPaymentAmount: Number(reservation.confirmed_payment_amount),
+
+      remainingPaymentAmount: Number(reservation.remaining_payment_amount),
+
+      paymentStatus: reservation.payment_status,
 
       status: reservation.status,
 

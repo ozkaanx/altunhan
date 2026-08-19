@@ -26,12 +26,7 @@ type RoomsGroupsProps = {
   filteredRoomCount: number;
 };
 
-export function RoomsGroups({
-  groupedRooms,
-  checkIn,
-  checkOut,
-  filteredRoomCount,
-}: RoomsGroupsProps) {
+export function RoomsGroups({ groupedRooms, checkIn, checkOut, filteredRoomCount }: RoomsGroupsProps) {
   return (
     <div className="mt-7 space-y-8">
       <div className="flex items-start gap-3 border border-[#E3E0D8] bg-white px-4 py-3 text-[11px] leading-5 text-[#6D726B]">

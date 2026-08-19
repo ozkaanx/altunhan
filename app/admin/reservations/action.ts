@@ -7,6 +7,12 @@ import {
 
 import { updateReservationAdminNote as updateReservationAdminNoteAction } from "@/app/admin/reservations/actions/note-actions";
 
+import {
+  recordReservationPayment as recordReservationPaymentAction,
+  updateReservationPaymentPlan as updateReservationPaymentPlanAction,
+  voidReservationPayment as voidReservationPaymentAction,
+} from "@/app/admin/reservations/actions/payment-actions";
+
 import { getReceiptSignedUrl as getReceiptSignedUrlAction } from "@/app/admin/reservations/actions/receipt-actions";
 
 import {
@@ -31,6 +37,31 @@ export async function createAdminReservation(values: CreateAdminReservationInput
 
 export async function updateReservationAdminNote(reservationId: number, adminNote: string) {
   return updateReservationAdminNoteAction(reservationId, adminNote);
+}
+
+export async function recordReservationPayment(
+  reservationId: number,
+  amount: number,
+  paymentMethod: "bank_transfer" | "cash" | "card" | "other",
+  adminNote: string,
+) {
+  return recordReservationPaymentAction(reservationId, amount, paymentMethod, adminNote);
+}
+
+export async function updateReservationPaymentPlan(
+  reservationId: number,
+  paymentPlan: "deposit" | "full",
+  depositTargetAmount: number | null,
+) {
+  return updateReservationPaymentPlanAction(
+    reservationId,
+    paymentPlan,
+    depositTargetAmount,
+  );
+}
+
+export async function voidReservationPayment(paymentId: number, reason: string) {
+  return voidReservationPaymentAction(paymentId, reason);
 }
 
 export async function getReceiptSignedUrl(storagePath: string) {

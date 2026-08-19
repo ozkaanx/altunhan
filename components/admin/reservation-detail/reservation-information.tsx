@@ -3,7 +3,6 @@ import {
   CalendarClock,
   CalendarDays,
   CreditCard,
-  ExternalLink,
   Loader2,
   Mail,
   Phone,
@@ -11,9 +10,9 @@ import {
 } from "lucide-react";
 
 import { ReservationAdminNote } from "@/components/admin/reservation-detail/reservation-admin-note";
+import { ReservationPayments } from "@/components/admin/reservation-detail/reservation-payments";
 import { InfoRow, MiniInfo } from "@/components/admin/reservation-detail/detail-info";
 
-import { formatPrice } from "@/lib/formatters/price";
 import { formatTurkishPhoneForDisplay } from "@/lib/phone";
 import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
 import { formatTcknForDisplay } from "@/lib/identity/tckn";
@@ -101,15 +100,7 @@ export function ReservationInformation({
         />
 
         <InfoRow icon={BedDouble} label="Atanan Fiziksel Oda" value={roomName} />
-        <div className="mt-4 grid grid-cols-2 gap-4">
-          <MiniInfo label={`Giriş · ${CHECK_IN_POLICY_TEXT}`} value={reservation.check_in} />
 
-          <MiniInfo label={`Çıkış · ${CHECK_OUT_POLICY_TEXT}`} value={reservation.check_out} />
-
-          <MiniInfo label="Gece" value={`${reservation.night_count}`} />
-
-          <MiniInfo label="Misafir" value={guestSummary} />
-        </div>
         <button
           type="button"
           onClick={onOpenRoomModal}
@@ -124,45 +115,34 @@ export function ReservationInformation({
           Odayı Değiştir
         </button>
 
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          <MiniInfo label={`Giriş · ${CHECK_IN_POLICY_TEXT}`} value={reservation.check_in} />
+
+          <MiniInfo label={`Çıkış · ${CHECK_OUT_POLICY_TEXT}`} value={reservation.check_out} />
+
+          <MiniInfo label="Gece" value={`${reservation.night_count}`} />
+
+          <MiniInfo label="Misafir" value={guestSummary} />
+        </div>
+
         {canEditDates && (
           <button
             type="button"
             onClick={onOpenDateModal}
-            className="mt-2 flex h-10 w-full items-center justify-center gap-2 border border-[#D7D3CA] bg-white text-xs font-semibold text-[#263A2D]"
+            className="mt-4 flex h-10 w-full items-center justify-center gap-2 border border-[#D7D3CA] bg-white text-xs font-semibold text-[#263A2D]"
           >
             <CalendarClock size={15} />
-            Tarihlerini Düzenle
+            Giriş–Çıkış Tarihlerini Düzenle
           </button>
         )}
       </section>
 
-      <section className="border border-[#E3E0D8] bg-white p-4">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#969990]">
-          Ödeme
-        </p>
-
-        <p className="mt-3 text-2xl font-semibold text-[#263A2D]">
-          {formatPrice(reservation.total_price)}
-        </p>
-
-        {reservation.receipt_storage_path && (
-          <button
-            type="button"
-            onClick={onOpenReceipt}
-            disabled={isOpeningReceipt}
-            className="mt-4 flex h-10 w-full items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white"
-          >
-            {isOpeningReceipt ? (
-              <Loader2 size={15} className="animate-spin" />
-            ) : (
-              <ExternalLink size={15} />
-            )}
-            Dekontu Gör
-          </button>
-        )}
-
-        {receiptError && <p className="mt-2 text-xs text-[#98584E]">{receiptError}</p>}
-      </section>
+      <ReservationPayments
+        reservation={reservation}
+        isOpeningReceipt={isOpeningReceipt}
+        receiptError={receiptError}
+        onOpenReceipt={onOpenReceipt}
+      />
     </>
   );
 }

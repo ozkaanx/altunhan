@@ -43,6 +43,9 @@ export type ReservationCreateResult =
 
         nightCount: number;
         totalPrice: number;
+        paymentPlan: "deposit" | "full";
+        depositTargetAmount: number;
+        amountDueNow: number;
       };
     }
   | {
