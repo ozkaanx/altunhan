@@ -101,7 +101,15 @@ export function ReservationInformation({
         />
 
         <InfoRow icon={BedDouble} label="Atanan Fiziksel Oda" value={roomName} />
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          <MiniInfo label={`Giriş · ${CHECK_IN_POLICY_TEXT}`} value={reservation.check_in} />
 
+          <MiniInfo label={`Çıkış · ${CHECK_OUT_POLICY_TEXT}`} value={reservation.check_out} />
+
+          <MiniInfo label="Gece" value={`${reservation.night_count}`} />
+
+          <MiniInfo label="Misafir" value={guestSummary} />
+        </div>
         <button
           type="button"
           onClick={onOpenRoomModal}
@@ -116,24 +124,14 @@ export function ReservationInformation({
           Odayı Değiştir
         </button>
 
-        <div className="mt-4 grid grid-cols-2 gap-4">
-          <MiniInfo label={`Giriş · ${CHECK_IN_POLICY_TEXT}`} value={reservation.check_in} />
-
-          <MiniInfo label={`Çıkış · ${CHECK_OUT_POLICY_TEXT}`} value={reservation.check_out} />
-
-          <MiniInfo label="Gece" value={`${reservation.night_count}`} />
-
-          <MiniInfo label="Misafir" value={guestSummary} />
-        </div>
-
         {canEditDates && (
           <button
             type="button"
             onClick={onOpenDateModal}
-            className="mt-4 flex h-10 w-full items-center justify-center gap-2 border border-[#D7D3CA] bg-white text-xs font-semibold text-[#263A2D]"
+            className="mt-2 flex h-10 w-full items-center justify-center gap-2 border border-[#D7D3CA] bg-white text-xs font-semibold text-[#263A2D]"
           >
             <CalendarClock size={15} />
-            Giriş–Çıkış Tarihlerini Düzenle
+            Tarihlerini Düzenle
           </button>
         )}
       </section>
