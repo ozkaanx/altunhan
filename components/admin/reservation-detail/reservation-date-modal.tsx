@@ -1,5 +1,7 @@
 import { CalendarDays, CheckCircle2, Loader2, Search } from "lucide-react";
 
+import { dateInputClass } from "@/components/admin/reservation-form/form-elements";
+
 import { formatPrice } from "@/lib/formatters/price";
 import { calculateNightCount } from "@/lib/reservation/date-utils";
 import { STAY_TIME_POLICY_SUMMARY } from "@/lib/reservation/stay-policy";
@@ -60,7 +62,7 @@ export function ReservationDateModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-end justify-center bg-black/40 sm:items-center sm:p-4">
+    <div className="fixed inset-0 z-[120] flex items-end justify-center overflow-hidden bg-black/40 sm:items-center sm:p-4">
       <button
         type="button"
         aria-label="Tarih düzenleme penceresini kapat"
@@ -72,7 +74,7 @@ export function ReservationDateModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="reservation-date-modal-title"
-        className="relative z-10 max-h-[92dvh] w-full overflow-y-auto bg-white p-5 shadow-2xl sm:max-w-[560px] sm:p-6"
+        className="relative z-10 max-h-[calc(100dvh-1rem)] w-full min-w-0 max-w-full overflow-y-auto overscroll-contain bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl [-webkit-overflow-scrolling:touch] sm:max-h-[92dvh] sm:max-w-[560px] sm:p-6"
       >
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#F1EFEA] text-[#A8754F]">
@@ -98,8 +100,8 @@ export function ReservationDateModal({
           </div>
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <label className="block">
+        <div className="mt-6 grid min-w-0 gap-4 sm:grid-cols-2">
+          <label className="block min-w-0">
             <span className="mb-2 block text-xs font-medium text-[#40463F]">Giriş Tarihi</span>
 
             <input
@@ -109,11 +111,11 @@ export function ReservationDateModal({
               value={checkIn}
               onChange={(event) => onCheckInChange(event.target.value)}
               disabled={isUpdating}
-              className="h-12 w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-sm text-[#263A2D] outline-none focus:border-[#263A2D] disabled:opacity-60"
+              className={`${dateInputClass} disabled:opacity-60`}
             />
           </label>
 
-          <label className="block">
+          <label className="block min-w-0">
             <span className="mb-2 block text-xs font-medium text-[#40463F]">Çıkış Tarihi</span>
 
             <input
@@ -123,7 +125,7 @@ export function ReservationDateModal({
               value={checkOut}
               onChange={(event) => onCheckOutChange(event.target.value)}
               disabled={isUpdating}
-              className="h-12 w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-sm text-[#263A2D] outline-none focus:border-[#263A2D] disabled:opacity-60"
+              className={`${dateInputClass} disabled:opacity-60`}
             />
           </label>
         </div>

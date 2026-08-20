@@ -123,3 +123,5 @@ export function SummaryItem({ label, value }: SummaryItemProps) {
 
 export const inputClass =
   "block box-border h-11 w-full min-w-0 max-w-full border border-[#DDD9D1] bg-[#FAF9F6] px-3 text-base text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D] sm:text-sm";
+
+export const dateInputClass = `${inputClass} appearance-none overflow-hidden [color-scheme:light] [&::-webkit-date-and-time-value]:min-w-0 [&::-webkit-date-and-time-value]:text-left [&::-webkit-datetime-edit]:min-w-0`;

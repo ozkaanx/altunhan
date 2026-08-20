@@ -34,7 +34,7 @@ export function ReservationRoomModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-end justify-center bg-black/40 sm:items-center sm:p-4">
+    <div className="fixed inset-0 z-[110] flex items-end justify-center overflow-hidden bg-black/40 sm:items-center sm:p-4">
       <button
         type="button"
         aria-label="Oda değiştirme penceresini kapat"
@@ -46,7 +46,7 @@ export function ReservationRoomModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="room-modal-title"
-        className="relative z-10 w-full bg-white p-5 shadow-2xl sm:max-w-[520px]"
+        className="relative z-10 flex max-h-[calc(100dvh-1rem)] w-full min-w-0 flex-col overflow-hidden bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl sm:max-h-[92dvh] sm:max-w-[520px]"
       >
         <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#A8754F]">
           Fiziksel Oda
@@ -60,7 +60,7 @@ export function ReservationRoomModal({
           Sadece bu rezervasyon tarihleri için müsait olan aynı tipteki odalar seçilebilir.
         </p>
 
-        <div className="mt-5 space-y-2">
+        <div className="mt-5 min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1 [-webkit-overflow-scrolling:touch]">
           {rooms.map((room) => {
             const disabled = !room.isAvailable && !room.isCurrent;
 
