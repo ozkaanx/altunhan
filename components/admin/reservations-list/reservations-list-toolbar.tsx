@@ -86,7 +86,7 @@ export function ReservationsListToolbar({
                   : "border-[#DDD9D1] bg-white text-[#6D726B]"
               }`}
             >
-              {filter === "all" ? "Tümü" : getReservationStatusLabel(filter)}
+              {filter === "all" ? "Aktif" : getReservationStatusLabel(filter)}
             </button>
           ))}
         </div>
@@ -94,7 +94,8 @@ export function ReservationsListToolbar({
 
       <div className="mt-5 flex flex-col gap-1 text-xs text-[#858A83] sm:flex-row sm:items-center sm:justify-between">
         <p>
-          Toplam <span className="font-semibold text-[#263A2D]">{totalCount}</span> rezervasyon
+          Toplam <span className="font-semibold text-[#263A2D]">{totalCount}</span>{" "}
+          {activeStatus === "all" ? "aktif rezervasyon" : "rezervasyon"}
         </p>
 
         {totalCount > 0 && (
