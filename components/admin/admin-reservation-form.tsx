@@ -4,6 +4,7 @@ import { ReservationSettingsSection } from "@/components/admin/reservation-form/
 import { GuestInformationSection } from "@/components/admin/reservation-form/guest-information-section";
 import { AccommodationSelectionSection } from "@/components/admin/reservation-form/accommodation-selection-section";
 import { ReservationFormFooter } from "@/components/admin/reservation-form/reservation-form-footer";
+import { InitialPaymentSection } from "@/components/admin/reservation-form/initial-payment-section";
 import { useAdminReservationForm } from "@/hooks/admin/use-admin-reservation-form";
 import type { AdminReservationFormProps } from "@/types/admin-reservation";
 
@@ -24,12 +25,18 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
     setGuestPhone,
     guestEmail,
     setGuestEmail,
-    status,
-    setStatus,
     source,
     setSource,
     adminNote,
     setAdminNote,
+    hasInitialPayment,
+    setHasInitialPayment,
+    initialPaymentAmount,
+    setInitialPaymentAmount,
+    initialPaymentMethod,
+    setInitialPaymentMethod,
+    initialPaymentNote,
+    setInitialPaymentNote,
     availableRooms,
     selectedRoomId,
     setSelectedRoomId,
@@ -46,6 +53,11 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
     canIncreaseChild,
     nightCount,
     totalPrice,
+    depositTargetAmount,
+    receivedPaymentAmount,
+    depositRemainingAmount,
+    totalRemainingAmount,
+    willBeConfirmed,
     today,
     handleAccommodationChange,
     handleAdultCountChange,
@@ -108,12 +120,35 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
 
       <ReservationSettingsSection
         source={source}
-        status={status}
         adminNote={adminNote}
         onSourceChange={setSource}
-        onStatusChange={setStatus}
         onAdminNoteChange={setAdminNote}
       />
+
+      <InitialPaymentSection
+        hasInitialPayment={hasInitialPayment}
+        initialPaymentAmount={initialPaymentAmount}
+        initialPaymentMethod={initialPaymentMethod}
+        initialPaymentNote={initialPaymentNote}
+        totalPrice={totalPrice}
+        depositTargetAmount={depositTargetAmount}
+        receivedPaymentAmount={receivedPaymentAmount}
+        depositRemainingAmount={depositRemainingAmount}
+        totalRemainingAmount={totalRemainingAmount}
+        willBeConfirmed={willBeConfirmed}
+        onHasInitialPaymentChange={(value) => {
+          setHasInitialPayment(value);
+
+          if (!value) {
+            setInitialPaymentAmount("");
+            setInitialPaymentNote("");
+          }
+        }}
+        onInitialPaymentAmountChange={setInitialPaymentAmount}
+        onInitialPaymentMethodChange={setInitialPaymentMethod}
+        onInitialPaymentNoteChange={setInitialPaymentNote}
+      />
+
       <ReservationFormFooter
         error={error}
         success={success}

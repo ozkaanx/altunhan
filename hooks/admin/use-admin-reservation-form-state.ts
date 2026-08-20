@@ -3,11 +3,12 @@
 import { useMemo, useState } from "react";
 
 import { getDefaultAdultCount, getTurkeyToday } from "@/lib/admin/reservation-form-utils";
+import { calculateDepositAmount } from "@/lib/reservation/reservation-utils";
 
 import type {
   AdminAvailableRoom,
+  AdminInitialPaymentMethod,
   AdminReservationAccommodation,
-  AdminReservationStatus,
   ReservationSource,
 } from "@/types/admin-reservation";
 
@@ -30,11 +31,15 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
   const [guestPhone, setGuestPhone] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
 
-  const [status, setStatus] = useState<AdminReservationStatus>("confirmed");
-
   const [source, setSource] = useState<ReservationSource>("phone");
 
   const [adminNote, setAdminNote] = useState("");
+
+  const [hasInitialPayment, setHasInitialPayment] = useState(false);
+  const [initialPaymentAmount, setInitialPaymentAmount] = useState("");
+  const [initialPaymentMethod, setInitialPaymentMethod] =
+    useState<AdminInitialPaymentMethod>("bank_transfer");
+  const [initialPaymentNote, setInitialPaymentNote] = useState("");
 
   const [availableRooms, setAvailableRooms] = useState<AdminAvailableRoom[]>([]);
 
@@ -83,6 +88,18 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
 
   const totalPrice = selectedAccommodation ? Number(selectedAccommodation.price) * nightCount : 0;
 
+  const depositTargetAmount = calculateDepositAmount(
+    Number(selectedAccommodation?.price ?? 0),
+    nightCount,
+    totalPrice,
+  );
+
+  const receivedPaymentAmount = hasInitialPayment ? Number(initialPaymentAmount) || 0 : 0;
+
+  const depositRemainingAmount = Math.max(depositTargetAmount - receivedPaymentAmount, 0);
+  const totalRemainingAmount = Math.max(totalPrice - receivedPaymentAmount, 0);
+  const willBeConfirmed = depositTargetAmount > 0 && receivedPaymentAmount >= depositTargetAmount;
+
   const today = getTurkeyToday();
 
   return {
@@ -113,14 +130,23 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
     guestEmail,
     setGuestEmail,
 
-    status,
-    setStatus,
-
     source,
     setSource,
 
     adminNote,
     setAdminNote,
+
+    hasInitialPayment,
+    setHasInitialPayment,
+
+    initialPaymentAmount,
+    setInitialPaymentAmount,
+
+    initialPaymentMethod,
+    setInitialPaymentMethod,
+
+    initialPaymentNote,
+    setInitialPaymentNote,
 
     availableRooms,
     setAvailableRooms,
@@ -152,6 +178,11 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
 
     nightCount,
     totalPrice,
+    depositTargetAmount,
+    receivedPaymentAmount,
+    depositRemainingAmount,
+    totalRemainingAmount,
+    willBeConfirmed,
     today,
   };
 }
