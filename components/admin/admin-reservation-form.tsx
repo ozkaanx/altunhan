@@ -53,9 +53,7 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
     canIncreaseChild,
     nightCount,
     totalPrice,
-    depositTargetAmount,
     receivedPaymentAmount,
-    depositRemainingAmount,
     totalRemainingAmount,
     willBeConfirmed,
     today,
@@ -131,9 +129,7 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
         initialPaymentMethod={initialPaymentMethod}
         initialPaymentNote={initialPaymentNote}
         totalPrice={totalPrice}
-        depositTargetAmount={depositTargetAmount}
         receivedPaymentAmount={receivedPaymentAmount}
-        depositRemainingAmount={depositRemainingAmount}
         totalRemainingAmount={totalRemainingAmount}
         willBeConfirmed={willBeConfirmed}
         onHasInitialPaymentChange={(value) => {
