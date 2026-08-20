@@ -2,7 +2,11 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-import type { ReservationStatus } from "@/types/reservation";
+import type {
+  ReservationPaymentPlan,
+  ReservationPaymentStatus,
+  ReservationStatus,
+} from "@/types/reservation";
 import type { ReservationTrackingResponse } from "@/types/reservation-tracking";
 import { normalizeTurkishMobilePhone } from "@/lib/phone";
 
@@ -27,9 +31,25 @@ type ReservationTrackingRpcRow = {
 
   total_price: number;
 
+  payment_plan: ReservationPaymentPlan;
+
+  deposit_target_amount: number;
+
+  confirmed_payment_amount: number;
+
+  amount_due_now: number;
+
+  remaining_payment_amount: number;
+
+  payment_status: ReservationPaymentStatus;
+
   status: ReservationStatus;
 
   has_receipt: boolean;
+
+  has_pending_receipt: boolean;
+
+  last_payment_note: string | null;
 
   rejection_reason: string | null;
 
@@ -60,7 +80,7 @@ export async function findReservation(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.rpc("get_public_reservation_status_v2", {
+  const { data, error } = await supabase.rpc("get_public_reservation_status_v3", {
     p_reservation_code: code,
 
     p_guest_phone: normalizedPhone,
@@ -106,9 +126,25 @@ export async function findReservation(
 
       totalPrice: Number(reservation.total_price),
 
+      paymentPlan: reservation.payment_plan,
+
+      depositTargetAmount: Number(reservation.deposit_target_amount),
+
+      confirmedPaymentAmount: Number(reservation.confirmed_payment_amount),
+
+      amountDueNow: Number(reservation.amount_due_now),
+
+      remainingPaymentAmount: Number(reservation.remaining_payment_amount),
+
+      paymentStatus: reservation.payment_status,
+
       status: reservation.status,
 
       hasReceipt: reservation.has_receipt,
+
+      hasPendingReceipt: reservation.has_pending_receipt,
+
+      lastPaymentNote: reservation.last_payment_note,
 
       rejectionReason: reservation.rejection_reason,
 

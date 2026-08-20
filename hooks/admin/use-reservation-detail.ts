@@ -14,12 +14,11 @@ import type { ReservationDetailDrawerProps } from "@/types/admin-reservation-det
 
 type UseReservationDetailParams = Pick<
   ReservationDetailDrawerProps,
-  "reservation" | "onApprove" | "onReject" | "onCancel"
+  "reservation" | "onReject" | "onCancel"
 >;
 
 export function useReservationDetail({
   reservation,
-  onApprove,
   onReject,
   onCancel,
 }: UseReservationDetailParams) {
@@ -33,8 +32,6 @@ export function useReservationDetail({
     setActionError,
     isActionLoading,
     setIsActionLoading,
-    setIsApproving,
-    setApproveError,
     setIsOpeningReceipt,
     setReceiptError,
     setRoomModalOpen,
@@ -69,8 +66,10 @@ export function useReservationDetail({
     setActionError(null);
   };
 
-  const handleOpenReceipt = async () => {
-    if (!reservation?.receipt_storage_path) {
+  const handleOpenReceipt = async (storagePath: string) => {
+    const cleanStoragePath = storagePath.trim();
+
+    if (!reservation || !cleanStoragePath) {
       return;
     }
 
@@ -90,7 +89,7 @@ export function useReservationDetail({
     setIsOpeningReceipt(true);
 
     try {
-      const result = await getReceiptSignedUrl(reservation.receipt_storage_path);
+      const result = await getReceiptSignedUrl(cleanStoragePath);
 
       if (!result.success || !result.url) {
         receiptWindow.close();
@@ -109,29 +108,6 @@ export function useReservationDetail({
       setReceiptError("Dekont açılırken beklenmeyen bir hata oluştu.");
     } finally {
       setIsOpeningReceipt(false);
-    }
-  };
-
-  const handleApprove = async () => {
-    if (!reservation) {
-      return;
-    }
-
-    setApproveError(null);
-    setIsApproving(true);
-
-    try {
-      const result = await onApprove(reservation);
-
-      if (!result.success) {
-        setApproveError(result.message ?? "Rezervasyon onaylanamadı.");
-      }
-    } catch (error) {
-      console.error(error);
-
-      setApproveError("Rezervasyon onaylanırken beklenmeyen bir hata oluştu.");
-    } finally {
-      setIsApproving(false);
     }
   };
 
@@ -360,7 +336,6 @@ export function useReservationDetail({
     ...state,
     closeActionModal,
     handleOpenReceipt,
-    handleApprove,
     handleModalAction,
     handleOpenRoomModal,
     handleChangeRoom,

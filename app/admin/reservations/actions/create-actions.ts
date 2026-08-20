@@ -86,7 +86,7 @@ export async function createAdminReservation(values: CreateAdminReservationInput
     };
   }
 
-  const { data, error } = await auth.supabase.rpc("create_admin_reservation_v3", {
+  const { data, error } = await auth.supabase.rpc("create_admin_reservation_v4", {
     p_accommodation_id: values.accommodationId,
     p_room_id: values.roomId,
 

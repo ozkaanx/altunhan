@@ -2,15 +2,11 @@
 
 import { useRouter } from "next/navigation";
 
-import {
-  approveReservation,
-  cancelReservation,
-  rejectReservation,
-} from "@/app/admin/reservations/action";
+import { cancelReservation, rejectReservation } from "@/app/admin/reservations/action";
 
 import type { Reservation } from "@/types/reservation";
 
-type ReservationListAction = "approve" | "reject" | "cancel";
+type ReservationListAction = "reject" | "cancel";
 
 type UseReservationListActionsParams = {
   onSuccess: (action: ReservationListAction, reservation: Reservation) => void;
@@ -19,24 +15,9 @@ type UseReservationListActionsParams = {
 export function useReservationListActions({ onSuccess }: UseReservationListActionsParams) {
   const router = useRouter();
 
-  const completeAction = (
-    action: ReservationListAction,
-    reservation: Reservation,
-  ) => {
+  const completeAction = (action: ReservationListAction, reservation: Reservation) => {
     onSuccess(action, reservation);
     router.refresh();
-  };
-
-  const handleApprove = async (reservation: Reservation) => {
-    const result = await approveReservation(reservation.id);
-
-    if (!result.success) {
-      return result;
-    }
-
-    completeAction("approve", reservation);
-
-    return { success: true };
   };
 
   const handleReject = async (reservation: Reservation, reason: string) => {
@@ -64,7 +45,6 @@ export function useReservationListActions({ onSuccess }: UseReservationListActio
   };
 
   return {
-    handleApprove,
     handleReject,
     handleCancel,
   };

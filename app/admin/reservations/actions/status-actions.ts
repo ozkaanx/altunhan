@@ -15,66 +15,6 @@ function revalidateReservationPaths() {
   revalidatePath("/rezervasyon/takip");
 }
 
-export async function approveReservation(id: number) {
-  if (!isValidReservationId(id)) {
-    return {
-      success: false as const,
-      message: "Geçersiz rezervasyon.",
-    };
-  }
-
-  const auth = await requireAdmin();
-
-  if (!auth.success) {
-    return {
-      success: false as const,
-      message: auth.message,
-    };
-  }
-
-  const { supabase } = auth;
-
-  const { data, error } = await supabase
-    .from("reservations")
-    .update({
-      status: "confirmed",
-      rejection_reason: null,
-      cancellation_reason: null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id)
-    .eq("status", "pending_approval")
-    .select("id");
-
-  if (error) {
-    console.error("Rezervasyon onaylanamadı:", error);
-
-    return {
-      success: false as const,
-      message: error.message,
-    };
-  }
-
-  if (!data?.length) {
-    return {
-      success: false as const,
-      message: "Rezervasyon bulunamadı veya artık onay beklemiyor.",
-    };
-  }
-
-  try {
-    await notifyReservationDecision(supabase, id, "confirmed");
-  } catch (notificationError) {
-    console.error("Rezervasyon onay maili gönderilemedi:", notificationError);
-  }
-
-  revalidateReservationPaths();
-
-  return {
-    success: true as const,
-  };
-}
-
 export async function rejectReservation(id: number, reason: string) {
   if (!isValidReservationId(id)) {
     return {
@@ -136,6 +76,20 @@ export async function rejectReservation(id: number, reason: string) {
       success: false as const,
       message: "Rezervasyon bulunamadı veya artık onay beklemiyor.",
     };
+  }
+
+  const { error: paymentError } = await supabase
+    .from("reservation_payments")
+    .update({
+      status: "rejected",
+      admin_note: cleanReason,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("reservation_id", id)
+    .eq("status", "pending");
+
+  if (paymentError) {
+    console.error("Bekleyen dekont ödemesi reddedilemedi:", paymentError);
   }
 
   try {

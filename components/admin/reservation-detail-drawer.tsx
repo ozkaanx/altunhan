@@ -16,7 +16,6 @@ export function ReservationDetailDrawer({
   reservation,
   open,
   onClose,
-  onApprove,
   onReject,
   onCancel,
   onAdminNoteChange,
@@ -30,7 +29,6 @@ export function ReservationDetailDrawer({
       reservation={reservation}
       open={open}
       onClose={onClose}
-      onApprove={onApprove}
       onReject={onReject}
       onCancel={onCancel}
       onAdminNoteChange={onAdminNoteChange}
@@ -46,7 +44,6 @@ function ReservationDetailDrawerContent({
   reservation,
   open,
   onClose,
-  onApprove,
   onReject,
   onCancel,
   onAdminNoteChange,
@@ -59,8 +56,6 @@ function ReservationDetailDrawerContent({
     actionError,
     setActionError,
     isActionLoading,
-    isApproving,
-    approveError,
     isOpeningReceipt,
     receiptError,
     roomModalOpen,
@@ -83,7 +78,6 @@ function ReservationDetailDrawerContent({
     dateError,
     closeActionModal,
     handleOpenReceipt,
-    handleApprove,
     handleModalAction,
     handleOpenRoomModal,
     handleChangeRoom,
@@ -95,7 +89,6 @@ function ReservationDetailDrawerContent({
     handleUpdateDates,
   } = useReservationDetail({
     reservation,
-    onApprove,
     onReject,
     onCancel,
   });
@@ -130,13 +123,7 @@ function ReservationDetailDrawerContent({
             onAdminNoteChange={onAdminNoteChange}
           />
 
-          <ReservationStatusActions
-            reservation={reservation}
-            approveError={approveError}
-            isApproving={isApproving}
-            onApprove={handleApprove}
-            onOpenAction={setActionModal}
-          />
+          <ReservationStatusActions reservation={reservation} onOpenAction={setActionModal} />
         </div>
       </aside>
 

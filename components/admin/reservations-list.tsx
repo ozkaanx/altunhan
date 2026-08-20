@@ -26,21 +26,8 @@ export function ReservationsList({
 }: ReservationsListProps) {
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
 
-  const { handleApprove, handleReject, handleCancel } = useReservationListActions({
-    onSuccess: (action, reservation) => {
-      if (action === "approve") {
-        setSelectedReservation((current) =>
-          current?.id === reservation.id
-            ? {
-                ...current,
-                status: "confirmed",
-              }
-            : current,
-        );
-
-        return;
-      }
-
+  const { handleReject, handleCancel } = useReservationListActions({
+    onSuccess: () => {
       setSelectedReservation(null);
     },
   });
@@ -74,7 +61,6 @@ export function ReservationsList({
         reservation={selectedReservation}
         open={Boolean(selectedReservation)}
         onClose={() => setSelectedReservation(null)}
-        onApprove={handleApprove}
         onReject={handleReject}
         onCancel={handleCancel}
         onAdminNoteChange={(adminNote) =>

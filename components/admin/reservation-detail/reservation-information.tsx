@@ -3,7 +3,6 @@ import {
   CalendarClock,
   CalendarDays,
   CreditCard,
-  ExternalLink,
   Loader2,
   Mail,
   Phone,
@@ -11,9 +10,9 @@ import {
 } from "lucide-react";
 
 import { ReservationAdminNote } from "@/components/admin/reservation-detail/reservation-admin-note";
+import { ReservationPayments } from "@/components/admin/reservation-detail/reservation-payments";
 import { InfoRow, MiniInfo } from "@/components/admin/reservation-detail/detail-info";
 
-import { formatPrice } from "@/lib/formatters/price";
 import { formatTurkishPhoneForDisplay } from "@/lib/phone";
 import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
 import { formatTcknForDisplay } from "@/lib/identity/tckn";
@@ -27,7 +26,7 @@ type ReservationInformationProps = {
   receiptError: string | null;
   onOpenRoomModal: () => void;
   onOpenDateModal: () => void;
-  onOpenReceipt: () => void;
+  onOpenReceipt: (storagePath: string) => void;
   onAdminNoteChange: (adminNote: string | null) => void;
 };
 
@@ -136,33 +135,12 @@ export function ReservationInformation({
         )}
       </section>
 
-      <section className="border border-[#E3E0D8] bg-white p-4">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#969990]">
-          Ödeme
-        </p>
-
-        <p className="mt-3 text-2xl font-semibold text-[#263A2D]">
-          {formatPrice(reservation.total_price)}
-        </p>
-
-        {reservation.receipt_storage_path && (
-          <button
-            type="button"
-            onClick={onOpenReceipt}
-            disabled={isOpeningReceipt}
-            className="mt-4 flex h-10 w-full items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white"
-          >
-            {isOpeningReceipt ? (
-              <Loader2 size={15} className="animate-spin" />
-            ) : (
-              <ExternalLink size={15} />
-            )}
-            Dekontu Gör
-          </button>
-        )}
-
-        {receiptError && <p className="mt-2 text-xs text-[#98584E]">{receiptError}</p>}
-      </section>
+      <ReservationPayments
+        reservation={reservation}
+        isOpeningReceipt={isOpeningReceipt}
+        receiptError={receiptError}
+        onOpenReceipt={onOpenReceipt}
+      />
     </>
   );
 }
