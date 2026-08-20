@@ -2,16 +2,7 @@
 
 import { useState } from "react";
 
-import {
-  Banknote,
-  CheckCircle2,
-  Clock3,
-  ExternalLink,
-  Loader2,
-  Plus,
-  WalletCards,
-  X,
-} from "lucide-react";
+import { Banknote, CheckCircle2, ExternalLink, Loader2, Plus, WalletCards, X } from "lucide-react";
 
 import {
   recordReservationPayment,
@@ -93,11 +84,8 @@ export function ReservationPayments({
   const pendingPayment = payments.find((payment) => payment.status === "pending") ?? null;
   const confirmedAmount = getConfirmedAmount(payments);
   const totalPrice = Number(reservation.total_price);
-  const depositTarget = Number(reservation.deposit_target_amount);
   const totalRemaining = Math.max(totalPrice - confirmedAmount, 0);
-  const depositRemaining = Math.max(depositTarget - confirmedAmount, 0);
-  const canChangePayments =
-    reservation.status !== "rejected" && reservation.status !== "cancelled";
+  const canChangePayments = reservation.status !== "rejected" && reservation.status !== "cancelled";
 
   const [receivedAmount, setReceivedAmount] = useState(
     String(Number(pendingPayment?.requested_amount ?? 0)),
@@ -109,8 +97,7 @@ export function ReservationPayments({
 
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(String(totalRemaining));
-  const [paymentMethod, setPaymentMethod] =
-    useState<ReservationPaymentMethod>("cash");
+  const [paymentMethod, setPaymentMethod] = useState<ReservationPaymentMethod>("cash");
   const [paymentNote, setPaymentNote] = useState("");
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [isSavingPayment, setIsSavingPayment] = useState(false);
@@ -247,28 +234,13 @@ export function ReservationPayments({
 
   return (
     <section className="border border-[#E3E0D8] bg-white p-4">
-      <div>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#969990]">
-          Ödeme
-        </p>
-
-        <p className="mt-1 text-xs text-[#777C75]">
-          Kapora hedefi {formatPrice(depositTarget)}
-        </p>
-      </div>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#969990]">Ödeme</p>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <PaymentSummary label="Toplam" value={totalPrice} icon={WalletCards} />
         <PaymentSummary label="Alınan" value={confirmedAmount} icon={CheckCircle2} />
         <PaymentSummary label="Kalan" value={totalRemaining} icon={Banknote} />
       </div>
-
-      {depositRemaining > 0 && (
-        <div className="mt-3 flex items-center gap-2 bg-[#FAF1E4] px-3 py-3 text-xs text-[#866332]">
-          <Clock3 size={15} />
-          Kaporanın tamamlanması için {formatPrice(depositRemaining)} daha gerekiyor.
-        </div>
-      )}
 
       {pendingPayment && (
         <div className="mt-4 border border-[#D8C7A8] bg-[#FCF8F0] p-4">
@@ -281,7 +253,10 @@ export function ReservationPayments({
               label="Sistem Beklentisi"
               value={formatPrice(pendingPayment.requested_amount)}
             />
-            <PaymentMiniInfo label="Yükleme Tarihi" value={formatPaymentDate(pendingPayment.created_at)} />
+            <PaymentMiniInfo
+              label="Yükleme Tarihi"
+              value={formatPaymentDate(pendingPayment.created_at)}
+            />
           </div>
 
           {pendingPayment.receipt_storage_path && (
@@ -517,9 +492,7 @@ export function ReservationPayments({
                 )}
 
                 {payment.admin_note && (
-                  <p className="mt-2 text-[10px] leading-4 text-[#777C75]">
-                    {payment.admin_note}
-                  </p>
+                  <p className="mt-2 text-[10px] leading-4 text-[#777C75]">{payment.admin_note}</p>
                 )}
 
                 {canChangePayments &&

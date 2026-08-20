@@ -17,9 +17,7 @@ type InitialPaymentSectionProps = {
   initialPaymentMethod: AdminInitialPaymentMethod;
   initialPaymentNote: string;
   totalPrice: number;
-  depositTargetAmount: number;
   receivedPaymentAmount: number;
-  depositRemainingAmount: number;
   totalRemainingAmount: number;
   willBeConfirmed: boolean;
   onHasInitialPaymentChange: (value: boolean) => void;
@@ -34,9 +32,7 @@ export function InitialPaymentSection({
   initialPaymentMethod,
   initialPaymentNote,
   totalPrice,
-  depositTargetAmount,
   receivedPaymentAmount,
-  depositRemainingAmount,
   totalRemainingAmount,
   willBeConfirmed,
   onHasInitialPaymentChange,
@@ -55,13 +51,13 @@ export function InitialPaymentSection({
       <div className="space-y-5 p-4 sm:p-5">
         <div className="grid gap-3 bg-[#FAF8F4] p-4 sm:grid-cols-3">
           <SummaryItem label="Toplam" value={formatPrice(totalPrice)} />
-          <SummaryItem label="Kapora Hedefi" value={formatPrice(depositTargetAmount)} />
+          <SummaryItem label="Alınan" value={formatPrice(receivedPaymentAmount)} />
           <SummaryItem label="Kalan Toplam" value={formatPrice(totalRemainingAmount)} />
         </div>
 
         <p className="text-[10px] leading-5 text-[#777D75]">
-          Bir gecelik konaklamada toplamın yarısı, birden fazla gecede bir gecelik ücret kapora
-          hedefidir.
+          Girilen ödeme tutarı kapora hedefinden bağımsız olarak kaydedilir. Ödeme alınmışsa
+          rezervasyon onaylanır, kalan tutar ayrıca takip edilir.
         </p>
 
         <Field label="Ödeme Durumu">
@@ -112,7 +108,7 @@ export function InitialPaymentSection({
 
             <div className="grid gap-3 border border-[#E3E0D8] bg-[#FAF9F6] p-4 sm:grid-cols-3">
               <SummaryItem label="Alınan" value={formatPrice(receivedPaymentAmount)} />
-              <SummaryItem label="Eksik Kapora" value={formatPrice(depositRemainingAmount)} />
+              <SummaryItem label="Kalan Toplam" value={formatPrice(totalRemainingAmount)} />
               <SummaryItem
                 label="Başlangıç Durumu"
                 value={willBeConfirmed ? "Onaylandı" : "Ödeme Bekliyor"}

@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 
 import { getDefaultAdultCount, getTurkeyToday } from "@/lib/admin/reservation-form-utils";
-import { calculateDepositAmount } from "@/lib/reservation/reservation-utils";
 
 import type {
   AdminAvailableRoom,
@@ -88,17 +87,10 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
 
   const totalPrice = selectedAccommodation ? Number(selectedAccommodation.price) * nightCount : 0;
 
-  const depositTargetAmount = calculateDepositAmount(
-    Number(selectedAccommodation?.price ?? 0),
-    nightCount,
-    totalPrice,
-  );
-
   const receivedPaymentAmount = hasInitialPayment ? Number(initialPaymentAmount) || 0 : 0;
 
-  const depositRemainingAmount = Math.max(depositTargetAmount - receivedPaymentAmount, 0);
   const totalRemainingAmount = Math.max(totalPrice - receivedPaymentAmount, 0);
-  const willBeConfirmed = depositTargetAmount > 0 && receivedPaymentAmount >= depositTargetAmount;
+  const willBeConfirmed = receivedPaymentAmount > 0;
 
   const today = getTurkeyToday();
 
@@ -178,9 +170,7 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
 
     nightCount,
     totalPrice,
-    depositTargetAmount,
     receivedPaymentAmount,
-    depositRemainingAmount,
     totalRemainingAmount,
     willBeConfirmed,
     today,

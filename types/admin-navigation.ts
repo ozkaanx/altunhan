@@ -1,4 +1,5 @@
 import {
+  BarChart3,
   CalendarDays,
   House,
   MessageSquareQuote,
@@ -28,6 +29,11 @@ export const adminNavigation = [
     label: "Odalar",
     href: "/admin/rooms",
     icon: BedDouble,
+  },
+  {
+    label: "Gelir Raporları",
+    href: "/admin/reports",
+    icon: BarChart3,
   },
   {
     label: "Yorumlar",
