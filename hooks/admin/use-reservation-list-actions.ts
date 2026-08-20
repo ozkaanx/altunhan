@@ -10,15 +10,20 @@ import {
 
 import type { Reservation } from "@/types/reservation";
 
+type ReservationListAction = "approve" | "reject" | "cancel";
+
 type UseReservationListActionsParams = {
-  onSuccess: () => void;
+  onSuccess: (action: ReservationListAction, reservation: Reservation) => void;
 };
 
 export function useReservationListActions({ onSuccess }: UseReservationListActionsParams) {
   const router = useRouter();
 
-  const completeAction = () => {
-    onSuccess();
+  const completeAction = (
+    action: ReservationListAction,
+    reservation: Reservation,
+  ) => {
+    onSuccess(action, reservation);
     router.refresh();
   };
 
@@ -29,11 +34,9 @@ export function useReservationListActions({ onSuccess }: UseReservationListActio
       return result;
     }
 
-    completeAction();
+    completeAction("approve", reservation);
 
-    return {
-      success: true,
-    };
+    return { success: true };
   };
 
   const handleReject = async (reservation: Reservation, reason: string) => {
@@ -43,11 +46,9 @@ export function useReservationListActions({ onSuccess }: UseReservationListActio
       return result;
     }
 
-    completeAction();
+    completeAction("reject", reservation);
 
-    return {
-      success: true,
-    };
+    return { success: true };
   };
 
   const handleCancel = async (reservation: Reservation, reason: string) => {
@@ -57,11 +58,9 @@ export function useReservationListActions({ onSuccess }: UseReservationListActio
       return result;
     }
 
-    completeAction();
+    completeAction("cancel", reservation);
 
-    return {
-      success: true,
-    };
+    return { success: true };
   };
 
   return {

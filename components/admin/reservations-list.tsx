@@ -27,7 +27,22 @@ export function ReservationsList({
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
 
   const { handleApprove, handleReject, handleCancel } = useReservationListActions({
-    onSuccess: () => setSelectedReservation(null),
+    onSuccess: (action, reservation) => {
+      if (action === "approve") {
+        setSelectedReservation((current) =>
+          current?.id === reservation.id
+            ? {
+                ...current,
+                status: "confirmed",
+              }
+            : current,
+        );
+
+        return;
+      }
+
+      setSelectedReservation(null);
+    },
   });
 
   const { search, setSearch, changeFilter, changePage } = useReservationsListNavigation({
