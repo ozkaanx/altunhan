@@ -5,6 +5,7 @@ import { formatPrice } from "@/lib/formatters/price";
 type ReservationSummaryTotalProps = {
   estimatedNightCount: number;
   estimatedTotal: number;
+  estimatedDeposit: number;
   isDisabled: boolean;
   isSubmitting: boolean;
   submitLabel: string;
@@ -13,6 +14,7 @@ type ReservationSummaryTotalProps = {
 export function ReservationSummaryTotal({
   estimatedNightCount,
   estimatedTotal,
+  estimatedDeposit,
   isDisabled,
   isSubmitting,
   submitLabel,
@@ -36,10 +38,19 @@ export function ReservationSummaryTotal({
       </div>
 
       {hasEstimate && (
-        <p className="mt-3 text-[9px] leading-5 text-white/55">
-          Gösterilen tutar seçtiğiniz konaklama ve gece sayısına göre hesaplanan toplam konaklama
-          bedelidir. Rezervasyon, ödeme ve işletme onayından sonra kesinleşir.
-        </p>
+        <div className="mt-4 border-t border-white/15 pt-4">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-white/55">
+              Şimdi Ödenecek Kapora
+            </p>
+            <p className="text-sm font-semibold text-white">{formatPrice(estimatedDeposit)}</p>
+          </div>
+
+          <p className="mt-3 text-[9px] leading-5 text-white/55">
+            Bir gece için toplamın yarısı; daha uzun konaklamalarda bir gecelik ücret kapora olarak
+            alınır. Rezervasyon, kapora doğrulandıktan sonra kesinleşir.
+          </p>
+        </div>
       )}
 
       <button

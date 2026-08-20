@@ -12,7 +12,10 @@ import type { PublicAccommodation } from "@/types/public-reservation";
 
 import type { CreatedReservation } from "@/types/reservation-ui";
 
-import { calculateReservationTotal } from "@/lib/reservation/reservation-utils";
+import {
+  calculateDepositAmount,
+  calculateReservationTotal,
+} from "@/lib/reservation/reservation-utils";
 
 import { publicReservationSchema } from "@/lib/reservation/reservation-schema";
 
@@ -86,6 +89,16 @@ export function useReservationForm({
         estimatedNightCount,
       ),
     [selectedAccommodation, estimatedNightCount],
+  );
+
+  const estimatedDeposit = useMemo(
+    () =>
+      calculateDepositAmount(
+        selectedAccommodation?.price ?? 0,
+        estimatedNightCount,
+        estimatedTotal,
+      ),
+    [selectedAccommodation, estimatedNightCount, estimatedTotal],
   );
 
   const dateError = useMemo(() => {
@@ -267,6 +280,12 @@ export function useReservationForm({
         nightCount: result.reservation.nightCount,
 
         totalPrice: result.reservation.totalPrice,
+
+        depositTargetAmount: result.reservation.depositTargetAmount,
+
+        amountDueNow: result.reservation.amountDueNow,
+
+        remainingPaymentAmount: result.reservation.remainingPaymentAmount,
       };
 
       setCreatedReservation(reservationData);
@@ -309,6 +328,7 @@ export function useReservationForm({
     // Calculations
     estimatedNightCount,
     estimatedTotal,
+    estimatedDeposit,
 
     // Status
     error,

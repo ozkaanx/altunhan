@@ -3,8 +3,11 @@
 import { ImagePlus, Loader2, Upload } from "lucide-react";
 
 import { formatFileSize } from "@/lib/reservation/reservation-utils";
+import { formatPrice } from "@/lib/formatters/price";
 
 type ReceiptUploadProps = {
+  amountDueNow: number;
+
   receipt: File | null;
 
   error: string | null;
@@ -19,6 +22,7 @@ type ReceiptUploadProps = {
 };
 
 export function ReceiptUpload({
+  amountDueNow,
   receipt,
   error,
   isUploading,
@@ -31,7 +35,8 @@ export function ReceiptUpload({
       <p className="text-sm font-semibold text-[#263A2D]">Ödeme Dekontu</p>
 
       <p className="mt-1 text-xs leading-5 text-[#8A8E88]">
-        JPG, PNG, WEBP veya PDF. Maksimum 10 MB.
+        Kapora havalesini yaptıktan sonra dekontu yükleyin. Beklenen tutar:{" "}
+        {formatPrice(amountDueNow)}. JPG, PNG, WEBP veya PDF. Maksimum 10 MB.
       </p>
 
       <label className="mt-4 flex min-h-32 cursor-pointer flex-col items-center justify-center border border-dashed border-[#CBC7BE] bg-[#FAF9F6] p-4 text-center transition hover:border-[#A8754F]">
@@ -97,7 +102,7 @@ export function ReceiptUpload({
         ) : (
           <>
             <Upload size={16} />
-            Ödemeyi Tamamla ve Dekontu Gönder
+            Kapora Dekontunu Gönder
           </>
         )}
       </button>

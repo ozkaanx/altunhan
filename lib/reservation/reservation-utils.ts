@@ -11,6 +11,18 @@ export function calculateReservationTotal(nightlyPrice: number, nightCount: numb
   return Math.max(0, nightlyPrice * nightCount);
 }
 
+export function calculateDepositAmount(
+  nightlyPrice: number,
+  nightCount: number,
+  totalPrice: number,
+) {
+  if (nightCount <= 0 || totalPrice <= 0) {
+    return 0;
+  }
+
+  return nightCount === 1 ? totalPrice / 2 : Math.min(nightlyPrice, totalPrice);
+}
+
 export function formatFileSize(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 }

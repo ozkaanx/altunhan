@@ -191,7 +191,9 @@ function getTimeline(reservation: ReservationTrackingResult): TimelineStep[] {
         },
       ];
 
-    default:
+    default: {
+      const hasPartialDeposit = reservation.confirmedPaymentAmount > 0;
+
       return [
         {
           title: "Rezervasyon Talebi",
@@ -199,8 +201,10 @@ function getTimeline(reservation: ReservationTrackingResult): TimelineStep[] {
           state: "completed",
         },
         {
-          title: "Ödeme Bekleniyor",
-          description: "Ödemenizi yaptıktan sonra dekontunuzu yükleyin.",
+          title: hasPartialDeposit ? "Eksik Kapora Bekleniyor" : "Kapora Bekleniyor",
+          description: hasPartialDeposit
+            ? "Doğrulanan ödeme kapora hedefinin altında kaldı. Eksik tutarı gönderip yeni dekont yükleyin."
+            : "Kapora ödemenizi yaptıktan sonra dekontunuzu yükleyin.",
           state: "active",
         },
         {
@@ -214,5 +218,6 @@ function getTimeline(reservation: ReservationTrackingResult): TimelineStep[] {
           state: "waiting",
         },
       ];
+    }
   }
 }

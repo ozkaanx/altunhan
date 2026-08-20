@@ -127,15 +127,48 @@ export function TrackingResult({
             />
 
             <InfoCard icon={Phone} label="Toplam" value={formatPrice(reservation.totalPrice)} />
+
+            <InfoCard
+              icon={ShieldCheck}
+              label="Kapora Hedefi"
+              value={formatPrice(reservation.depositTargetAmount)}
+            />
+
+            <InfoCard
+              icon={ShieldCheck}
+              label="Doğrulanan Ödeme"
+              value={formatPrice(reservation.confirmedPaymentAmount)}
+            />
+
+            <InfoCard
+              icon={Phone}
+              label="Toplam Kalan"
+              value={formatPrice(reservation.remainingPaymentAmount)}
+            />
           </div>
+
+          {reservation.status === "pending_payment" && reservation.amountDueNow > 0 && (
+            <div className="mt-4 border border-[#E5D8BE] bg-[#F7F0E3] p-4">
+              <p className="text-xs font-semibold text-[#6F5428]">
+                Tamamlanması gereken kapora: {formatPrice(reservation.amountDueNow)}
+              </p>
+
+              {reservation.lastPaymentNote && (
+                <p className="mt-2 text-xs leading-5 text-[#806B48]">
+                  Son dekont açıklaması: {reservation.lastPaymentNote}
+                </p>
+              )}
+            </div>
+          )}
 
           <TrackingTimeline reservation={reservation} />
 
-          {reservation.status === "pending_payment" && !reservation.hasReceipt && (
+          {reservation.status === "pending_payment" && !reservation.hasPendingReceipt && (
             <>
               <BankInformation settings={settings} reservationCode={reservation.reservationCode} />
 
               <TrackingReceiptUpload
+                amountDueNow={reservation.amountDueNow}
                 receipt={receipt}
                 error={error}
                 uploadSuccess={uploadSuccess}

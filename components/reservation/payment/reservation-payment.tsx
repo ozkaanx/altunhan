@@ -33,6 +33,8 @@ export function ReservationPayment({ reservation, settings }: ReservationPayment
     Boolean(settings?.bank_name?.trim()) &&
     Boolean(settings?.bank_account_holder?.trim());
 
+  const isSingleNight = reservation.nightCount === 1;
+
   return (
     <div className="mx-auto max-w-[760px]">
       <div className="border border-[#E1DED6] bg-white p-5 sm:p-8">
@@ -45,12 +47,16 @@ export function ReservationPayment({ reservation, settings }: ReservationPayment
         </p>
 
         <h1 className="mt-2 font-serif text-3xl text-[#263A2D] sm:text-4xl">
-          {hasBankInformation ? "Ödemenizi tamamlayın." : "Rezervasyon talebiniz oluşturuldu."}
+          {hasBankInformation
+            ? "Kapora ödemenizi tamamlayın."
+            : "Rezervasyon talebiniz oluşturuldu."}
         </h1>
 
         <p className="mt-3 max-w-xl text-sm leading-6 text-[#70756F]">
           {hasBankInformation
-            ? "Rezervasyonunuz oluşturuldu. Havale/EFT işlemini tamamladıktan sonra dekontunuzu yükleyin."
+            ? isSingleNight
+              ? "Bir gecelik konaklamanız için toplam tutarın yarısını kapora olarak gönderip dekontunuzu yükleyin."
+              : "Rezervasyonunuzu kesinleştirmek için bir gecelik konaklama bedelini kapora olarak gönderip dekontunuzu yükleyin."
             : "Ödeme bilgileri henüz hazırlanmadığı için şu anda ödeme alınmamaktadır. Rezervasyon bilgileriniz aşağıda yer almaktadır."}
         </p>
 
@@ -75,6 +81,16 @@ export function ReservationPayment({ reservation, settings }: ReservationPayment
           />
 
           <ReservationDetailCard label="Toplam Tutar" value={formatPrice(reservation.totalPrice)} />
+
+          <ReservationDetailCard
+            label="Şimdi Ödenecek Kapora"
+            value={formatPrice(reservation.amountDueNow)}
+          />
+
+          <ReservationDetailCard
+            label="Kapora Sonrası Kalan"
+            value={formatPrice(reservation.remainingPaymentAmount)}
+          />
         </div>
 
         {hasBankInformation ? (
@@ -98,6 +114,21 @@ export function ReservationPayment({ reservation, settings }: ReservationPayment
             </div>
             <BankInformation settings={settings} reservationCode={reservation.reservationCode} />
 
+            <div className="mt-5 border border-[#CBDDC8] bg-[#EAF2E8] p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#496449]">
+                Gönderilecek Tutar
+              </p>
+
+              <p className="mt-2 text-2xl font-semibold text-[#263A2D]">
+                {formatPrice(reservation.amountDueNow)}
+              </p>
+
+              <p className="mt-2 text-xs leading-5 text-[#5E6F5D]">
+                Havale açıklamasına {reservation.reservationCode} rezervasyon numarasını yazın.
+                Farklı bir tutar gönderirseniz admin, banka hesabına geçen gerçek tutarı kaydeder.
+              </p>
+            </div>
+
             <ReceiptUpload
               receipt={receipt}
               error={error}
@@ -105,6 +136,7 @@ export function ReservationPayment({ reservation, settings }: ReservationPayment
               onSelect={selectReceipt}
               onRemove={clearReceipt}
               onUpload={uploadReceipt}
+              amountDueNow={reservation.amountDueNow}
             />
           </>
         ) : (

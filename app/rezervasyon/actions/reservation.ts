@@ -11,6 +11,9 @@ type ReservationRpcResult = {
   accommodation_title: string;
   night_count: number;
   total_price: number;
+  deposit_target_amount: number;
+  amount_due_now: number;
+  remaining_payment_amount: number;
 };
 
 export async function createPublicReservation(
@@ -29,7 +32,7 @@ export async function createPublicReservation(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.rpc("create_public_reservation_v3", {
+  const { data, error } = await supabase.rpc("create_public_reservation_v4", {
     p_accommodation_id: input.accommodationId,
 
     p_check_in: input.checkIn,
@@ -78,6 +81,12 @@ export async function createPublicReservation(
       nightCount: Number(reservation.night_count),
 
       totalPrice: Number(reservation.total_price),
+
+      depositTargetAmount: Number(reservation.deposit_target_amount),
+
+      amountDueNow: Number(reservation.amount_due_now),
+
+      remainingPaymentAmount: Number(reservation.remaining_payment_amount),
     },
   };
 }

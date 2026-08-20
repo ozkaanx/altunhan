@@ -1,4 +1,4 @@
-import { Ban, Check, Loader2, XCircle } from "lucide-react";
+import { Ban, XCircle } from "lucide-react";
 
 import type { ReservationDrawerAction } from "@/types/admin-reservation-detail";
 
@@ -6,17 +6,11 @@ import type { Reservation } from "@/types/reservation";
 
 type ReservationStatusActionsProps = {
   reservation: Reservation;
-  approveError: string | null;
-  isApproving: boolean;
-  onApprove: () => void;
   onOpenAction: (action: ReservationDrawerAction) => void;
 };
 
 export function ReservationStatusActions({
   reservation,
-  approveError,
-  isApproving,
-  onApprove,
   onOpenAction,
 }: ReservationStatusActionsProps) {
   return (
@@ -41,33 +35,15 @@ export function ReservationStatusActions({
         </section>
       )}
 
-      {approveError && (
-        <div className="border border-[#E5C7C0] bg-[#F8EEEA] p-3 text-xs text-[#98584E]">
-          {approveError}
-        </div>
-      )}
-
       {reservation.status === "pending_approval" && (
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => onOpenAction("reject")}
-            className="flex h-12 items-center justify-center gap-2 border border-[#D9B8B2] bg-white text-xs font-semibold text-[#9C5148]"
-          >
-            <XCircle size={16} />
-            Reddet
-          </button>
-
-          <button
-            type="button"
-            onClick={onApprove}
-            disabled={isApproving}
-            className="flex h-12 items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white disabled:opacity-50"
-          >
-            {isApproving ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-            Onayla
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => onOpenAction("reject")}
+          className="flex h-12 w-full items-center justify-center gap-2 border border-[#D9B8B2] bg-white text-xs font-semibold text-[#9C5148]"
+        >
+          <XCircle size={16} />
+          Rezervasyonu Reddet
+        </button>
       )}
 
       {reservation.status === "confirmed" && (

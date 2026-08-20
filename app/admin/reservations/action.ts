@@ -10,6 +10,13 @@ import { updateReservationAdminNote as updateReservationAdminNoteAction } from "
 import { getReceiptSignedUrl as getReceiptSignedUrlAction } from "@/app/admin/reservations/actions/receipt-actions";
 
 import {
+  recordReservationPayment as recordReservationPaymentAction,
+  rejectReservationPayment as rejectReservationPaymentAction,
+  verifyReservationPayment as verifyReservationPaymentAction,
+  voidReservationPayment as voidReservationPaymentAction,
+} from "@/app/admin/reservations/actions/payment-actions";
+
+import {
   changeReservationRoom as changeReservationRoomAction,
   getAvailableRooms as getAvailableRoomsAction,
   getAvailableRoomsForDates as getAvailableRoomsForDatesAction,
@@ -18,7 +25,6 @@ import {
 } from "@/app/admin/reservations/actions/room-actions";
 
 import {
-  approveReservation as approveReservationAction,
   cancelReservation as cancelReservationAction,
   rejectReservation as rejectReservationAction,
 } from "@/app/admin/reservations/actions/status-actions";
@@ -35,6 +41,27 @@ export async function updateReservationAdminNote(reservationId: number, adminNot
 
 export async function getReceiptSignedUrl(storagePath: string) {
   return getReceiptSignedUrlAction(storagePath);
+}
+
+export async function verifyReservationPayment(paymentId: number, receivedAmount: number) {
+  return verifyReservationPaymentAction(paymentId, receivedAmount);
+}
+
+export async function rejectReservationPayment(paymentId: number, reason: string) {
+  return rejectReservationPaymentAction(paymentId, reason);
+}
+
+export async function recordReservationPayment(
+  reservationId: number,
+  amount: number,
+  paymentMethod: import("@/types/reservation").ReservationPaymentMethod,
+  adminNote: string,
+) {
+  return recordReservationPaymentAction(reservationId, amount, paymentMethod, adminNote);
+}
+
+export async function voidReservationPayment(paymentId: number, reason: string) {
+  return voidReservationPaymentAction(paymentId, reason);
 }
 
 export async function changeReservationRoom(reservationId: number, roomId: number) {
@@ -68,10 +95,6 @@ export async function updateReservationDates(
   roomId: number,
 ) {
   return updateReservationDatesAction(reservationId, checkIn, checkOut, roomId);
-}
-
-export async function approveReservation(id: number) {
-  return approveReservationAction(id);
 }
 
 export async function cancelReservation(id: number, reason: string) {

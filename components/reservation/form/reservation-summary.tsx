@@ -20,6 +20,7 @@ type ReservationSummaryProps = {
   childCount: number;
   estimatedNightCount: number;
   estimatedTotal: number;
+  estimatedDeposit: number;
   dateError: string | null;
   error: string | null;
   isSubmitting: boolean;
@@ -36,6 +37,7 @@ export function ReservationSummary({
   childCount,
   estimatedNightCount,
   estimatedTotal,
+  estimatedDeposit,
   dateError,
   error,
   isSubmitting,
@@ -88,6 +90,7 @@ export function ReservationSummary({
         <ReservationSummaryTotal
           estimatedNightCount={estimatedNightCount}
           estimatedTotal={estimatedTotal}
+          estimatedDeposit={estimatedDeposit}
           isDisabled={isDisabled}
           isSubmitting={isSubmitting}
           submitLabel={submitLabel}

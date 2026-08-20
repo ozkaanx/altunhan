@@ -3,8 +3,11 @@
 import { ImagePlus, Loader2, Upload } from "lucide-react";
 
 import { formatFileSize } from "@/lib/reservation/reservation-utils";
+import { formatPrice } from "@/lib/formatters/price";
 
 type TrackingReceiptUploadProps = {
+  amountDueNow: number;
+
   receipt: File | null;
 
   error: string | null;
@@ -20,6 +23,7 @@ type TrackingReceiptUploadProps = {
 };
 
 export function TrackingReceiptUpload({
+  amountDueNow,
   receipt,
   error,
   uploadSuccess,
@@ -35,7 +39,8 @@ export function TrackingReceiptUpload({
       </p>
 
       <p className="mt-2 text-xs leading-5 text-[#858A83]">
-        Ödemenizi yaptıysanız dekontunuzu buradan yükleyebilirsiniz.
+        Göndermeniz gereken kapora tutarı {formatPrice(amountDueNow)}. Havalenizi yaptıysanız
+        dekontunuzu buradan yükleyebilirsiniz.
       </p>
 
       <label className="mt-4 flex min-h-32 cursor-pointer flex-col items-center justify-center border border-dashed border-[#CBC7BE] bg-[#FAF9F6] p-4 text-center transition hover:border-[#A8754F]">

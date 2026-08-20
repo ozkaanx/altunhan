@@ -1,4 +1,8 @@
-import type { ReservationStatus } from "@/types/reservation";
+import type {
+  ReservationPaymentPlan,
+  ReservationPaymentStatus,
+  ReservationStatus,
+} from "@/types/reservation";
 
 export type ReservationTrackingResult = {
   reservationCode: string;
@@ -19,9 +23,25 @@ export type ReservationTrackingResult = {
 
   totalPrice: number;
 
+  paymentPlan: ReservationPaymentPlan;
+
+  depositTargetAmount: number;
+
+  confirmedPaymentAmount: number;
+
+  amountDueNow: number;
+
+  remainingPaymentAmount: number;
+
+  paymentStatus: ReservationPaymentStatus;
+
   status: ReservationStatus;
 
   hasReceipt: boolean;
+
+  hasPendingReceipt: boolean;
+
+  lastPaymentNote: string | null;
 
   rejectionReason: string | null;
 
