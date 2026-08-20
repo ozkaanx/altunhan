@@ -8,6 +8,12 @@ import type { Reservation, ReservationStatus } from "@/types/reservation";
 
 const PAGE_SIZE = 20;
 
+const activeReservationStatuses: ReservationStatus[] = [
+  "pending_payment",
+  "pending_approval",
+  "confirmed",
+];
+
 const allowedStatuses: ReservationStatus[] = [
   "pending_payment",
   "pending_approval",
@@ -120,7 +126,9 @@ export default async function ReservationsPage({ searchParams }: ReservationsPag
     },
   );
 
-  if (activeStatus !== "all") {
+  if (activeStatus === "all") {
+    reservationsQuery = reservationsQuery.in("status", activeReservationStatuses);
+  } else {
     reservationsQuery = reservationsQuery.eq("status", activeStatus);
   }
 
