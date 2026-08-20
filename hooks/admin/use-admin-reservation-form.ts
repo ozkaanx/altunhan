@@ -31,9 +31,12 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
     guestIdentityNumber,
     guestPhone,
     guestEmail,
-    status,
     source,
     adminNote,
+    hasInitialPayment,
+    initialPaymentAmount,
+    initialPaymentMethod,
+    initialPaymentNote,
     setAvailableRooms,
     selectedRoomId,
     setSelectedRoomId,
@@ -43,6 +46,7 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
     setSuccess,
     selectedAccommodation,
     totalGuestCount,
+    totalPrice,
   } = form;
 
   const resetRooms = () => {
@@ -214,6 +218,29 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
       return;
     }
 
+    const parsedInitialPaymentAmount = hasInitialPayment ? Number(initialPaymentAmount) : 0;
+
+    if (
+      hasInitialPayment &&
+      (!Number.isFinite(parsedInitialPaymentAmount) || parsedInitialPaymentAmount <= 0)
+    ) {
+      setError("Alınan ödeme tutarı sıfırdan büyük olmalıdır.");
+
+      return;
+    }
+
+    if (parsedInitialPaymentAmount > totalPrice) {
+      setError("Alınan ödeme rezervasyonun toplam tutarından fazla olamaz.");
+
+      return;
+    }
+
+    if (initialPaymentNote.trim().length > 500) {
+      setError("Ödeme notu en fazla 500 karakter olabilir.");
+
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -228,9 +255,11 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
         guestIdentityNumber,
         guestPhone,
         guestEmail,
-        status,
         source,
         adminNote,
+        initialPaymentAmount: parsedInitialPaymentAmount,
+        initialPaymentMethod: hasInitialPayment ? initialPaymentMethod : null,
+        initialPaymentNote: hasInitialPayment ? initialPaymentNote : "",
       });
 
       if (!result.success) {

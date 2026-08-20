@@ -1,4 +1,4 @@
-import type { ReservationStatus } from "@/types/reservation";
+import type { ReservationPaymentMethod } from "@/types/reservation";
 
 export type AdminReservationAccommodation = {
   id: number;
@@ -16,12 +16,9 @@ export type AdminAvailableRoom = {
   roomNumber: string | null;
 };
 
-export type AdminReservationStatus = Extract<
-  ReservationStatus,
-  "pending_payment" | "pending_approval" | "confirmed"
->;
-
 export type ReservationSource = "phone" | "whatsapp" | "walk_in" | "admin";
+
+export type AdminInitialPaymentMethod = ReservationPaymentMethod;
 
 export type AdminReservationFormProps = {
   accommodations: AdminReservationAccommodation[];

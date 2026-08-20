@@ -7,6 +7,8 @@ import { getTurkeyToday } from "@/lib/admin/reservation-form-utils";
 import { normalizeTurkishMobilePhone } from "@/lib/phone";
 import { isValidTckn, normalizeTckn } from "@/lib/identity/tckn";
 
+import type { ReservationPaymentMethod, ReservationStatus } from "@/types/reservation";
+
 export type CreateAdminReservationInput = {
   accommodationId: number;
   roomId: number | null;
@@ -18,9 +20,24 @@ export type CreateAdminReservationInput = {
   guestIdentityNumber: string;
   guestPhone: string;
   guestEmail: string;
-  status: "pending_payment" | "pending_approval" | "confirmed";
   source: "phone" | "whatsapp" | "walk_in" | "admin";
   adminNote: string;
+  initialPaymentAmount: number;
+  initialPaymentMethod: ReservationPaymentMethod | null;
+  initialPaymentNote: string;
+};
+
+type CreateAdminReservationRpcRow = {
+  reservation_id: number;
+  reservation_code: string;
+  room_id: number;
+  room_name: string;
+  room_number: string | null;
+  total_price: number;
+  deposit_target_amount: number;
+  confirmed_payment_amount: number;
+  remaining_payment_amount: number;
+  status: ReservationStatus;
 };
 
 export async function createAdminReservation(values: CreateAdminReservationInput) {
@@ -77,6 +94,27 @@ export async function createAdminReservation(values: CreateAdminReservationInput
     };
   }
 
+  if (!Number.isFinite(values.initialPaymentAmount) || values.initialPaymentAmount < 0) {
+    return {
+      success: false as const,
+      message: "Alınan ödeme tutarı geçersiz.",
+    };
+  }
+
+  if (values.initialPaymentAmount > 0 && !values.initialPaymentMethod) {
+    return {
+      success: false as const,
+      message: "Ödeme yöntemi seçilmelidir.",
+    };
+  }
+
+  if (values.initialPaymentNote.trim().length > 500) {
+    return {
+      success: false as const,
+      message: "Ödeme notu en fazla 500 karakter olabilir.",
+    };
+  }
+
   const auth = await requireAdmin();
 
   if (!auth.success) {
@@ -86,7 +124,7 @@ export async function createAdminReservation(values: CreateAdminReservationInput
     };
   }
 
-  const { data, error } = await auth.supabase.rpc("create_admin_reservation_v4", {
+  const { data, error } = await auth.supabase.rpc("create_admin_reservation_v5", {
     p_accommodation_id: values.accommodationId,
     p_room_id: values.roomId,
 
@@ -102,10 +140,12 @@ export async function createAdminReservation(values: CreateAdminReservationInput
 
     p_guest_email: values.guestEmail.trim() || null,
 
-    p_status: values.status,
     p_source: values.source,
 
     p_admin_note: values.adminNote.trim() || null,
+    p_initial_payment_amount: values.initialPaymentAmount,
+    p_initial_payment_method: values.initialPaymentMethod,
+    p_initial_payment_note: values.initialPaymentNote.trim() || null,
   });
 
   if (error) {
@@ -117,7 +157,7 @@ export async function createAdminReservation(values: CreateAdminReservationInput
     };
   }
 
-  const reservation = data?.[0];
+  const reservation = (data as CreateAdminReservationRpcRow[] | null)?.[0];
 
   if (!reservation) {
     return {
@@ -145,6 +185,10 @@ export async function createAdminReservation(values: CreateAdminReservationInput
       roomNumber: reservation.room_number,
 
       totalPrice: Number(reservation.total_price),
+      depositTargetAmount: Number(reservation.deposit_target_amount),
+      confirmedPaymentAmount: Number(reservation.confirmed_payment_amount),
+      remainingPaymentAmount: Number(reservation.remaining_payment_amount),
+      status: reservation.status,
     },
   };
 }
