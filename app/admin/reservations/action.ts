@@ -11,6 +11,7 @@ import { getReceiptSignedUrl as getReceiptSignedUrlAction } from "@/app/admin/re
 
 import {
   recordReservationPayment as recordReservationPaymentAction,
+  recordReservationRefund as recordReservationRefundAction,
   rejectReservationPayment as rejectReservationPaymentAction,
   verifyReservationPayment as verifyReservationPaymentAction,
   voidReservationPayment as voidReservationPaymentAction,
@@ -58,6 +59,15 @@ export async function recordReservationPayment(
   adminNote: string,
 ) {
   return recordReservationPaymentAction(reservationId, amount, paymentMethod, adminNote);
+}
+
+export async function recordReservationRefund(
+  reservationId: number,
+  amount: number,
+  paymentMethod: import("@/types/reservation").ReservationPaymentMethod,
+  reason: string,
+) {
+  return recordReservationRefundAction(reservationId, amount, paymentMethod, reason);
 }
 
 export async function voidReservationPayment(paymentId: number, reason: string) {

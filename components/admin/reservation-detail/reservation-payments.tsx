@@ -2,7 +2,16 @@
 
 import { useState } from "react";
 
-import { Banknote, CheckCircle2, ExternalLink, Loader2, Plus, WalletCards, X } from "lucide-react";
+import {
+  Banknote,
+  CheckCircle2,
+  ExternalLink,
+  Loader2,
+  Plus,
+  RotateCcw,
+  WalletCards,
+  X,
+} from "lucide-react";
 
 import {
   recordReservationPayment,
@@ -10,6 +19,8 @@ import {
   verifyReservationPayment,
   voidReservationPayment,
 } from "@/app/admin/reservations/action";
+
+import { ReservationRefundForm } from "@/components/admin/reservation-detail/reservation-refund-form";
 
 import { formatPrice } from "@/lib/formatters/price";
 
@@ -46,16 +57,23 @@ const paymentStatusLabels = {
   rejected: "Reddedildi",
 };
 
-function getConfirmedAmount(payments: ReservationPayment[]) {
-  return payments.reduce((total, payment) => {
-    if (payment.status !== "confirmed") {
-      return total;
-    }
+function getConfirmedPaymentTotals(payments: ReservationPayment[]) {
+  return payments.reduce(
+    (totals, payment) => {
+      if (payment.status !== "confirmed") {
+        return totals;
+      }
 
-    return payment.payment_type === "refund"
-      ? total - Number(payment.amount)
-      : total + Number(payment.amount);
-  }, 0);
+      if (payment.payment_type === "refund") {
+        totals.refunded += Number(payment.amount);
+      } else {
+        totals.collected += Number(payment.amount);
+      }
+
+      return totals;
+    },
+    { collected: 0, refunded: 0 },
+  );
 }
 
 function formatPaymentDate(value: string | null) {
@@ -82,10 +100,17 @@ export function ReservationPayments({
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
   const pendingPayment = payments.find((payment) => payment.status === "pending") ?? null;
-  const confirmedAmount = getConfirmedAmount(payments);
+  const { collected: collectedAmount, refunded: refundedAmount } =
+    getConfirmedPaymentTotals(payments);
+  const netCollectedAmount = Math.max(collectedAmount - refundedAmount, 0);
   const totalPrice = Number(reservation.total_price);
-  const totalRemaining = Math.max(totalPrice - confirmedAmount, 0);
-  const canChangePayments = reservation.status !== "rejected" && reservation.status !== "cancelled";
+  const isClosedReservation =
+    reservation.status === "rejected" || reservation.status === "cancelled";
+  const totalRemaining = isClosedReservation
+    ? 0
+    : Math.max(totalPrice - netCollectedAmount, 0);
+  const refundableAmount = netCollectedAmount;
+  const canChangePayments = !isClosedReservation;
 
   const [receivedAmount, setReceivedAmount] = useState(
     String(Number(pendingPayment?.requested_amount ?? 0)),
@@ -236,9 +261,10 @@ export function ReservationPayments({
     <section className="border border-[#E3E0D8] bg-white p-4">
       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#969990]">Ödeme</p>
 
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <PaymentSummary label="Toplam" value={totalPrice} icon={WalletCards} />
-        <PaymentSummary label="Alınan" value={confirmedAmount} icon={CheckCircle2} />
+        <PaymentSummary label="Net Alınan" value={netCollectedAmount} icon={CheckCircle2} />
+        <PaymentSummary label="İade" value={refundedAmount} icon={RotateCcw} />
         <PaymentSummary label="Kalan" value={totalRemaining} icon={Banknote} />
       </div>
 
@@ -445,6 +471,13 @@ export function ReservationPayments({
         </>
       )}
 
+      {!pendingPayment && (
+        <ReservationRefundForm
+          reservationId={reservation.id}
+          refundableAmount={refundableAmount}
+        />
+      )}
+
       <div className="mt-5 border-t border-[#EEEAE3] pt-4">
         <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#969990]">
           Ödeme Geçmişi
@@ -456,8 +489,15 @@ export function ReservationPayments({
               <div key={payment.id} className="border border-[#E8E4DC] bg-[#FAF9F6] p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs font-semibold text-[#263A2D]">
-                      {paymentTypeLabels[payment.payment_type]} · {formatPrice(payment.amount)}
+                    <p
+                      className={`text-xs font-semibold ${
+                        payment.payment_type === "refund" ? "text-[#98584E]" : "text-[#263A2D]"
+                      }`}
+                    >
+                      {paymentTypeLabels[payment.payment_type]} ·{
+                        payment.payment_type === "refund" ? " -" : " "
+                      }
+                      {formatPrice(payment.amount)}
                     </p>
                     <p className="mt-1 text-[10px] text-[#858A83]">
                       {paymentMethodLabels[payment.payment_method]} ·{" "}

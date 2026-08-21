@@ -19,6 +19,7 @@ type VerifyPaymentRpcRow = {
 
 function revalidatePaymentPaths() {
   revalidatePath("/admin/reservations");
+  revalidatePath("/admin/reports");
   revalidatePath("/admin");
   revalidatePath("/rezervasyon/takip");
 }
@@ -180,6 +181,67 @@ export async function recordReservationPayment(
     return {
       success: false as const,
       message: error?.message ?? "Ödeme kaydedilemedi.",
+    };
+  }
+
+  revalidatePaymentPaths();
+
+  return {
+    success: true as const,
+  };
+}
+
+export async function recordReservationRefund(
+  reservationId: number,
+  amount: number,
+  paymentMethod: ReservationPaymentMethod,
+  reason: string,
+) {
+  if (!Number.isInteger(reservationId) || reservationId <= 0) {
+    return {
+      success: false as const,
+      message: "Rezervasyon bilgisi geçersiz.",
+    };
+  }
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return {
+      success: false as const,
+      message: "İade tutarı sıfırdan büyük olmalıdır.",
+    };
+  }
+
+  const cleanReason = reason.trim();
+
+  if (cleanReason.length < 3 || cleanReason.length > MAX_NOTE_LENGTH) {
+    return {
+      success: false as const,
+      message: `İade sebebi 3-${MAX_NOTE_LENGTH} karakter arasında olmalıdır.`,
+    };
+  }
+
+  const auth = await requireAdmin();
+
+  if (!auth.success) {
+    return {
+      success: false as const,
+      message: auth.message,
+    };
+  }
+
+  const { data, error } = await auth.supabase.rpc("record_admin_reservation_refund", {
+    p_reservation_id: reservationId,
+    p_amount: amount,
+    p_payment_method: paymentMethod,
+    p_reason: cleanReason,
+  });
+
+  if (error || !data) {
+    console.error("Rezervasyon iadesi kaydedilemedi:", error);
+
+    return {
+      success: false as const,
+      message: error?.message ?? "İade kaydedilemedi.",
     };
   }
 

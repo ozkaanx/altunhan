@@ -104,6 +104,9 @@ export async function findReservation(
     };
   }
 
+  const isClosedReservation =
+    reservation.status === "cancelled" || reservation.status === "rejected";
+
   return {
     success: true,
 
@@ -132,9 +135,11 @@ export async function findReservation(
 
       confirmedPaymentAmount: Number(reservation.confirmed_payment_amount),
 
-      amountDueNow: Number(reservation.amount_due_now),
+      amountDueNow: isClosedReservation ? 0 : Number(reservation.amount_due_now),
 
-      remainingPaymentAmount: Number(reservation.remaining_payment_amount),
+      remainingPaymentAmount: isClosedReservation
+        ? 0
+        : Number(reservation.remaining_payment_amount),
 
       paymentStatus: reservation.payment_status,
 
