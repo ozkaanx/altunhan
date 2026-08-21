@@ -12,6 +12,21 @@ import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/s
 
 import type { AdminAvailableRoom, AdminReservationAccommodation } from "@/types/admin-reservation";
 
+function getBedConfigurationLabel(
+  value: AdminAvailableRoom["bedConfiguration"],
+) {
+  switch (value) {
+    case "one_double":
+      return "1 Çift Kişilik";
+    case "double_single":
+      return "1 Çift + 1 Tek";
+    case "two_double":
+      return "2 Çift Kişilik";
+    default:
+      return null;
+  }
+}
+
 type AccommodationSelectionSectionProps = {
   accommodations: AdminReservationAccommodation[];
   accommodationId: number | null;
@@ -22,6 +37,7 @@ type AccommodationSelectionSectionProps = {
   maxAdults: number;
   maxChildren: number;
   maxTotalGuests: number;
+  totalGuestCount: number;
   availableRooms: AdminAvailableRoom[];
   selectedRoomId: number | null;
   isLoadingRooms: boolean;
@@ -44,6 +60,7 @@ export function AccommodationSelectionSection({
   maxAdults,
   maxChildren,
   maxTotalGuests,
+  totalGuestCount,
   availableRooms,
   selectedRoomId,
   isLoadingRooms,
@@ -149,7 +166,13 @@ export function AccommodationSelectionSection({
 
         {availableRooms.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-medium text-[#40463F]">Fiziksel Oda</p>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs font-medium text-[#40463F]">Fiziksel Oda</p>
+
+              <span className="text-[10px] text-[#8B8E87]">
+                {totalGuestCount} kişi için uygun {availableRooms.length} oda
+              </span>
+            </div>
 
             <select
               value={selectedRoomId ?? ""}
@@ -160,16 +183,23 @@ export function AccommodationSelectionSection({
             >
               <option value="">Otomatik oda ata</option>
 
-              {availableRooms.map((room) => (
-                <option key={room.id} value={room.id}>
-                  {room.roomName}
-                  {room.roomNumber ? ` · ${room.roomNumber}` : ""}
-                </option>
-              ))}
+              {availableRooms.map((room) => {
+                const bedLabel = getBedConfigurationLabel(room.bedConfiguration);
+
+                return (
+                  <option key={room.id} value={room.id}>
+                    {room.roomName}
+                    {room.roomNumber ? ` · ${room.roomNumber}` : ""}
+                    {bedLabel ? ` · ${bedLabel}` : ""}
+                    {room.maxGuests ? ` · ${room.maxGuests} kişi` : ""}
+                  </option>
+                );
+              })}
             </select>
 
             <p className="mt-2 text-[10px] leading-5 text-[#969990]">
-              Oda seçmezseniz sistem uygun fiziksel odayı otomatik atar.
+              Sadece seçilen misafir sayısına kapasitesi yeterli ve tarihlerde müsait odalar
+              listelenir. Oda seçmezseniz sistem bu uygun odalardan birini otomatik atar.
             </p>
           </div>
         )}

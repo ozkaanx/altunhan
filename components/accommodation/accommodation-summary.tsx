@@ -4,6 +4,10 @@ import { AccommodationInfoCard } from "@/components/accommodation/accommodation-
 import { AccommodationRoomAmenities } from "@/components/accommodation/accommodation-room-amenities";
 
 import type { Accommodation } from "@/types/accommodation";
+import {
+  getAccommodationBedSummary,
+  type AccommodationBedConfiguration,
+} from "@/lib/accommodation/accommodation-bed-summary";
 
 type AccommodationSummaryProps = {
   accommodation: Pick<
@@ -15,9 +19,20 @@ type AccommodationSummaryProps = {
     | "bathroom_count"
     | "amenities"
   >;
+  bedConfigurations: AccommodationBedConfiguration[];
 };
 
-export function AccommodationSummary({ accommodation }: AccommodationSummaryProps) {
+export function AccommodationSummary({
+  accommodation,
+  bedConfigurations,
+}: AccommodationSummaryProps) {
+  const hasRoomBedConfigurations = bedConfigurations.length > 0;
+
+  const bedSummary = getAccommodationBedSummary(
+    bedConfigurations,
+    accommodation.bed_count,
+  );
+
   return (
     <div className="min-w-0">
       <div className="flex items-center gap-3">
@@ -47,8 +62,8 @@ export function AccommodationSummary({ accommodation }: AccommodationSummaryProp
 
         <AccommodationInfoCard
           icon={BedDouble}
-          label="Yatak"
-          value={`${accommodation.bed_count} adet`}
+          label={hasRoomBedConfigurations ? "Yatak Düzeni" : "Yatak"}
+          value={bedSummary}
         />
 
         <AccommodationInfoCard

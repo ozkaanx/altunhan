@@ -33,6 +33,12 @@ export const publicReservationSchema = z
 
     childCount: z.number().int("Çocuk sayısı geçersiz.").min(0, "Çocuk sayısı geçersiz."),
 
+    requestedBedConfiguration: z
+      .enum(["one_double", "double_single", "two_double"])
+      .nullable()
+      .optional()
+      .transform((value) => value ?? null),
+
     guestName: z
       .string()
       .trim()

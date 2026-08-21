@@ -78,6 +78,7 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
         maxAdults={maxAdults}
         maxChildren={maxChildren}
         maxTotalGuests={maxTotalGuests}
+        totalGuestCount={totalGuestCount}
         availableRooms={availableRooms}
         selectedRoomId={selectedRoomId}
         isLoadingRooms={isLoadingRooms}

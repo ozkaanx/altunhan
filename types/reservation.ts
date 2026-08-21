@@ -43,6 +43,8 @@ export type Reservation = {
   adult_count: number;
   child_count: number;
 
+  requested_bed_configuration: "one_double" | "double_single" | "two_double" | null;
+
   nightly_price: number;
   night_count: number;
   total_price: number;
@@ -81,5 +83,7 @@ export type Reservation = {
     id: number;
     room_name: string;
     room_number: string | null;
+    bed_configuration: "one_double" | "double_single" | "two_double" | null;
+    max_guests: number | null;
   } | null;
 };

@@ -32,7 +32,7 @@ export async function createPublicReservation(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.rpc("create_public_reservation_v4", {
+  const { data, error } = await supabase.rpc("create_public_reservation_v5", {
     p_accommodation_id: input.accommodationId,
 
     p_check_in: input.checkIn,
@@ -45,6 +45,8 @@ export async function createPublicReservation(
     p_guest_identity_number: input.guestIdentityNumber,
     p_guest_phone: input.guestPhone,
     p_guest_email: input.guestEmail,
+
+    p_requested_bed_configuration: input.requestedBedConfiguration,
   });
 
   if (error) {

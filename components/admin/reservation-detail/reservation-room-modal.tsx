@@ -1,10 +1,13 @@
-import { Loader2 } from "lucide-react";
+import { BedDouble, Loader2, Users } from "lucide-react";
+
+import { ROOM_BED_OPTIONS } from "@/lib/admin/room-bed-config";
 
 import type { ReservationRoomOption } from "@/types/admin-reservation-detail";
 
 type ReservationRoomModalProps = {
   open: boolean;
   rooms: ReservationRoomOption[];
+  guestCount: number;
   selectedRoomId: number | null;
   error: string | null;
   isChanging: boolean;
@@ -16,6 +19,7 @@ type ReservationRoomModalProps = {
 export function ReservationRoomModal({
   open,
   rooms,
+  guestCount,
   selectedRoomId,
   error,
   isChanging,
@@ -57,14 +61,27 @@ export function ReservationRoomModal({
         </h3>
 
         <p className="mt-2 text-xs leading-5 text-[#7D817B]">
-          Sadece bu rezervasyon tarihleri için müsait olan aynı tipteki odalar seçilebilir.
+          Aynı tipteki odaların müsaitlik, yatak düzeni ve kapasite bilgilerini karşılaştırabilirsiniz.
         </p>
 
         <div className="mt-5 min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1 [-webkit-overflow-scrolling:touch]">
           {rooms.map((room) => {
             const disabled = !room.isAvailable && !room.isCurrent;
 
-            const status = room.isCurrent ? "Mevcut" : room.isAvailable ? "Müsait" : "Dolu";
+            const capacityInsufficient =
+              typeof room.maxGuests === "number" && room.maxGuests < guestCount;
+
+            const bedLabel =
+              ROOM_BED_OPTIONS.find((option) => option.value === room.bedConfiguration)?.label ??
+              null;
+
+            const status = room.isCurrent
+              ? "Mevcut"
+              : capacityInsufficient
+                ? "Kapasite Yetersiz"
+                : room.isAvailable
+                  ? "Müsait"
+                  : "Dolu";
 
             return (
               <button
@@ -78,21 +95,41 @@ export function ReservationRoomModal({
                     : "border-[#E3E0D8] bg-white"
                 } ${disabled ? "cursor-not-allowed opacity-40" : ""}`}
               >
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-semibold text-[#263A2D]">{room.roomName}</p>
 
                   <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-[#969990]">
                     {room.roomNumber ?? "—"}
                   </p>
+
+                  {(bedLabel || room.maxGuests) && (
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-[#6F756E]">
+                      {bedLabel && (
+                        <span className="flex items-center gap-1">
+                          <BedDouble size={12} aria-hidden="true" />
+                          {bedLabel}
+                        </span>
+                      )}
+
+                      {room.maxGuests && (
+                        <span className="flex items-center gap-1">
+                          <Users size={12} aria-hidden="true" />
+                          Maks. {room.maxGuests} kişi
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <span
                   className={`text-[10px] font-semibold ${
                     room.isCurrent
                       ? "text-[#A8754F]"
-                      : room.isAvailable
-                        ? "text-[#4F6A4F]"
-                        : "text-[#98584E]"
+                      : capacityInsufficient
+                        ? "text-[#98584E]"
+                        : room.isAvailable
+                          ? "text-[#4F6A4F]"
+                          : "text-[#98584E]"
                   }`}
                 >
                   {status}

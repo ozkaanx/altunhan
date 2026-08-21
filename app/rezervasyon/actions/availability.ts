@@ -2,7 +2,11 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-import type { AccommodationBusyRange } from "@/types/public-reservation";
+import type {
+  AccommodationBusyRange,
+  BedConfigurationAvailability,
+  PublicBedConfiguration,
+} from "@/types/public-reservation";
 
 type AccommodationBusyRangeRpc = {
   check_in: string;
@@ -58,3 +62,88 @@ export async function getAccommodationBusyRanges(
     ranges,
   };
 }
+
+type BedConfigurationAvailabilityRpc = {
+  bed_configuration: PublicBedConfiguration;
+  max_guests: number;
+  available_count: number;
+  is_available: boolean;
+};
+
+type BedConfigurationAvailabilityResult =
+  | {
+      success: true;
+      options: BedConfigurationAvailability[];
+    }
+  | {
+      success: false;
+      options: [];
+      message: string;
+    };
+
+export async function getBedConfigurationAvailability(
+  accommodationId: number,
+  checkIn: string,
+  checkOut: string,
+  guestCount: number,
+): Promise<BedConfigurationAvailabilityResult> {
+  if (!Number.isInteger(accommodationId) || accommodationId <= 0) {
+    return {
+      success: false,
+      options: [],
+      message: "Konaklama seçilemedi.",
+    };
+  }
+
+  if (!checkIn || !checkOut || checkOut <= checkIn) {
+    return {
+      success: false,
+      options: [],
+      message: "Geçerli bir tarih aralığı seçin.",
+    };
+  }
+
+  if (!Number.isInteger(guestCount) || guestCount < 1) {
+    return {
+      success: false,
+      options: [],
+      message: "Misafir sayısı geçersiz.",
+    };
+  }
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc(
+    "get_public_bed_configuration_availability",
+    {
+      p_accommodation_id: accommodationId,
+      p_check_in: checkIn,
+      p_check_out: checkOut,
+      p_guest_count: guestCount,
+    },
+  );
+
+  if (error) {
+    console.error("Yatak tipi müsaitliği alınamadı:", error);
+
+    return {
+      success: false,
+      options: [],
+      message: error.message ?? "Yatak tipi müsaitliği alınamadı.",
+    };
+  }
+
+  const options =
+    (data as BedConfigurationAvailabilityRpc[] | null)?.map((item) => ({
+      bedConfiguration: item.bed_configuration,
+      maxGuests: Number(item.max_guests),
+      availableCount: Number(item.available_count),
+      isAvailable: Boolean(item.is_available),
+    })) ?? [];
+
+  return {
+    success: true,
+    options,
+  };
+}
+

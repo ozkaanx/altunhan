@@ -143,6 +143,7 @@ function ReservationDetailDrawerContent({
       <ReservationRoomModal
         open={roomModalOpen}
         rooms={availableRooms}
+        guestCount={reservation.guest_count}
         selectedRoomId={selectedRoomId}
         error={roomError}
         isChanging={isChangingRoom}

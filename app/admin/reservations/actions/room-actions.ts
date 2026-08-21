@@ -16,6 +16,8 @@ type AvailableRoomRpc = {
   room_id: number | string;
   room_name: string;
   room_number: string | null;
+  bed_configuration: "one_double" | "double_single" | "two_double" | null;
+  max_guests: number | string | null;
 };
 
 type UpdatedReservationDatesRpc = {
@@ -65,13 +67,56 @@ export async function getAvailableRooms(reservationId: number) {
     };
   }
 
-  const rooms = ((data ?? []) as AvailableReservationRoomRpc[]).map((room) => ({
+  const baseRooms = ((data ?? []) as AvailableReservationRoomRpc[]).map((room) => ({
     id: Number(room.room_id),
     roomName: room.room_name,
     roomNumber: room.room_number,
     isCurrent: Boolean(room.is_current),
     isAvailable: Boolean(room.is_available),
   }));
+
+  if (baseRooms.length === 0) {
+    return {
+      success: true as const,
+      rooms: [],
+    };
+  }
+
+  const { data: roomDetails, error: roomDetailsError } = await auth.supabase
+    .from("rooms")
+    .select("id, bed_configuration, max_guests")
+    .in(
+      "id",
+      baseRooms.map((room) => room.id),
+    );
+
+  if (roomDetailsError) {
+    console.error("Oda yatak bilgileri alınamadı:", roomDetailsError);
+  }
+
+  const roomDetailsById = new Map(
+    (roomDetails ?? []).map((room) => [
+      Number(room.id),
+      {
+        bedConfiguration: room.bed_configuration as
+          | "one_double"
+          | "double_single"
+          | "two_double"
+          | null,
+        maxGuests: room.max_guests === null ? null : Number(room.max_guests),
+      },
+    ]),
+  );
+
+  const rooms = baseRooms.map((room) => {
+    const details = roomDetailsById.get(room.id);
+
+    return {
+      ...room,
+      bedConfiguration: details?.bedConfiguration ?? null,
+      maxGuests: details?.maxGuests ?? null,
+    };
+  });
 
   return {
     success: true as const,
@@ -123,11 +168,20 @@ export async function getAvailableRoomsForDates(
   accommodationId: number,
   checkIn: string,
   checkOut: string,
+  guestCount: number,
 ) {
   if (!isValidId(accommodationId) || !checkIn || !checkOut) {
     return {
       success: false as const,
       message: "Oda tipi ve tarihler zorunludur.",
+      rooms: [],
+    };
+  }
+
+  if (!Number.isInteger(guestCount) || guestCount < 1) {
+    return {
+      success: false as const,
+      message: "Misafir sayısı en az 1 olmalıdır.",
       rooms: [],
     };
   }
@@ -150,10 +204,11 @@ export async function getAvailableRoomsForDates(
     };
   }
 
-  const { data, error } = await auth.supabase.rpc("get_available_rooms_for_dates", {
+  const { data, error } = await auth.supabase.rpc("get_available_rooms_for_dates_v2", {
     p_accommodation_id: accommodationId,
     p_check_in: checkIn,
     p_check_out: checkOut,
+    p_guest_count: guestCount,
   });
 
   if (error) {
@@ -170,6 +225,8 @@ export async function getAvailableRoomsForDates(
     id: Number(room.room_id),
     roomName: room.room_name,
     roomNumber: room.room_number,
+    bedConfiguration: room.bed_configuration,
+    maxGuests: room.max_guests === null ? null : Number(room.max_guests),
   }));
 
   return {

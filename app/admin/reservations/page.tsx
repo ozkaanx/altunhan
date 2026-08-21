@@ -105,7 +105,9 @@ export default async function ReservationsPage({ searchParams }: ReservationsPag
           rooms (
             id,
             room_name,
-            room_number
+            room_number,
+            bed_configuration,
+            max_guests
           ),
           reservation_payments (
             id,

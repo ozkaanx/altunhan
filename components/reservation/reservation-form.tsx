@@ -38,6 +38,11 @@ export function ReservationForm({
     adultCount,
     childCount,
 
+    requestedBedConfiguration,
+    bedConfigurationOptions,
+    isLoadingBedAvailability,
+    bedAvailabilityError,
+
     guestName,
     guestIdentityNumber,
     guestPhone,
@@ -59,6 +64,7 @@ export function ReservationForm({
 
     handleAdultCountChange,
     handleChildCountChange,
+    handleBedConfigurationChange,
 
     handleSubmit,
 
@@ -106,6 +112,10 @@ export function ReservationForm({
             adultCount={adultCount}
             childCount={childCount}
             selectedAccommodation={selectedAccommodation}
+            requestedBedConfiguration={requestedBedConfiguration}
+            bedConfigurationOptions={bedConfigurationOptions}
+            isLoadingBedAvailability={isLoadingBedAvailability}
+            bedAvailabilityError={bedAvailabilityError}
             busyRanges={busyRanges}
             isLoadingAvailability={isLoadingAvailability}
             availabilityError={availabilityError}
@@ -114,6 +124,7 @@ export function ReservationForm({
             onCheckOutChange={handleCheckOutChange}
             onAdultCountChange={handleAdultCountChange}
             onChildCountChange={handleChildCountChange}
+            onBedConfigurationChange={handleBedConfigurationChange}
           />
 
           <ContactStep
