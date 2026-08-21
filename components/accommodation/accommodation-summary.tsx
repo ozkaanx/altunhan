@@ -1,13 +1,19 @@
 import { Bath, BedDouble, Users } from "lucide-react";
 
 import { AccommodationInfoCard } from "@/components/accommodation/accommodation-info-card";
+import { AccommodationRoomAmenities } from "@/components/accommodation/accommodation-room-amenities";
 
 import type { Accommodation } from "@/types/accommodation";
 
 type AccommodationSummaryProps = {
   accommodation: Pick<
     Accommodation,
-    "title" | "short_description" | "capacity" | "bed_count" | "bathroom_count"
+    | "title"
+    | "short_description"
+    | "capacity"
+    | "bed_count"
+    | "bathroom_count"
+    | "amenities"
   >;
 };
 
@@ -32,7 +38,7 @@ export function AccommodationSummary({ accommodation }: AccommodationSummaryProp
         </p>
       )}
 
-      <div className="mt-8 grid grid-cols-3 border border-[#D9D4CA] bg-[#FAF8F2]">
+      <div className="mt-8 grid grid-cols-3 ">
         <AccommodationInfoCard
           icon={Users}
           label="Kapasite"
@@ -51,6 +57,8 @@ export function AccommodationSummary({ accommodation }: AccommodationSummaryProp
           value={`${accommodation.bathroom_count} adet`}
         />
       </div>
+
+      <AccommodationRoomAmenities amenities={accommodation.amenities} />
     </div>
   );
 }

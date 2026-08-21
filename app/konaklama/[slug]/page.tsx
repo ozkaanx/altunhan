@@ -14,7 +14,6 @@ import {
 import { AccommodationDetailHero } from "@/components/accommodation/accommodation-detail-hero";
 import { AccommodationOverview } from "@/components/accommodation/accommodation-overview";
 import { AccommodationDetailsSection } from "@/components/accommodation/accommodation-details-section";
-import { AccommodationReservationCta } from "@/components/accommodation/accommodation-reservation-cta";
 import { sortAccommodationImages } from "@/lib/accommodation/accommodation-images";
 import { AccommodationGuestInformation } from "@/components/accommodation/accommodation-guest-information";
 import { AccommodationMobileReservationBar } from "@/components/accommodation/accommodation-mobile-reservation-bar";
@@ -97,9 +96,7 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
         <AccommodationOverview accommodation={accommodation} reservationHref={reservationHref} />
         <AccommodationDetailsSection accommodation={accommodation} />
         <AccommodationGuestInformation settings={settings} />
-        <AccommodationReservationCta reservationHref={reservationHref} />
       </main>
-
       <AccommodationMobileReservationBar
         price={accommodation.price}
         reservationHref={reservationHref}

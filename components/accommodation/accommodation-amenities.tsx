@@ -1,4 +1,5 @@
 import { getAmenityMeta } from "@/lib/accommodation/amenity-meta";
+import { getAmenityConfig } from "@/lib/accommodation/amenities";
 
 import type { Accommodation } from "@/types/accommodation";
 
@@ -7,7 +8,9 @@ type AccommodationAmenitiesProps = {
 };
 
 export function AccommodationAmenities({ amenities }: AccommodationAmenitiesProps) {
-  const amenityItems = amenities ?? [];
+  const accommodationAmenities = (amenities ?? []).filter(
+    (amenity) => getAmenityConfig(amenity)?.group !== "room",
+  );
 
   return (
     <div>
@@ -25,11 +28,10 @@ export function AccommodationAmenities({ amenities }: AccommodationAmenitiesProp
         Konaklama Özellikleri
       </h2>
 
-      {amenityItems.length > 0 ? (
+      {accommodationAmenities.length > 0 ? (
         <div className="mt-7 grid gap-2.5 sm:grid-cols-2">
-          {amenityItems.map((amenity) => {
+          {accommodationAmenities.map((amenity) => {
             const amenityMeta = getAmenityMeta(amenity);
-
             const Icon = amenityMeta.icon;
 
             return (
