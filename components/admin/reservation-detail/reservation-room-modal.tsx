@@ -61,7 +61,8 @@ export function ReservationRoomModal({
         </h3>
 
         <p className="mt-2 text-xs leading-5 text-[#7D817B]">
-          Aynı tipteki odaların müsaitlik, yatak düzeni ve kapasite bilgilerini karşılaştırabilirsiniz.
+          Aynı tipteki odaların müsaitlik, yatak düzeni ve kapasite bilgilerini
+          karşılaştırabilirsiniz.
         </p>
 
         <div className="mt-5 min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1 [-webkit-overflow-scrolling:touch]">

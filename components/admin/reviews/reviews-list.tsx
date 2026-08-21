@@ -11,12 +11,7 @@ type ReviewsListProps = {
   onDelete: (id: number) => void | Promise<void>;
 };
 
-export function ReviewsList({
-  reviews,
-  onToggle,
-  onEdit,
-  onDelete,
-}: ReviewsListProps) {
+export function ReviewsList({ reviews, onToggle, onEdit, onDelete }: ReviewsListProps) {
   const activeCount = reviews.filter((review) => review.is_active).length;
 
   return (
@@ -42,9 +37,7 @@ export function ReviewsList({
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-3">
-                    <p className="text-sm font-semibold text-[#263A2D]">
-                      {review.guest_name}
-                    </p>
+                    <p className="text-sm font-semibold text-[#263A2D]">{review.guest_name}</p>
 
                     <span
                       className={`px-2 py-1 text-[9px] font-semibold ${
@@ -67,9 +60,7 @@ export function ReviewsList({
                     {review.review_text}
                   </p>
 
-                  <p className="mt-3 text-[10px] text-[#9A9E97]">
-                    Sıra: {review.sort_order}
-                  </p>
+                  <p className="mt-3 text-[10px] text-[#9A9E97]">Sıra: {review.sort_order}</p>
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2">

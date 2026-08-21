@@ -15,27 +15,18 @@ type RoomBedEditorProps = {
   maxGuests: number | null;
 };
 
-export function RoomBedEditor({
-  roomId,
-  bedConfiguration,
-  maxGuests,
-}: RoomBedEditorProps) {
+export function RoomBedEditor({ roomId, bedConfiguration, maxGuests }: RoomBedEditorProps) {
   const router = useRouter();
 
-  const [selectedValue, setSelectedValue] = useState<BedConfiguration | "">(
-    bedConfiguration ?? "",
-  );
-  const [savedValue, setSavedValue] = useState<BedConfiguration | "">(
-    bedConfiguration ?? "",
-  );
+  const [selectedValue, setSelectedValue] = useState<BedConfiguration | "">(bedConfiguration ?? "");
+  const [savedValue, setSavedValue] = useState<BedConfiguration | "">(bedConfiguration ?? "");
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
 
   const selectedConfiguration = selectedValue || null;
 
   const calculatedCapacity =
-    getRoomBedCapacity(selectedConfiguration) ??
-    (selectedValue === savedValue ? maxGuests : null);
+    getRoomBedCapacity(selectedConfiguration) ?? (selectedValue === savedValue ? maxGuests : null);
 
   const hasChanges = selectedValue !== savedValue;
 
@@ -102,9 +93,7 @@ export function RoomBedEditor({
         {calculatedCapacity ? (
           <span>
             Maksimum kapasite:{" "}
-            <strong className="font-semibold text-[#4E554E]">
-              {calculatedCapacity} kişi
-            </strong>
+            <strong className="font-semibold text-[#4E554E]">{calculatedCapacity} kişi</strong>
           </span>
         ) : (
           <span>Kapasite yatak düzenine göre otomatik hesaplanır.</span>

@@ -34,17 +34,13 @@ export function ReservationPayments({
   const totalPrice = Number(reservation.total_price);
   const isClosedReservation =
     reservation.status === "rejected" || reservation.status === "cancelled";
-  const totalRemaining = isClosedReservation
-    ? 0
-    : Math.max(totalPrice - netCollectedAmount, 0);
+  const totalRemaining = isClosedReservation ? 0 : Math.max(totalPrice - netCollectedAmount, 0);
   const refundableAmount = netCollectedAmount;
   const canChangePayments = !isClosedReservation;
 
   return (
     <section className="border border-[#E3E0D8] bg-white p-4">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#969990]">
-        Ödeme
-      </p>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#969990]">Ödeme</p>
 
       <ReservationPaymentSummary
         totalPrice={totalPrice}
@@ -69,17 +65,11 @@ export function ReservationPayments({
       )}
 
       {canChangePayments && !pendingPayment && totalRemaining > 0 && (
-        <ReservationPaymentForm
-          reservationId={reservation.id}
-          totalRemaining={totalRemaining}
-        />
+        <ReservationPaymentForm reservationId={reservation.id} totalRemaining={totalRemaining} />
       )}
 
       {!pendingPayment && (
-        <ReservationRefundForm
-          reservationId={reservation.id}
-          refundableAmount={refundableAmount}
-        />
+        <ReservationRefundForm reservationId={reservation.id} refundableAmount={refundableAmount} />
       )}
 
       <ReservationPaymentHistory

@@ -28,8 +28,7 @@ export function ReservationRefundForm({
 }: ReservationRefundFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState(String(refundableAmount));
-  const [paymentMethod, setPaymentMethod] =
-    useState<ReservationPaymentMethod>("bank_transfer");
+  const [paymentMethod, setPaymentMethod] = useState<ReservationPaymentMethod>("bank_transfer");
   const [reason, setReason] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -109,8 +108,8 @@ export function ReservationRefundForm({
       </div>
 
       <p className="mt-2 text-[10px] leading-4 text-[#9A746E]">
-        İade ayrı bir finansal hareket olarak kaydedilir; eski tahsilat silinmez ve gelir
-        raporunda iade olarak düşülür.
+        İade ayrı bir finansal hareket olarak kaydedilir; eski tahsilat silinmez ve gelir raporunda
+        iade olarak düşülür.
       </p>
 
       <button

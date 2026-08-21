@@ -2,10 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  createPublicReservation,
-  getBedConfigurationAvailability,
-} from "@/app/rezervasyon/action";
+import { createPublicReservation, getBedConfigurationAvailability } from "@/app/rezervasyon/action";
 
 import { calculateNightCount, reservationOverlapsRange } from "@/lib/reservation/date-utils";
 
@@ -133,16 +130,11 @@ export function useReservationForm({
         const availableOptions = result.options.filter((option) => option.isAvailable);
 
         setRequestedBedConfiguration((current) => {
-          if (
-            current &&
-            availableOptions.some((option) => option.bedConfiguration === current)
-          ) {
+          if (current && availableOptions.some((option) => option.bedConfiguration === current)) {
             return current;
           }
 
-          return availableOptions.length === 1
-            ? availableOptions[0].bedConfiguration
-            : null;
+          return availableOptions.length === 1 ? availableOptions[0].bedConfiguration : null;
         });
       } catch (bedError) {
         console.error("Yatak tipi müsaitliği alınamadı:", bedError);

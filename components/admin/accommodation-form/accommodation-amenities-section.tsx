@@ -1,16 +1,14 @@
 import { SectionHeader } from "@/components/admin/accommodation-form/form-elements";
 
-import {
-  accommodationAmenityOptions,
-  roomAmenityOptions,
-} from "@/lib/accommodation/amenities";
+import { accommodationAmenityOptions, roomAmenityOptions } from "@/lib/accommodation/amenities";
 
 type AccommodationAmenitiesSectionProps = {
   selectedAmenities: string[];
   onToggle: (amenity: string) => void;
 };
 
-type AmenityOption = (typeof accommodationAmenityOptions)[number] | (typeof roomAmenityOptions)[number];
+type AmenityOption =
+  (typeof accommodationAmenityOptions)[number] | (typeof roomAmenityOptions)[number];
 
 function AmenityButton({
   amenity,
@@ -56,9 +54,7 @@ export function AccommodationAmenitiesSection({
         <div>
           <div className="mb-3">
             <h3 className="text-xs font-semibold text-[#263A2D]">Konaklama Özellikleri</h3>
-            <p className="mt-1 text-[10px] text-[#969990]">
-              Tesis ve konaklamanın genel imkanları
-            </p>
+            <p className="mt-1 text-[10px] text-[#969990]">Tesis ve konaklamanın genel imkanları</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">

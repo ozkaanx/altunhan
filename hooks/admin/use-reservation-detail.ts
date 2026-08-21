@@ -245,11 +245,7 @@ export function useReservationDetail({
     setIsLoadingDateRooms(true);
 
     try {
-      const result = await getAvailableRoomsForReservationDates(
-        reservation.id,
-        checkIn,
-        checkOut,
-      );
+      const result = await getAvailableRoomsForReservationDates(reservation.id, checkIn, checkOut);
 
       if (!result.success) {
         setDateError(result.message ?? "Müsait odalar alınamadı.");

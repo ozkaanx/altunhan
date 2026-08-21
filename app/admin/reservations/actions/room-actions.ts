@@ -99,10 +99,7 @@ export async function getAvailableRooms(reservationId: number) {
       Number(room.id),
       {
         bedConfiguration: room.bed_configuration as
-          | "one_double"
-          | "double_single"
-          | "two_double"
-          | null,
+          "one_double" | "double_single" | "two_double" | null,
         maxGuests: room.max_guests === null ? null : Number(room.max_guests),
       },
     ]),

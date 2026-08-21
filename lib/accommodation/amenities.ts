@@ -166,9 +166,7 @@ export const accommodationAmenityOptions = amenityOptions.filter(
   (amenity) => amenity.group === "accommodation",
 );
 
-export const roomAmenityOptions = amenityOptions.filter(
-  (amenity) => amenity.group === "room",
-);
+export const roomAmenityOptions = amenityOptions.filter((amenity) => amenity.group === "room");
 
 export function getAmenityConfig(value: string) {
   return amenityOptions.find((amenity) => amenity.value === value);

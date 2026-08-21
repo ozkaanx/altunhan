@@ -143,9 +143,7 @@ export function ReservationInformation({
             <MiniInfo
               label="Oda Kapasitesi"
               value={
-                reservation.rooms.max_guests
-                  ? `Maks. ${reservation.rooms.max_guests} kişi`
-                  : "—"
+                reservation.rooms.max_guests ? `Maks. ${reservation.rooms.max_guests} kişi` : "—"
               }
             />
           </div>

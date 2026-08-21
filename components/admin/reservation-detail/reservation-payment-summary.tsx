@@ -1,10 +1,4 @@
-import {
-  Banknote,
-  CheckCircle2,
-  RotateCcw,
-  WalletCards,
-  type LucideIcon,
-} from "lucide-react";
+import { Banknote, CheckCircle2, RotateCcw, WalletCards, type LucideIcon } from "lucide-react";
 
 import { formatPrice } from "@/lib/formatters/price";
 

@@ -12,9 +12,7 @@ import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/s
 
 import type { AdminAvailableRoom, AdminReservationAccommodation } from "@/types/admin-reservation";
 
-function getBedConfigurationLabel(
-  value: AdminAvailableRoom["bedConfiguration"],
-) {
+function getBedConfigurationLabel(value: AdminAvailableRoom["bedConfiguration"]) {
   switch (value) {
     case "one_double":
       return "1 Çift Kişilik";

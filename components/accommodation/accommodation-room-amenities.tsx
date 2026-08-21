@@ -7,9 +7,7 @@ type AccommodationRoomAmenitiesProps = {
   amenities: Accommodation["amenities"];
 };
 
-export function AccommodationRoomAmenities({
-  amenities,
-}: AccommodationRoomAmenitiesProps) {
+export function AccommodationRoomAmenities({ amenities }: AccommodationRoomAmenitiesProps) {
   const roomAmenities = (amenities ?? []).filter(
     (amenity) => getAmenityConfig(amenity)?.group === "room",
   );

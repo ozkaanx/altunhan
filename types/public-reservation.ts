@@ -1,9 +1,6 @@
 import type { PublicReservationValues } from "@/lib/reservation/reservation-schema";
 
-export type PublicBedConfiguration =
-  | "one_double"
-  | "double_single"
-  | "two_double";
+export type PublicBedConfiguration = "one_double" | "double_single" | "two_double";
 
 export type BedConfigurationAvailability = {
   bedConfiguration: PublicBedConfiguration;

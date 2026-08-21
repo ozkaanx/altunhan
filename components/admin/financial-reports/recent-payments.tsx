@@ -30,9 +30,7 @@ export function RecentPayments({ payments }: RecentPaymentsProps) {
     <section className="mt-6 border border-[#E3E0D8] bg-white">
       <div className="border-b border-[#ECE8E1] px-4 py-4 sm:px-5">
         <h2 className="text-sm font-semibold text-[#263A2D]">Son Finansal Hareketler</h2>
-        <p className="mt-1 text-[10px] text-[#969990]">
-          Seçilen dönemdeki son 12 tahsilat ve iade
-        </p>
+        <p className="mt-1 text-[10px] text-[#969990]">Seçilen dönemdeki son 12 tahsilat ve iade</p>
       </div>
 
       {payments.length > 0 ? (
