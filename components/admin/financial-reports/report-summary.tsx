@@ -18,9 +18,9 @@ type ReportSummaryProps = {
 export function ReportSummary({ summary }: ReportSummaryProps) {
   const cards = [
     {
-      label: "Tahsil Edilen",
+      label: "Net Tahsilat",
       value: formatPrice(summary.collectedRevenue),
-      description: `${summary.paymentCount.toLocaleString("tr-TR")} onaylı ödeme`,
+      description: `${summary.paymentCount.toLocaleString("tr-TR")} onaylı tahsilat · iadeler düşülmüş`,
       icon: CircleDollarSign,
       featured: true,
     },
