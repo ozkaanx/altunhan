@@ -1,14 +1,21 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { createPublicReservation } from "@/app/rezervasyon/action";
+import {
+  createPublicReservation,
+  getBedConfigurationAvailability,
+} from "@/app/rezervasyon/action";
 
 import { calculateNightCount, reservationOverlapsRange } from "@/lib/reservation/date-utils";
 
 import { useReservationAvailability } from "@/hooks/reservation/use-reservation-availability";
 
-import type { PublicAccommodation } from "@/types/public-reservation";
+import type {
+  BedConfigurationAvailability,
+  PublicAccommodation,
+  PublicBedConfiguration,
+} from "@/types/public-reservation";
 
 import type { CreatedReservation } from "@/types/reservation-ui";
 
@@ -52,6 +59,17 @@ export function useReservationForm({
 
   const [childCount, setChildCount] = useState(0);
 
+  const [requestedBedConfiguration, setRequestedBedConfiguration] =
+    useState<PublicBedConfiguration | null>(null);
+
+  const [bedConfigurationOptions, setBedConfigurationOptions] = useState<
+    BedConfigurationAvailability[]
+  >([]);
+
+  const [isLoadingBedAvailability, setIsLoadingBedAvailability] = useState(false);
+
+  const [bedAvailabilityError, setBedAvailabilityError] = useState<string | null>(null);
+
   const [guestName, setGuestName] = useState("");
 
   const [guestIdentityNumber, setGuestIdentityNumber] = useState("");
@@ -75,6 +93,78 @@ export function useReservationForm({
 
   const { busyRanges, isLoadingAvailability, availabilityError } =
     useReservationAvailability(accommodationId);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadBedAvailability = async () => {
+      if (!accommodationId || !checkIn || !checkOut || checkOut <= checkIn) {
+        setBedConfigurationOptions([]);
+        setRequestedBedConfiguration(null);
+        setBedAvailabilityError(null);
+        setIsLoadingBedAvailability(false);
+        return;
+      }
+
+      setIsLoadingBedAvailability(true);
+      setBedAvailabilityError(null);
+
+      try {
+        const result = await getBedConfigurationAvailability(
+          accommodationId,
+          checkIn,
+          checkOut,
+          guestCount,
+        );
+
+        if (cancelled) {
+          return;
+        }
+
+        if (!result.success) {
+          setBedConfigurationOptions([]);
+          setRequestedBedConfiguration(null);
+          setBedAvailabilityError(result.message);
+          return;
+        }
+
+        setBedConfigurationOptions(result.options);
+
+        const availableOptions = result.options.filter((option) => option.isAvailable);
+
+        setRequestedBedConfiguration((current) => {
+          if (
+            current &&
+            availableOptions.some((option) => option.bedConfiguration === current)
+          ) {
+            return current;
+          }
+
+          return availableOptions.length === 1
+            ? availableOptions[0].bedConfiguration
+            : null;
+        });
+      } catch (bedError) {
+        console.error("Yatak tipi müsaitliği alınamadı:", bedError);
+
+        if (!cancelled) {
+          setBedConfigurationOptions([]);
+          setRequestedBedConfiguration(null);
+          setBedAvailabilityError("Yatak tipi müsaitliği alınamadı.");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingBedAvailability(false);
+        }
+      }
+    };
+
+    void loadBedAvailability();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [accommodationId, checkIn, checkOut, guestCount]);
 
   const estimatedNightCount = useMemo(
     () => calculateNightCount(checkIn, checkOut),
@@ -121,12 +211,24 @@ export function useReservationForm({
     return null;
   }, [checkIn, checkOut, busyRanges]);
 
+  const resetBedPreference = () => {
+    setRequestedBedConfiguration(null);
+    setBedConfigurationOptions([]);
+    setBedAvailabilityError(null);
+  };
+
+  const handleBedConfigurationChange = (value: PublicBedConfiguration) => {
+    setRequestedBedConfiguration(value);
+    setError(null);
+  };
+
   const handleAccommodationChange = (accommodation: PublicAccommodation) => {
     setAccommodationId(accommodation.id);
 
     setCheckIn("");
     setCheckOut("");
 
+    resetBedPreference();
     setError(null);
 
     const nextAdultCount = Math.max(
@@ -158,6 +260,7 @@ export function useReservationForm({
 
     setAdultCount(nextValue);
 
+    resetBedPreference();
     setError(null);
   };
 
@@ -176,12 +279,14 @@ export function useReservationForm({
 
     setChildCount(nextValue);
 
+    resetBedPreference();
     setError(null);
   };
 
   const handleCheckInChange = (value: string) => {
     setCheckIn(value);
 
+    resetBedPreference();
     setError(null);
 
     if (checkOut && value >= checkOut) {
@@ -192,6 +297,7 @@ export function useReservationForm({
   const handleCheckOutChange = (value: string) => {
     setCheckOut(value);
 
+    resetBedPreference();
     setError(null);
   };
 
@@ -206,6 +312,30 @@ export function useReservationForm({
       return;
     }
 
+    if (isLoadingBedAvailability) {
+      setError("Yatak seçenekleri kontrol ediliyor. Lütfen kısa bir süre bekleyin.");
+
+      return;
+    }
+
+    if (bedAvailabilityError) {
+      setError(bedAvailabilityError);
+
+      return;
+    }
+
+    if (bedConfigurationOptions.length > 0) {
+      const selectedBedOption = bedConfigurationOptions.find(
+        (option) => option.bedConfiguration === requestedBedConfiguration,
+      );
+
+      if (!selectedBedOption?.isAvailable) {
+        setError("Lütfen müsait bir yatak tercihi seçin.");
+
+        return;
+      }
+    }
+
     const validationResult = publicReservationSchema.safeParse({
       accommodationId,
 
@@ -214,6 +344,8 @@ export function useReservationForm({
 
       adultCount,
       childCount,
+
+      requestedBedConfiguration,
 
       guestName,
       guestIdentityNumber,
@@ -320,6 +452,11 @@ export function useReservationForm({
     childCount,
     guestCount,
 
+    requestedBedConfiguration,
+    bedConfigurationOptions,
+    isLoadingBedAvailability,
+    bedAvailabilityError,
+
     guestName,
     guestIdentityNumber,
     guestPhone,
@@ -344,6 +481,7 @@ export function useReservationForm({
 
     handleAdultCountChange,
     handleChildCountChange,
+    handleBedConfigurationChange,
 
     handleSubmit,
 

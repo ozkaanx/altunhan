@@ -14,6 +14,8 @@ export type AdminAvailableRoom = {
   id: number;
   roomName: string;
   roomNumber: string | null;
+  bedConfiguration: "one_double" | "double_single" | "two_double" | null;
+  maxGuests: number | null;
 };
 
 export type ReservationSource = "phone" | "whatsapp" | "walk_in" | "admin";

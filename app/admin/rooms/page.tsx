@@ -16,6 +16,8 @@ export default async function RoomsPage() {
       room_name,
       room_number,
       is_active,
+      bed_configuration,
+      max_guests,
 
       accommodations (
         id,
@@ -51,6 +53,8 @@ export default async function RoomsPage() {
       room_name: room.room_name,
       room_number: room.room_number,
       is_active: Boolean(room.is_active),
+      bed_configuration: room.bed_configuration,
+      max_guests: room.max_guests === null ? null : Number(room.max_guests),
 
       accommodations: accommodation
         ? {

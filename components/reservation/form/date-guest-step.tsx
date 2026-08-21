@@ -2,9 +2,15 @@
 
 import { DateSelection } from "@/components/reservation/form/date-guest-step/date-selection";
 import { GuestSelection } from "@/components/reservation/form/date-guest-step/guest-selection";
+import { BedPreferenceSelection } from "@/components/reservation/form/date-guest-step/bed-preference-selection";
 import { SectionTitle } from "@/components/shared/sectionTitle";
 
-import type { AccommodationBusyRange, PublicAccommodation } from "@/types/public-reservation";
+import type {
+  AccommodationBusyRange,
+  BedConfigurationAvailability,
+  PublicAccommodation,
+  PublicBedConfiguration,
+} from "@/types/public-reservation";
 
 type DateGuestStepProps = {
   checkIn: string;
@@ -12,6 +18,10 @@ type DateGuestStepProps = {
   adultCount: number;
   childCount: number;
   selectedAccommodation: PublicAccommodation | undefined;
+  requestedBedConfiguration: PublicBedConfiguration | null;
+  bedConfigurationOptions: BedConfigurationAvailability[];
+  isLoadingBedAvailability: boolean;
+  bedAvailabilityError: string | null;
   busyRanges: AccommodationBusyRange[];
   isLoadingAvailability: boolean;
   availabilityError: string | null;
@@ -20,6 +30,7 @@ type DateGuestStepProps = {
   onCheckOutChange: (value: string) => void;
   onAdultCountChange: (value: number) => void;
   onChildCountChange: (value: number) => void;
+  onBedConfigurationChange: (value: PublicBedConfiguration) => void;
 };
 
 export function DateGuestStep({
@@ -28,6 +39,10 @@ export function DateGuestStep({
   adultCount,
   childCount,
   selectedAccommodation,
+  requestedBedConfiguration,
+  bedConfigurationOptions,
+  isLoadingBedAvailability,
+  bedAvailabilityError,
   busyRanges,
   isLoadingAvailability,
   availabilityError,
@@ -36,6 +51,7 @@ export function DateGuestStep({
   onCheckOutChange,
   onAdultCountChange,
   onChildCountChange,
+  onBedConfigurationChange,
 }: DateGuestStepProps) {
   return (
     <section className="border border-[#DDD8CC] bg-[#FAF8F2] p-4 sm:p-6">
@@ -62,6 +78,15 @@ export function DateGuestStep({
         selectedAccommodation={selectedAccommodation}
         onAdultCountChange={onAdultCountChange}
         onChildCountChange={onChildCountChange}
+      />
+
+      <BedPreferenceSelection
+        options={bedConfigurationOptions}
+        value={requestedBedConfiguration}
+        guestCount={adultCount + childCount}
+        isLoading={isLoadingBedAvailability}
+        error={bedAvailabilityError}
+        onChange={onBedConfigurationChange}
       />
     </section>
   );

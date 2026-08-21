@@ -90,6 +90,7 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
 
     setAdultCount(Math.max(1, Math.min(value, maximumAllowed)));
 
+    resetRooms();
     setError(null);
   };
 
@@ -105,6 +106,7 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
 
     setChildCount(Math.max(0, Math.min(value, maximumAllowed)));
 
+    resetRooms();
     setError(null);
   };
 
@@ -132,7 +134,12 @@ export function useAdminReservationForm(accommodations: AdminReservationAccommod
     setIsLoadingRooms(true);
 
     try {
-      const result = await getAvailableRoomsForDates(accommodationId, checkIn, checkOut);
+      const result = await getAvailableRoomsForDates(
+        accommodationId,
+        checkIn,
+        checkOut,
+        totalGuestCount,
+      );
 
       if (!result.success) {
         setError(result.message ?? "Müsait odalar alınamadı.");

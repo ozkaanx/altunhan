@@ -74,7 +74,7 @@ export async function generateMetadata({
 export default async function AccommodationDetailPage({ params }: AccommodationDetailPageProps) {
   const { slug } = await params;
 
-  const { accommodation, settings, accommodations, homepageContent } =
+  const { accommodation, bedConfigurations, settings, accommodations, homepageContent } =
     await getAccommodationDetailPageData(slug);
 
   if (!accommodation) {
@@ -93,7 +93,11 @@ export default async function AccommodationDetailPage({ params }: AccommodationD
 
       <main className="bg-[#F5F1E8] pb-[88px] lg:pb-0">
         <AccommodationDetailHero title={accommodation.title} images={images} />
-        <AccommodationOverview accommodation={accommodation} reservationHref={reservationHref} />
+        <AccommodationOverview
+          accommodation={accommodation}
+          bedConfigurations={bedConfigurations}
+          reservationHref={reservationHref}
+        />
         <AccommodationDetailsSection accommodation={accommodation} />
         <AccommodationGuestInformation settings={settings} />
       </main>

@@ -19,6 +19,25 @@ import { formatTcknForDisplay } from "@/lib/identity/tckn";
 
 import type { Reservation } from "@/types/reservation";
 
+function getBedConfigurationLabel(
+  value: Reservation["rooms"] extends infer Room
+    ? Room extends { bed_configuration: infer Configuration }
+      ? Configuration
+      : never
+    : never,
+) {
+  switch (value) {
+    case "one_double":
+      return "1 Çift Kişilik";
+    case "double_single":
+      return "1 Çift + 1 Tek";
+    case "two_double":
+      return "2 Çift Kişilik";
+    default:
+      return null;
+  }
+}
+
 type ReservationInformationProps = {
   reservation: Reservation;
   isLoadingRooms: boolean;
@@ -45,6 +64,14 @@ export function ReservationInformation({
       ? `${reservation.rooms.room_name} · ${reservation.rooms.room_number}`
       : reservation.rooms.room_name
     : "Henüz oda atanmamış";
+
+  const bedConfigurationLabel = reservation.rooms
+    ? getBedConfigurationLabel(reservation.rooms.bed_configuration)
+    : null;
+
+  const requestedBedConfigurationLabel = getBedConfigurationLabel(
+    reservation.requested_bed_configuration,
+  );
 
   const guestSummary =
     reservation.child_count > 0
@@ -99,7 +126,31 @@ export function ReservationInformation({
           value={reservation.accommodations?.title ?? "—"}
         />
 
+        {requestedBedConfigurationLabel && (
+          <InfoRow
+            icon={BedDouble}
+            label="Müşteri Yatak Tercihi"
+            value={requestedBedConfigurationLabel}
+          />
+        )}
+
         <InfoRow icon={BedDouble} label="Atanan Fiziksel Oda" value={roomName} />
+
+        {reservation.rooms && (bedConfigurationLabel || reservation.rooms.max_guests) && (
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            <MiniInfo label="Yatak Düzeni" value={bedConfigurationLabel ?? "—"} />
+
+            <MiniInfo
+              label="Oda Kapasitesi"
+              value={
+                reservation.rooms.max_guests
+                  ? `Maks. ${reservation.rooms.max_guests} kişi`
+                  : "—"
+              }
+            />
+          </div>
+        )}
+
         <div className="mt-4 grid grid-cols-2 gap-4">
           <MiniInfo label={`Giriş · ${CHECK_IN_POLICY_TEXT}`} value={reservation.check_in} />
 

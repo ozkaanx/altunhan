@@ -6,6 +6,7 @@ import type { Accommodation } from "@/types/accommodation";
 import type { HomeAccommodation } from "@/types/home-accommodation";
 import type { HomepageContent } from "@/types/homepage-content";
 import type { SiteSettings } from "@/types/site-settings";
+import type { AccommodationBedConfiguration } from "@/lib/accommodation/accommodation-bed-summary";
 
 const ACCOMMODATION_DETAIL_SELECT = `
   id,
@@ -52,9 +53,20 @@ export const getAccommodationBySlug = cache(async (slug: string) => {
 export async function getAccommodationDetailPageData(slug: string) {
   const supabase = await createClient();
 
-  const [accommodation, settingsResult, accommodationsResult, homepageContentResult] =
+  const accommodation = await getAccommodationBySlug(slug);
+
+  const bedConfigurationsPromise = accommodation
+    ? supabase.rpc("get_public_accommodation_bed_configurations", {
+        p_accommodation_id: accommodation.id,
+      })
+    : Promise.resolve({
+        data: [] as string[],
+        error: null,
+      });
+
+  const [bedConfigurationsResult, settingsResult, accommodationsResult, homepageContentResult] =
     await Promise.all([
-      getAccommodationBySlug(slug),
+      bedConfigurationsPromise,
 
       supabase.from("site_settings").select("*").eq("id", 1).maybeSingle(),
 
@@ -85,6 +97,7 @@ export async function getAccommodationDetailPageData(slug: string) {
     ]);
 
   const errors = [
+    bedConfigurationsResult.error,
     settingsResult.error,
     accommodationsResult.error,
     homepageContentResult.error,
@@ -96,6 +109,8 @@ export async function getAccommodationDetailPageData(slug: string) {
 
   return {
     accommodation,
+
+    bedConfigurations: (bedConfigurationsResult.data ?? []) as AccommodationBedConfiguration[],
 
     settings: settingsResult.data as SiteSettings | null,
 

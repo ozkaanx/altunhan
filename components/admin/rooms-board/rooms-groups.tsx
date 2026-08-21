@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BedDouble, Clock3, DoorClosed } from "lucide-react";
 
 import { StatusBadge } from "@/components/admin/rooms-board/room-board-elements";
+import { RoomBedEditor } from "@/components/admin/rooms-board/room-bed-editor";
 
 import { getReservationsForRange } from "@/lib/admin/room-board-utils";
 import { formatReservationDate } from "@/lib/reservation/date-utils";
@@ -103,6 +104,12 @@ export function RoomsGroups({
                         <StatusBadge type="available" />
                       )}
                     </div>
+
+                    <RoomBedEditor
+                      roomId={room.id}
+                      bedConfiguration={room.bed_configuration}
+                      maxGuests={room.max_guests}
+                    />
 
                     {isOccupied ? (
                       <div className="mt-4 space-y-3 border-t border-[#E8E4DC] pt-4">

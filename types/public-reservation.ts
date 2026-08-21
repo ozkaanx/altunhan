@@ -1,5 +1,17 @@
 import type { PublicReservationValues } from "@/lib/reservation/reservation-schema";
 
+export type PublicBedConfiguration =
+  | "one_double"
+  | "double_single"
+  | "two_double";
+
+export type BedConfigurationAvailability = {
+  bedConfiguration: PublicBedConfiguration;
+  maxGuests: number;
+  availableCount: number;
+  isAvailable: boolean;
+};
+
 export type AccommodationBusyRange = {
   checkIn: string;
   checkOut: string;
