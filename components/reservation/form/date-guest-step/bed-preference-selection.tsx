@@ -86,9 +86,7 @@ export function BedPreferenceSelection({
                 aria-pressed={selected}
                 onClick={() => onChange(option.bedConfiguration)}
                 className={`flex min-h-[88px] items-center justify-between gap-3 border p-4 text-left transition ${
-                  selected
-                    ? "border-[#526048] bg-[#F1F4EE]"
-                    : "border-[#DDD8CC] bg-white"
+                  selected ? "border-[#526048] bg-[#F1F4EE]" : "border-[#DDD8CC] bg-white"
                 } ${disabled ? "cursor-not-allowed opacity-45" : "hover:border-[#A9B0A5]"}`}
               >
                 <div className="min-w-0">
@@ -115,11 +113,14 @@ export function BedPreferenceSelection({
         </div>
       )}
 
-      {!isLoading && !error && options.filter((option) => option.isAvailable).length > 1 && !value && (
-        <p className="mt-3 text-[10px] text-[#A8754F]">
-          Devam etmek için yatak tercihinizi seçin.
-        </p>
-      )}
+      {!isLoading &&
+        !error &&
+        options.filter((option) => option.isAvailable).length > 1 &&
+        !value && (
+          <p className="mt-3 text-[10px] text-[#A8754F]">
+            Devam etmek için yatak tercihinizi seçin.
+          </p>
+        )}
     </div>
   );
 }

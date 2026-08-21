@@ -1,7 +1,4 @@
-import type {
-  ReservationPayment,
-  ReservationPaymentMethod,
-} from "@/types/reservation";
+import type { ReservationPayment, ReservationPaymentMethod } from "@/types/reservation";
 
 export const paymentMethodLabels: Record<ReservationPaymentMethod, string> = {
   bank_transfer: "Havale / EFT",

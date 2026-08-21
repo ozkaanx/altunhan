@@ -1,7 +1,4 @@
-export type AccommodationBedConfiguration =
-  | "one_double"
-  | "double_single"
-  | "two_double";
+export type AccommodationBedConfiguration = "one_double" | "double_single" | "two_double";
 
 export function getAccommodationBedSummary(
   configurations: AccommodationBedConfiguration[],

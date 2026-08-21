@@ -65,8 +65,7 @@ export function ReservationPaymentHistory({
                 </div>
 
                 <span className="shrink-0 text-[9px] font-semibold uppercase tracking-[0.08em] text-[#6B716A]">
-                  {payment.status === "rejected" &&
-                  payment.admin_note?.includes("Tahsilat iptali:")
+                  {payment.status === "rejected" && payment.admin_note?.includes("Tahsilat iptali:")
                     ? "İptal Edildi"
                     : paymentStatusLabels[payment.status]}
                 </span>

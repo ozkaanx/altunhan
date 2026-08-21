@@ -135,9 +135,7 @@ export function ReviewForm({
           <div>
             <p className="text-xs font-medium text-[#263A2D]">Yayında</p>
 
-            <p className="mt-1 text-[10px] text-[#969A93]">
-              Aktif yorumlar ana sayfada görünür.
-            </p>
+            <p className="mt-1 text-[10px] text-[#969A93]">Aktif yorumlar ana sayfada görünür.</p>
           </div>
 
           <input

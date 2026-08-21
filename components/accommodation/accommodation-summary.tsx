@@ -12,12 +12,7 @@ import {
 type AccommodationSummaryProps = {
   accommodation: Pick<
     Accommodation,
-    | "title"
-    | "short_description"
-    | "capacity"
-    | "bed_count"
-    | "bathroom_count"
-    | "amenities"
+    "title" | "short_description" | "capacity" | "bed_count" | "bathroom_count" | "amenities"
   >;
   bedConfigurations: AccommodationBedConfiguration[];
 };
@@ -28,10 +23,7 @@ export function AccommodationSummary({
 }: AccommodationSummaryProps) {
   const hasRoomBedConfigurations = bedConfigurations.length > 0;
 
-  const bedSummary = getAccommodationBedSummary(
-    bedConfigurations,
-    accommodation.bed_count,
-  );
+  const bedSummary = getAccommodationBedSummary(bedConfigurations, accommodation.bed_count);
 
   return (
     <div className="min-w-0">
@@ -53,7 +45,7 @@ export function AccommodationSummary({
         </p>
       )}
 
-      <div className="mt-8 grid grid-cols-3 ">
+      <div className="mt-8 grid grid-cols-3">
         <AccommodationInfoCard
           icon={Users}
           label="Kapasite"

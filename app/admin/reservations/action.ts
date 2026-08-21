@@ -95,7 +95,6 @@ export async function getAvailableRoomsForReservationDates(
   reservationId: number,
   checkIn: string,
   checkOut: string,
-
 ) {
   return getAvailableRoomsForReservationDatesAction(reservationId, checkIn, checkOut);
 }

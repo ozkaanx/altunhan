@@ -113,15 +113,12 @@ export async function getBedConfigurationAvailability(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.rpc(
-    "get_public_bed_configuration_availability",
-    {
-      p_accommodation_id: accommodationId,
-      p_check_in: checkIn,
-      p_check_out: checkOut,
-      p_guest_count: guestCount,
-    },
-  );
+  const { data, error } = await supabase.rpc("get_public_bed_configuration_availability", {
+    p_accommodation_id: accommodationId,
+    p_check_in: checkIn,
+    p_check_out: checkOut,
+    p_guest_count: guestCount,
+  });
 
   if (error) {
     console.error("Yatak tipi müsaitliği alınamadı:", error);
@@ -146,4 +143,3 @@ export async function getBedConfigurationAvailability(
     options,
   };
 }
-
