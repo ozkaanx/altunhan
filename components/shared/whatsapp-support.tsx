@@ -4,32 +4,36 @@ import { getWhatsAppHref } from "@/lib/contact-links";
 
 type WhatsAppSupportProps = {
   whatsapp: string | null | undefined;
+  instagram: string | null | undefined;
 };
 
 const DEFAULT_MESSAGE = "Merhaba, Altunhan Farm hakkında bilgi almak istiyorum.";
-const INSTAGRAM_URL = "https://www.instagram.com/altunhanfarm/";
 
-export function WhatsAppSupport({ whatsapp }: WhatsAppSupportProps) {
+export function WhatsAppSupport({ whatsapp, instagram }: WhatsAppSupportProps) {
   const whatsappHref = getWhatsAppHref(whatsapp, DEFAULT_MESSAGE);
+  const instagramHref = instagram?.trim() || null;
 
-  if (!whatsappHref) {
+  if (!whatsappHref && !instagramHref) {
     return null;
   }
 
   return (
     <div className="fixed bottom-24 right-4 z-[60] flex items-center gap-2 lg:bottom-6 lg:right-6">
-      <a
-        href={INSTAGRAM_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Altunhan Farm Instagram hesabını aç"
-        title="Instagram"
-        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#FCAF45] text-white shadow-[0_10px_35px_rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E1306C]"
-      >
-        <FaInstagram size={24} aria-hidden="true" />
-      </a>
+      {instagramHref && (
+        <a
+          href={instagramHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Altunhan Farm Instagram hesabını aç"
+          title="Instagram"
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#FCAF45] text-white shadow-[0_10px_35px_rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E1306C]"
+        >
+          <FaInstagram size={24} aria-hidden="true" />
+        </a>
+      )}
 
-      <a
+      {whatsappHref && (
+        <a
         href={whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
@@ -45,7 +49,8 @@ export function WhatsAppSupport({ whatsapp }: WhatsAppSupportProps) {
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
           <FaWhatsapp size={23} aria-hidden="true" />
         </span>
-      </a>
+        </a>
+      )}
     </div>
   );
 }

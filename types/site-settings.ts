@@ -15,6 +15,12 @@ export type SiteSettings = {
 
   address: string;
 
+  instagram: string;
+
+  map_url: string;
+
+  map_embed_url: string;
+
   created_at: string;
 
   updated_at: string;
@@ -36,6 +42,12 @@ export type SiteSettingsFormValues = {
   email: string;
 
   address: string;
+
+  instagram: string;
+
+  map_url: string;
+
+  map_embed_url: string;
 
   hero_image_url: string | null;
 };
