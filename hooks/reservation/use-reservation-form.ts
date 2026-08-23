@@ -42,7 +42,9 @@ export function useReservationForm({
   initialAccommodationId,
 }: UseReservationFormParams) {
   const initialAccommodation =
-    accommodations.find((item) => item.id === initialAccommodationId) ?? accommodations[0] ?? null;
+    initialAccommodationId == null
+      ? null
+      : accommodations.find((item) => item.id === initialAccommodationId) ?? null;
 
   const [accommodationId, setAccommodationId] = useState<number | null>(
     initialAccommodation?.id ?? null,
@@ -223,10 +225,12 @@ export function useReservationForm({
     resetBedPreference();
     setError(null);
 
-    const nextAdultCount = Math.max(
-      1,
-      Math.min(adultCount, accommodation.max_adults, accommodation.max_total_guests),
-    );
+    const nextAdultCount = selectedAccommodation
+      ? Math.max(
+          1,
+          Math.min(adultCount, accommodation.max_adults, accommodation.max_total_guests),
+        )
+      : getDefaultAdultCount(accommodation);
 
     const remainingCapacity = Math.max(0, accommodation.max_total_guests - nextAdultCount);
 

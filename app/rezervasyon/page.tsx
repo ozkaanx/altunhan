@@ -93,7 +93,7 @@ export default async function ReservationPage({ searchParams }: ReservationPageP
       )
     : null;
 
-  const initialAccommodationId = requestedAccommodation?.id ?? publicAccommodations[0]?.id ?? null;
+  const initialAccommodationId = requestedAccommodation?.id ?? null;
 
   return (
     <main className="min-h-screen bg-[#F5F1E8]">
@@ -160,6 +160,7 @@ export default async function ReservationPage({ searchParams }: ReservationPageP
             accommodations={publicAccommodations}
             settings={settings as SiteSettings | null}
             initialAccommodationId={initialAccommodationId}
+            focusDateStepOnLoad={Boolean(requestedAccommodation)}
           />
         ) : (
           <div className="mx-auto max-w-[760px] border border-[#DDD8CC] bg-[#FAF8F2] px-6 py-16 text-center">

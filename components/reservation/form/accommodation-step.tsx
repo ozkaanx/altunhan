@@ -1,35 +1,20 @@
 "use client";
 
-import Image from "next/image";
-
 import { Check, Users } from "lucide-react";
 
+import { AccommodationImageSlider } from "@/components/reservation/form/accommodation-image-slider";
 import { SectionTitle } from "@/components/shared/sectionTitle";
 
 import { formatPrice } from "@/lib/formatters/price";
 import { cn } from "@/lib/utils";
 
-import type { PublicAccommodation, PublicAccommodationImage } from "@/types/public-reservation";
+import type { PublicAccommodation } from "@/types/public-reservation";
 
 type AccommodationStepProps = {
   accommodations: PublicAccommodation[];
   accommodationId: number | null;
   onChange: (accommodation: PublicAccommodation) => void;
 };
-
-function getCoverImage(images: PublicAccommodationImage[] | undefined) {
-  if (!images?.length) {
-    return null;
-  }
-
-  const cover = images.find((image) => image.is_cover);
-
-  if (cover) {
-    return cover.image_url;
-  }
-
-  return [...images].sort((a, b) => Number(a.sort_order) - Number(b.sort_order))[0]?.image_url;
-}
 
 export function AccommodationStep({
   accommodations,
@@ -43,8 +28,8 @@ export function AccommodationStep({
           <SectionTitle number="01" title="Konaklamanızı Seçin" />
 
           <p className="mt-3 max-w-[560px] text-[11px] leading-5 text-[#81867F]">
-            Size uygun konaklama tipini seçin. Tarih ve misafir bilgilerinizi bir sonraki bölümde
-            belirleyebilirsiniz.
+            Size uygun konaklama tipini seçin. Görselleri inceleyebilir, ardından tarih ve misafir
+            bilgilerinizi belirleyebilirsiniz.
           </p>
         </div>
 
@@ -62,40 +47,38 @@ export function AccommodationStep({
           {accommodations.map((accommodation) => {
             const selected = accommodation.id === accommodationId;
 
-            const image = getCoverImage(accommodation.accommodation_images);
-
             return (
-              <button
-                type="button"
+              <article
                 key={accommodation.id}
+                role="button"
+                tabIndex={0}
                 aria-pressed={selected}
                 onClick={() => onChange(accommodation)}
+                onKeyDown={(event) => {
+                  if (event.target !== event.currentTarget) {
+                    return;
+                  }
+
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onChange(accommodation);
+                  }
+                }}
                 className={cn(
-                  "group relative overflow-hidden border text-left transition-all duration-300",
+                  "group relative cursor-pointer overflow-hidden border text-left outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-farm-forest/40",
                   selected
                     ? "border-farm-forest bg-[#F2F3ED] shadow-[0_10px_30px_rgba(38,58,45,0.07)]"
                     : "border-farm-line bg-white hover:border-[#B8B2A8]",
                 )}
               >
-                <div className="relative aspect-[16/7] overflow-hidden bg-[#E8E2D7]">
-                  {image ? (
-                    <Image
-                      src={image}
-                      alt={accommodation.title}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 50vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-[1.025]"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-xs text-[#AAA69B]">
-                      Altunhan Farm
-                    </div>
-                  )}
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
+                <div className="relative">
+                  <AccommodationImageSlider
+                    images={accommodation.accommodation_images}
+                    title={accommodation.title}
+                  />
 
                   {selected && (
-                    <div className="absolute right-3 top-3 flex items-center gap-1.5 bg-farm-forest px-2.5 py-1.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-white">
+                    <div className="pointer-events-none absolute right-3 top-3 flex items-center gap-1.5 bg-farm-forest px-2.5 py-1.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-white">
                       <Check size={11} strokeWidth={2} />
                       Seçildi
                     </div>
@@ -147,7 +130,7 @@ export function AccommodationStep({
                     </span>
                   </div>
                 </div>
-              </button>
+              </article>
             );
           })}
         </div>
