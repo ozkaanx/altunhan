@@ -3,6 +3,9 @@ import { getTurkeyToday } from "@/lib/reservation/date-utils";
 
 import type {
   AdminFinancialReport,
+  FinancialPaymentBreakdown,
+  FinancialReportPayment,
+  FinancialReportPaymentType,
   FinancialReportPeriod,
   FinancialReportRange,
 } from "@/types/admin-financial-report";
@@ -187,3 +190,101 @@ export async function getAdminFinancialReport(startDate: string, endDate: string
     error: null,
   };
 }
+
+function normalizePaymentBreakdown(value: unknown): FinancialPaymentBreakdown | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const data = value as Record<string, unknown>;
+
+  return {
+    grossCollected: toNumber(data.grossCollected),
+    depositCollected: toNumber(data.depositCollected),
+    balanceCollected: toNumber(data.balanceCollected),
+    fullCollected: toNumber(data.fullCollected),
+    refundTotal: toNumber(data.refundTotal),
+    netCollected: toNumber(data.netCollected),
+    collectionCount: toNumber(data.collectionCount),
+    refundCount: toNumber(data.refundCount),
+  };
+}
+
+export async function getAdminFinancialPaymentBreakdown(
+  startDate: string,
+  endDate: string,
+) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc(
+    "get_admin_financial_payment_breakdown",
+    {
+      p_start_date: startDate,
+      p_end_date: endDate,
+    },
+  );
+
+  if (error) {
+    console.error("Tahsilat kırılımı alınamadı:", error);
+
+    return {
+      breakdown: null,
+      error: error.message,
+    };
+  }
+
+  return {
+    breakdown: normalizePaymentBreakdown(data),
+    error: null,
+  };
+}
+
+function normalizeRecentFinancialMovements(value: unknown): FinancialReportPayment[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+
+  return value.map((item) => {
+    const row = item as Record<string, unknown>;
+
+    return {
+      paymentId: toNumber(row.paymentId),
+      code: String(row.code ?? ""),
+      guestName: String(row.guestName ?? ""),
+      amount: toNumber(row.amount),
+      method: String(row.method ?? "other") as FinancialReportPayment["method"],
+      paymentType: String(row.paymentType ?? "full") as FinancialReportPaymentType,
+      paidAt: String(row.paidAt ?? ""),
+    };
+  });
+}
+
+export async function getAdminRecentFinancialMovements(
+  startDate: string,
+  endDate: string,
+) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc(
+    "get_admin_recent_financial_movements",
+    {
+      p_start_date: startDate,
+      p_end_date: endDate,
+    },
+  );
+
+  if (error) {
+    console.error("Son finansal hareketler alınamadı:", error);
+
+    return {
+      movements: null,
+      error: error.message,
+    };
+  }
+
+  return {
+    movements: normalizeRecentFinancialMovements(data),
+    error: null,
+  };
+}
+

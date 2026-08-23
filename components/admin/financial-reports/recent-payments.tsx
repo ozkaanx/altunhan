@@ -1,6 +1,9 @@
 import { formatPrice } from "@/lib/formatters/price";
 
-import type { FinancialReportPayment } from "@/types/admin-financial-report";
+import type {
+  FinancialReportPayment,
+  FinancialReportPaymentType,
+} from "@/types/admin-financial-report";
 
 type RecentPaymentsProps = {
   payments: FinancialReportPayment[];
@@ -12,6 +15,21 @@ const paymentMethodLabels = {
   card: "Kart",
   other: "Diğer",
 };
+
+const paymentTypeLabels: Record<FinancialReportPaymentType, string> = {
+  deposit: "Kapora",
+  balance: "Bakiye",
+  full: "Tam Ödeme",
+  refund: "İade",
+};
+
+function getPaymentType(payment: FinancialReportPayment) {
+  if (payment.paymentType) {
+    return payment.paymentType;
+  }
+
+  return payment.amount < 0 ? "refund" : "full";
+}
 
 function formatPaymentDate(value: string) {
   if (!value) {
@@ -46,9 +64,20 @@ export function RecentPayments({ payments }: RecentPaymentsProps) {
                     <p className="mt-1 truncate text-sm font-semibold text-[#263A2D]">
                       {payment.guestName}
                     </p>
-                    <p className="mt-2 text-[10px] text-[#969990]">
-                      {paymentMethodLabels[payment.method]} · {formatPaymentDate(payment.paidAt)}
-                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[10px] text-[#969990]">
+                      <span
+                        className={`px-2 py-1 font-semibold ${
+                          getPaymentType(payment) === "refund"
+                            ? "bg-[#F8EEEA] text-[#9A5047]"
+                            : "bg-[#EEF0EA] text-[#526048]"
+                        }`}
+                      >
+                        {paymentTypeLabels[getPaymentType(payment)]}
+                      </span>
+                      <span>
+                        {paymentMethodLabels[payment.method]} · {formatPaymentDate(payment.paidAt)}
+                      </span>
+                    </div>
                   </div>
                   <p
                     className={`shrink-0 text-sm font-semibold ${
@@ -69,6 +98,7 @@ export function RecentPayments({ payments }: RecentPaymentsProps) {
                   <th className="px-5 py-3 font-medium">Rezervasyon</th>
                   <th className="px-5 py-3 font-medium">Misafir</th>
                   <th className="px-5 py-3 font-medium">Tarih</th>
+                  <th className="px-5 py-3 font-medium">Tür</th>
                   <th className="px-5 py-3 font-medium">Yöntem</th>
                   <th className="px-5 py-3 text-right font-medium">Tutar</th>
                 </tr>
@@ -82,6 +112,17 @@ export function RecentPayments({ payments }: RecentPaymentsProps) {
                     <td className="px-5 py-3 font-semibold text-[#263A2D]">{payment.code}</td>
                     <td className="px-5 py-3">{payment.guestName}</td>
                     <td className="px-5 py-3">{formatPaymentDate(payment.paidAt)}</td>
+                    <td className="px-5 py-3">
+                      <span
+                        className={`inline-flex px-2 py-1 text-[9px] font-semibold ${
+                          getPaymentType(payment) === "refund"
+                            ? "bg-[#F8EEEA] text-[#9A5047]"
+                            : "bg-[#EEF0EA] text-[#526048]"
+                        }`}
+                      >
+                        {paymentTypeLabels[getPaymentType(payment)]}
+                      </span>
+                    </td>
                     <td className="px-5 py-3">{paymentMethodLabels[payment.method]}</td>
                     <td
                       className={`px-5 py-3 text-right font-semibold ${
