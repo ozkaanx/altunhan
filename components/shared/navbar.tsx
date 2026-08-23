@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
@@ -46,14 +47,20 @@ export default function Navbar() {
     <>
       <nav className="relative z-40 w-full bg-farm-cream">
         <div className="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-4 sm:px-6 md:h-24 md:px-12 lg:px-16">
-          <Link href="/" onClick={closeMenu} className="flex flex-col leading-none">
-            <span className="font-serif text-[20px] tracking-[0.24em] text-farm-forest sm:text-[22px] sm:tracking-[0.28em]">
-              ALTUNHAN
-            </span>
-
-            <span className="mt-1 text-center text-[9px] tracking-[0.5em] text-farm-forest sm:text-[10px] sm:tracking-[0.55em]">
-              FARM
-            </span>
+          <Link
+            href="/"
+            onClick={closeMenu}
+            aria-label="Altunhan Farm ana sayfa"
+            className="flex shrink-0 items-center"
+          >
+            <Image
+              src="/images/farmlogo.png"
+              alt="Altunhan Farm"
+              width={500}
+              height={500}
+              priority
+              className="h-16 w-16 object-contain sm:h-16 sm:w-16 md:h-[85px] md:w-[85px]"
+            />
           </Link>
 
           <ul className="hidden items-center gap-9 lg:flex">
@@ -110,14 +117,19 @@ export default function Navbar() {
             className="fixed right-0 top-0 z-50 flex h-dvh w-[85%] max-w-[360px] flex-col bg-farm-cream shadow-2xl lg:hidden"
           >
             <div className="flex h-20 items-center justify-between border-b border-farm-line px-5">
-              <Link href="/" onClick={closeMenu} className="flex flex-col leading-none">
-                <span className="font-serif text-[18px] tracking-[0.24em] text-farm-forest">
-                  ALTUNHAN
-                </span>
-
-                <span className="mt-1 text-center text-[9px] tracking-[0.48em] text-farm-forest">
-                  FARM
-                </span>
+              <Link
+                href="/"
+                onClick={closeMenu}
+                aria-label="Altunhan Farm ana sayfa"
+                className="flex shrink-0 items-center"
+              >
+                <Image
+                  src="/images/farmlogo.png"
+                  alt="Altunhan Farm"
+                  width={500}
+                  height={500}
+                  className="h-14 w-14 object-contain"
+                />
               </Link>
 
               <button

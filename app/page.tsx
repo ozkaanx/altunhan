@@ -13,6 +13,7 @@ import type { SiteSettings } from "@/types/site-settings";
 import type { Review } from "@/types/review";
 import type { HomepageContent } from "@/types/homepage-content";
 import Restaurant from "@/components/shared/restaurant";
+import BeachEntryNotice from "@/components/shared/beach-entry-notice";
 
 import type { HomeAccommodation } from "@/types/home-accommodation";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -103,6 +104,7 @@ export default async function Home() {
           content={content}
         />
         <Restaurant />
+        <BeachEntryNotice />
         <LocationReviews
           settings={siteSettings}
           reviews={(reviews ?? []) as Review[]}
