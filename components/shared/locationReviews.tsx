@@ -52,6 +52,13 @@ export default function LocationReviews({ settings }: LocationReviewsProps) {
 
   const instagram = settings?.instagram?.trim() || null;
 
+
+  const instagramUsername = instagram
+
+    ? `@${instagram.replace(/\/+$/, "").split("/").pop()}`
+
+    : null;
+
   const mapUrl = settings?.map_url?.trim() || "";
 
   const mapEmbedUrl = settings?.map_embed_url?.trim() || null;
@@ -176,7 +183,7 @@ export default function LocationReviews({ settings }: LocationReviewsProps) {
             <ContactItem
               icon={<Instagram size={18} className="text-[#A8754F]" />}
               label="Instagram"
-              value={instagram ?? "Instagram bağlantısı girilmemiş"}
+              value={instagramUsername ?? "Instagram bağlantısı girilmemiş"}
               href={instagram}
               linkLabel="Aç"
             />
