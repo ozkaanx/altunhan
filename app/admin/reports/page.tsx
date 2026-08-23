@@ -1,13 +1,14 @@
 import { BarChart3 } from "lucide-react";
 
-import { DailyPerformance } from "@/components/admin/financial-reports/daily-performance";
+import { PeriodOverview } from "@/components/admin/financial-reports/period-overview";
 import { RecentPayments } from "@/components/admin/financial-reports/recent-payments";
 import { ReportBreakdowns } from "@/components/admin/financial-reports/report-breakdowns";
 import { ReportControls } from "@/components/admin/financial-reports/report-controls";
-import { ReportSummary } from "@/components/admin/financial-reports/report-summary";
 
 import {
+  getAdminFinancialPaymentBreakdown,
   getAdminFinancialReport,
+  getAdminRecentFinancialMovements,
   getFinancialReportRange,
   parseFinancialReportDate,
   parseFinancialReportPeriod,
@@ -25,7 +26,16 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
   const period = parseFinancialReportPeriod(params.period);
   const anchorDate = parseFinancialReportDate(params.date);
   const range = getFinancialReportRange(period, anchorDate);
-  const { report, error } = await getAdminFinancialReport(range.startDate, range.endDate);
+
+  const [
+    { report, error },
+    { breakdown: paymentBreakdown, error: paymentBreakdownError },
+    { movements: recentFinancialMovements },
+  ] = await Promise.all([
+    getAdminFinancialReport(range.startDate, range.endDate),
+    getAdminFinancialPaymentBreakdown(range.startDate, range.endDate),
+    getAdminRecentFinancialMovements(range.startDate, range.endDate),
+  ]);
 
   return (
     <section>
@@ -56,13 +66,19 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
         </div>
       ) : (
         <>
-          <ReportSummary summary={report.summary} />
-          <DailyPerformance days={report.daily} />
+          <PeriodOverview
+            period={range.period}
+            summary={report.summary}
+            days={report.daily}
+            paymentBreakdown={paymentBreakdown}
+          />
           <ReportBreakdowns
             accommodations={report.accommodations}
             paymentMethods={report.paymentMethods}
+            period={range.period}
+            dayCount={report.daily.length}
           />
-          <RecentPayments payments={report.recentPayments} />
+          <RecentPayments payments={recentFinancialMovements ?? report.recentPayments} />
 
           <div className="mt-5 border border-[#E3E0D8] bg-[#FAF9F6] px-4 py-3 text-[10px] leading-5 text-[#777D75]">
             Gelir yalnızca onaylanmış tahsilatlardan hesaplanır. Rezervasyon değeri henüz tahsil

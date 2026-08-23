@@ -37,13 +37,27 @@ export type FinancialReportPaymentMethod = {
   paymentCount: number;
 };
 
+export type FinancialReportPaymentType = "deposit" | "balance" | "full" | "refund";
+
 export type FinancialReportPayment = {
   paymentId: number;
   code: string;
   guestName: string;
   amount: number;
   method: FinancialReportPaymentMethod["method"];
+  paymentType?: FinancialReportPaymentType;
   paidAt: string;
+};
+
+export type FinancialPaymentBreakdown = {
+  grossCollected: number;
+  depositCollected: number;
+  balanceCollected: number;
+  fullCollected: number;
+  refundTotal: number;
+  netCollected: number;
+  collectionCount: number;
+  refundCount: number;
 };
 
 export type AdminFinancialReport = {
