@@ -6,6 +6,9 @@ export type SettingsFormValues = {
   whatsapp: string;
   email: string;
   address: string;
+  instagram: string;
+  map_url: string;
+  map_embed_url: string;
 };
 
 export type SettingsFieldName = keyof SettingsFormValues;

@@ -17,6 +17,9 @@ function getInitialValues(settings: SiteSettings): SettingsFormValues {
     whatsapp: settings.whatsapp ?? "",
     email: settings.email ?? "",
     address: settings.address ?? "",
+    instagram: settings.instagram ?? "",
+    map_url: settings.map_url ?? "",
+    map_embed_url: settings.map_embed_url ?? "",
   };
 }
 

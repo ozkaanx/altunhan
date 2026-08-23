@@ -1,4 +1,4 @@
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Instagram, Mail, MapPin, Phone } from "lucide-react";
 
 import {
   SettingsField,
@@ -57,6 +57,21 @@ export function ContactSettingsSection({ values, onFieldChange }: ContactSetting
         />
       </SettingsField>
 
+      <SettingsField icon={Instagram} label="Instagram" htmlFor="instagram">
+        <input
+          id="instagram"
+          type="url"
+          value={values.instagram}
+          onChange={(event) => onFieldChange("instagram", event.currentTarget.value)}
+          placeholder="https://www.instagram.com/altunhanfarm/"
+          className={settingsInputClassName}
+        />
+
+        <p className="mt-2 text-[10px] leading-5 text-[#969990]">
+          Sitedeki Instagram bağlantılarında kullanılacak profil adresi.
+        </p>
+      </SettingsField>
+
       <SettingsField icon={MapPin} label="Adres" htmlFor="address">
         <textarea
           id="address"
@@ -66,6 +81,36 @@ export function ContactSettingsSection({ values, onFieldChange }: ContactSetting
           placeholder="Altunhan Farm adresi"
           className="w-full resize-none border border-[#DDD9D1] bg-[#FAF9F6] p-3 text-sm leading-6 text-[#263A2D] outline-none placeholder:text-[#A3A69F] focus:border-[#263A2D]"
         />
+      </SettingsField>
+
+      <SettingsField icon={MapPin} label="Google Maps Linki" htmlFor="map_url">
+        <input
+          id="map_url"
+          type="url"
+          value={values.map_url}
+          onChange={(event) => onFieldChange("map_url", event.currentTarget.value)}
+          placeholder="https://maps.app.goo.gl/..."
+          className={settingsInputClassName}
+        />
+
+        <p className="mt-2 text-[10px] leading-5 text-[#969990]">
+          Google Maps&apos;te tesis konumunu açıp Paylaş → Bağlantıyı kopyala ile aldığınız linki girin.
+        </p>
+      </SettingsField>
+
+      <SettingsField icon={MapPin} label="Google Maps Embed Linki" htmlFor="map_embed_url">
+        <input
+          id="map_embed_url"
+          type="url"
+          value={values.map_embed_url}
+          onChange={(event) => onFieldChange("map_embed_url", event.currentTarget.value)}
+          placeholder="https://www.google.com/maps/embed?..."
+          className={settingsInputClassName}
+        />
+
+        <p className="mt-2 text-[10px] leading-5 text-[#969990]">
+          Google Maps → Paylaş → Harita yerleştir bölümündeki iframe kodunun src adresini girin.
+        </p>
       </SettingsField>
     </SettingsSection>
   );

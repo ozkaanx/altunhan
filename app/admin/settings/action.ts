@@ -32,6 +32,12 @@ export async function updateSiteSettings(values: SiteSettingsFormValues) {
 
   const address = values.address.trim();
 
+  const instagram = values.instagram.trim();
+
+  const mapUrl = values.map_url.trim();
+
+  const mapEmbedUrl = values.map_embed_url.trim();
+
   if (!bankAccountHolder) {
     return {
       success: false,
@@ -65,6 +71,12 @@ export async function updateSiteSettings(values: SiteSettingsFormValues) {
       email,
 
       address,
+
+      instagram,
+
+      map_url: mapUrl,
+
+      map_embed_url: mapEmbedUrl,
 
       updated_at: new Date().toISOString(),
     },

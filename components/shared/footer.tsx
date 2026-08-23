@@ -36,6 +36,8 @@ export default function Footer({ settings, accommodations, content }: FooterProp
 
   const address = settings?.address?.trim() || "";
 
+  const instagram = settings?.instagram?.trim() || "";
+
   const phoneHref = getPhoneHref(phone);
 
   const whatsappHref = getWhatsAppHref(whatsapp);
@@ -100,8 +102,8 @@ export default function Footer({ settings, accommodations, content }: FooterProp
                 </li>
 
                 <li>
-                  <Link href="/#deneyim" className={footerLinkClass}>
-                    Deneyim
+                  <Link href="/#ulasim" className={footerLinkClass}>
+                    Ulaşım
                   </Link>
                 </li>
 
@@ -241,17 +243,19 @@ export default function Footer({ settings, accommodations, content }: FooterProp
               </Link>
             </div>
 
-            <div className="flex items-center gap-3">
-              <a
-                href="https://www.instagram.com/altunhanfarm/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="flex h-9 w-9 items-center justify-center border border-white/10 text-white/60 transition-all duration-300 hover:border-farm-gold hover:bg-farm-gold hover:text-white"
-              >
-                <FiInstagram size={15} />
-              </a>
-            </div>
+            {instagram && (
+              <div className="flex items-center gap-3">
+                <a
+                  href={instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="flex h-9 w-9 items-center justify-center border border-white/10 text-white/60 transition-all duration-300 hover:border-farm-gold hover:bg-farm-gold hover:text-white"
+                >
+                  <FiInstagram size={15} />
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </section>
