@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 import { AccommodationStep } from "@/components/reservation/form/accommodation-step";
 import { ContactStep } from "@/components/reservation/form/contact-step";
 import { DateGuestStep } from "@/components/reservation/form/date-guest-step";
@@ -18,12 +20,14 @@ type ReservationFormProps = {
   accommodations: PublicAccommodation[];
   settings: SiteSettings | null;
   initialAccommodationId?: number | null;
+  focusDateStepOnLoad?: boolean;
 };
 
 export function ReservationForm({
   accommodations,
   settings,
   initialAccommodationId,
+  focusDateStepOnLoad = false,
 }: ReservationFormProps) {
   const {
     accommodationId,
@@ -77,6 +81,38 @@ export function ReservationForm({
     initialAccommodationId,
   });
 
+  const dateGuestStepRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!focusDateStepOnLoad || !accommodationId) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      dateGuestStepRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 120);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [focusDateStepOnLoad, accommodationId]);
+
+  const handleAccommodationSelection = (accommodation: PublicAccommodation) => {
+    handleAccommodationChange(accommodation);
+
+    if (!window.matchMedia("(max-width: 1023px)").matches) {
+      return;
+    }
+
+    window.setTimeout(() => {
+      dateGuestStepRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
+  };
+
   if (createdReservation) {
     return <ReservationPayment reservation={createdReservation} settings={settings} />;
   }
@@ -103,10 +139,11 @@ export function ReservationForm({
           <AccommodationStep
             accommodations={accommodations}
             accommodationId={accommodationId}
-            onChange={handleAccommodationChange}
+            onChange={handleAccommodationSelection}
           />
 
-          <DateGuestStep
+          <div ref={dateGuestStepRef} className="scroll-mt-4">
+            <DateGuestStep
             checkIn={checkIn}
             checkOut={checkOut}
             adultCount={adultCount}
@@ -125,7 +162,8 @@ export function ReservationForm({
             onAdultCountChange={handleAdultCountChange}
             onChildCountChange={handleChildCountChange}
             onBedConfigurationChange={handleBedConfigurationChange}
-          />
+            />
+          </div>
 
           <ContactStep
             guestName={guestName}
