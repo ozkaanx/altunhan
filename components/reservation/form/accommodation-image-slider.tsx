@@ -21,10 +21,7 @@ function sortImages(images: PublicAccommodationImage[]) {
   });
 }
 
-export function AccommodationImageSlider({
-  images,
-  title,
-}: AccommodationImageSliderProps) {
+export function AccommodationImageSlider({ images, title }: AccommodationImageSliderProps) {
   const sortedImages = useMemo(() => sortImages(images ?? []), [images]);
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
@@ -41,15 +38,11 @@ export function AccommodationImageSlider({
   const hasMultipleImages = sortedImages.length > 1;
 
   const showPrevious = () => {
-    setActiveIndex((current) =>
-      current === 0 ? sortedImages.length - 1 : current - 1,
-    );
+    setActiveIndex((current) => (current === 0 ? sortedImages.length - 1 : current - 1));
   };
 
   const showNext = () => {
-    setActiveIndex((current) =>
-      current === sortedImages.length - 1 ? 0 : current + 1,
-    );
+    setActiveIndex((current) => (current === sortedImages.length - 1 ? 0 : current + 1));
   };
 
   return (

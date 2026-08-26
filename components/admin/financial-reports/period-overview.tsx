@@ -29,31 +29,21 @@ const periodLabels: Record<FinancialReportPeriod, string> = {
   month: "Aylık",
 };
 
-export function PeriodOverview({
-  period,
-  summary,
-  days,
-  paymentBreakdown,
-}: PeriodOverviewProps) {
+export function PeriodOverview({ period, summary, days, paymentBreakdown }: PeriodOverviewProps) {
   const totalCheckIns = days.reduce((total, day) => total + day.checkIns, 0);
   const totalCheckOuts = days.reduce((total, day) => total + day.checkOuts, 0);
 
   const isDaily = period === "day";
-  const usedCapacity = isDaily
-    ? (days[0]?.occupiedRooms ?? 0)
-    : summary.soldRoomNights;
+  const usedCapacity = isDaily ? (days[0]?.occupiedRooms ?? 0) : summary.soldRoomNights;
 
   const totalCapacity = summary.availableRoomNights;
   const emptyCapacity = Math.max(totalCapacity - usedCapacity, 0);
 
-  const netCollected =
-    paymentBreakdown?.netCollected ?? summary.collectedRevenue;
+  const netCollected = paymentBreakdown?.netCollected ?? summary.collectedRevenue;
 
-  const depositCollected =
-    paymentBreakdown?.depositCollected ?? 0;
+  const depositCollected = paymentBreakdown?.depositCollected ?? 0;
 
-  const refundTotal =
-    paymentBreakdown?.refundTotal ?? summary.refundTotal;
+  const refundTotal = paymentBreakdown?.refundTotal ?? summary.refundTotal;
 
   const cards = [
     {
@@ -105,9 +95,7 @@ export function PeriodOverview({
     <section className="mt-5 border border-[#D9D5CC] bg-[#F8F7F3] p-4 sm:p-5">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-sm font-semibold text-[#263A2D]">
-            {periodLabels[period]} Özet
-          </h2>
+          <h2 className="text-sm font-semibold text-[#263A2D]">{periodLabels[period]} Özet</h2>
           <p className="mt-1 text-[10px] leading-5 text-[#969990]">
             İşletmenin bu dönem için en önemli rakamları.
           </p>
@@ -122,25 +110,19 @@ export function PeriodOverview({
             <article
               key={card.label}
               className={`min-w-0 border p-4 ${
-                card.featured
-                  ? "border-[#263A2D] bg-[#263A2D]"
-                  : "border-[#E3E0D8] bg-white"
+                card.featured ? "border-[#263A2D] bg-[#263A2D]" : "border-[#E3E0D8] bg-white"
               }`}
             >
               <div
                 className={`flex h-8 w-8 items-center justify-center ${
-                  card.featured
-                    ? "bg-white/10 text-[#D6C19F]"
-                    : "bg-[#EEF0EA] text-[#526048]"
+                  card.featured ? "bg-white/10 text-[#D6C19F]" : "bg-[#EEF0EA] text-[#526048]"
                 }`}
               >
                 <Icon size={15} strokeWidth={1.6} />
               </div>
 
               <p
-                className={`mt-3 text-[9px] ${
-                  card.featured ? "text-white/60" : "text-[#858A82]"
-                }`}
+                className={`mt-3 text-[9px] ${card.featured ? "text-white/60" : "text-[#858A82]"}`}
               >
                 {card.label}
               </p>
@@ -166,22 +148,10 @@ export function PeriodOverview({
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-px overflow-hidden border border-[#E3E0D8] bg-[#E3E0D8] sm:grid-cols-4">
-        <SmallStat
-          label="Rezervasyon"
-          value={summary.reservationCount.toLocaleString("tr-TR")}
-        />
-        <SmallStat
-          label="Giriş"
-          value={totalCheckIns.toLocaleString("tr-TR")}
-        />
-        <SmallStat
-          label="Çıkış"
-          value={totalCheckOuts.toLocaleString("tr-TR")}
-        />
-        <SmallStat
-          label="İade"
-          value={formatPrice(refundTotal)}
-        />
+        <SmallStat label="Rezervasyon" value={summary.reservationCount.toLocaleString("tr-TR")} />
+        <SmallStat label="Giriş" value={totalCheckIns.toLocaleString("tr-TR")} />
+        <SmallStat label="Çıkış" value={totalCheckOuts.toLocaleString("tr-TR")} />
+        <SmallStat label="İade" value={formatPrice(refundTotal)} />
       </div>
     </section>
   );
@@ -190,9 +160,7 @@ export function PeriodOverview({
 function SmallStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-white px-4 py-3">
-      <p className="text-[8px] uppercase tracking-[0.08em] text-[#969990]">
-        {label}
-      </p>
+      <p className="text-[8px] uppercase tracking-[0.08em] text-[#969990]">{label}</p>
       <p className="mt-1 text-sm font-semibold text-[#263A2D]">{value}</p>
     </div>
   );

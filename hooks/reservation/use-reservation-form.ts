@@ -3,10 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { createPublicReservation, getBedConfigurationAvailability } from "@/app/rezervasyon/action";
+import { getGoogleAnalyticsAttribution } from "@/lib/analytics/attribution";
 
 import { calculateNightCount, reservationOverlapsRange } from "@/lib/reservation/date-utils";
 
 import { useReservationAvailability } from "@/hooks/reservation/use-reservation-availability";
+import { trackReservationCreated } from "@/lib/analytics/events";
 
 import type {
   BedConfigurationAvailability,
@@ -44,7 +46,7 @@ export function useReservationForm({
   const initialAccommodation =
     initialAccommodationId == null
       ? null
-      : accommodations.find((item) => item.id === initialAccommodationId) ?? null;
+      : (accommodations.find((item) => item.id === initialAccommodationId) ?? null);
 
   const [accommodationId, setAccommodationId] = useState<number | null>(
     initialAccommodation?.id ?? null,
@@ -226,10 +228,7 @@ export function useReservationForm({
     setError(null);
 
     const nextAdultCount = selectedAccommodation
-      ? Math.max(
-          1,
-          Math.min(adultCount, accommodation.max_adults, accommodation.max_total_guests),
-        )
+      ? Math.max(1, Math.min(adultCount, accommodation.max_adults, accommodation.max_total_guests))
       : getDefaultAdultCount(accommodation);
 
     const remainingCapacity = Math.max(0, accommodation.max_total_guests - nextAdultCount);
@@ -387,13 +386,21 @@ export function useReservationForm({
     setIsSubmitting(true);
 
     try {
-      const result = await createPublicReservation(input);
+      const attribution = await getGoogleAnalyticsAttribution();
+
+      const result = await createPublicReservation(input, attribution);
 
       if (!result.success) {
         setError(result.message);
 
         return;
       }
+      trackReservationCreated({
+        reservationCode: result.reservation.reservationCode,
+        accommodationTitle: result.reservation.accommodationTitle,
+        nightCount: result.reservation.nightCount,
+        totalPrice: result.reservation.totalPrice,
+      });
 
       const reservationData: CreatedReservation = {
         id: result.reservation.id,

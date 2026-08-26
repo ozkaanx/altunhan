@@ -85,25 +85,19 @@ export function PaymentBreakdown({ breakdown, error }: PaymentBreakdownProps) {
             <article
               key={card.label}
               className={`min-w-0 border p-3.5 ${
-                card.featured
-                  ? "border-[#263A2D] bg-[#263A2D]"
-                  : "border-[#E3E0D8] bg-white"
+                card.featured ? "border-[#263A2D] bg-[#263A2D]" : "border-[#E3E0D8] bg-white"
               }`}
             >
               <div
                 className={`flex h-8 w-8 items-center justify-center ${
-                  card.featured
-                    ? "bg-white/10 text-[#D6C19F]"
-                    : "bg-[#EEF0EA] text-[#526048]"
+                  card.featured ? "bg-white/10 text-[#D6C19F]" : "bg-[#EEF0EA] text-[#526048]"
                 }`}
               >
                 <Icon size={15} strokeWidth={1.6} />
               </div>
 
               <p
-                className={`mt-3 text-[9px] ${
-                  card.featured ? "text-white/60" : "text-[#858A82]"
-                }`}
+                className={`mt-3 text-[9px] ${card.featured ? "text-white/60" : "text-[#858A82]"}`}
               >
                 {card.label}
               </p>

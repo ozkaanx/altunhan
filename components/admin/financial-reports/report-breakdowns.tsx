@@ -85,19 +85,13 @@ export function ReportBreakdowns({
                     </div>
 
                     <div className="mt-4 grid grid-cols-3 gap-2">
-                      <Metric
-                        label={totalLabel}
-                        value={totalCapacity.toLocaleString("tr-TR")}
-                      />
+                      <Metric label={totalLabel} value={totalCapacity.toLocaleString("tr-TR")} />
                       <Metric
                         label={occupiedLabel}
                         value={occupied.toLocaleString("tr-TR")}
                         emphasis
                       />
-                      <Metric
-                        label={emptyLabel}
-                        value={empty.toLocaleString("tr-TR")}
-                      />
+                      <Metric label={emptyLabel} value={empty.toLocaleString("tr-TR")} />
                     </div>
                   </article>
                 );
@@ -131,9 +125,7 @@ export function ReportBreakdowns({
                         key={item.accommodationId}
                         className="border-t border-[#F0EDE7] text-xs text-[#596058]"
                       >
-                        <td className="px-5 py-4 font-semibold text-[#263A2D]">
-                          {item.title}
-                        </td>
+                        <td className="px-5 py-4 font-semibold text-[#263A2D]">{item.title}</td>
 
                         <td className="px-4 py-4 text-right">
                           {totalCapacity.toLocaleString("tr-TR")}
@@ -164,8 +156,8 @@ export function ReportBreakdowns({
             {!isDaily && (
               <div className="border-t border-[#ECE8E1] bg-[#FAF9F6] px-4 py-3 sm:px-5">
                 <p className="text-[9px] leading-4 text-[#8A8E87]">
-                  Haftalık ve aylık görünümde oda durumu oda-gece üzerinden hesaplanır.
-                  Örneğin 6 oda × 7 gün = 42 toplam oda-gece kapasitesi.
+                  Haftalık ve aylık görünümde oda durumu oda-gece üzerinden hesaplanır. Örneğin 6
+                  oda × 7 gün = 42 toplam oda-gece kapasitesi.
                 </p>
               </div>
             )}
@@ -201,9 +193,7 @@ export function ReportBreakdowns({
                       <p className="text-xs font-semibold text-[#263A2D]">
                         {paymentMethodLabels[item.method]}
                       </p>
-                      <p className="mt-1 text-[9px] text-[#969990]">
-                        {item.paymentCount} ödeme
-                      </p>
+                      <p className="mt-1 text-[9px] text-[#969990]">{item.paymentCount} ödeme</p>
                     </div>
 
                     <div className="text-right">
@@ -227,9 +217,7 @@ export function ReportBreakdowns({
             })}
           </div>
         ) : (
-          <p className="px-5 py-12 text-center text-xs text-[#969990]">
-            Bu dönemde ödeme yok.
-          </p>
+          <p className="px-5 py-12 text-center text-xs text-[#969990]">Bu dönemde ödeme yok.</p>
         )}
       </section>
     </div>
@@ -249,9 +237,7 @@ function Metric({
     <div className="bg-[#F7F5EF] px-2.5 py-2.5">
       <p className="text-[8px] text-[#969990]">{label}</p>
       <p
-        className={`mt-1 text-base font-semibold ${
-          emphasis ? "text-[#263A2D]" : "text-[#596058]"
-        }`}
+        className={`mt-1 text-base font-semibold ${emphasis ? "text-[#263A2D]" : "text-[#596058]"}`}
       >
         {value}
       </p>
