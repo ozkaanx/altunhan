@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://altunhan-beta.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://altunhanfarm.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -61,13 +62,9 @@ export const metadata: Metadata = {
 
     images: [
       {
-        url: "/images/hero/altunhan-farm.jpg",
+        url: "/images/hero/tas_ev.jpg",
 
-        width: 1200,
-
-        height: 630,
-
-        alt: "Altunhan Farm",
+        alt: "Altunhan Farm - Saros",
       },
     ],
   },
@@ -79,7 +76,7 @@ export const metadata: Metadata = {
 
     description: "Saros Körfezi'nin kıyısında, doğayla iç içe konaklama deneyimi.",
 
-    images: ["/images/hero/altunhan-farm.jpg"],
+    images: ["/images/hero/tas_ev.jpg"],
   },
 
   robots: {
@@ -115,8 +112,11 @@ export default function RootLayout({
     <html lang="tr">
       <body className={`${geistSans.className} antialiased`}>
         {children}
+
         <GoogleAnalytics />
+
         <Analytics />
+
         <SpeedInsights />
       </body>
     </html>
