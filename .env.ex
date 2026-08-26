@@ -44,3 +44,10 @@ RESEND_REPLY_TO_EMAIL=
 # ==========================================
 
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
+# ==========================================
+# GOOGLE ANALYTICS
+# ==========================================
+
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+GA_MEASUREMENT_PROTOCOL_API_SECRET=
