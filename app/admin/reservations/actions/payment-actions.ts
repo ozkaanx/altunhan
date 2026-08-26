@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 
 import { requireAdmin } from "@/lib/auth/admin";
 import { notifyReservationDecision } from "@/lib/notifications/reservation-emails";
-
 import type { ReservationPaymentMethod } from "@/types/reservation";
+import { sendReservationConfirmedEvent } from "@/lib/analytics/measurement-protocol";
 
 const MAX_NOTE_LENGTH = 500;
 
@@ -65,8 +65,61 @@ export async function verifyReservationPayment(paymentId: number, receivedAmount
   }
 
   if (result.reservation_confirmed) {
+    const reservationId = Number(result.reservation_id);
+
     try {
-      await notifyReservationDecision(auth.supabase, Number(result.reservation_id), "confirmed");
+      const { data: reservation, error: reservationError } = await auth.supabase
+        .from("reservations")
+        .select(
+          `
+          reservation_code,
+          total_price,
+          ga_client_id,
+          confirmed_conversion_sent_at
+        `,
+        )
+        .eq("id", reservationId)
+        .single();
+
+      if (reservationError) {
+        console.error("Analytics için rezervasyon bilgisi alınamadı:", reservationError);
+      } else if (reservation.ga_client_id && !reservation.confirmed_conversion_sent_at) {
+        const analyticsResult = await sendReservationConfirmedEvent({
+          clientId: reservation.ga_client_id,
+
+          reservationCode: reservation.reservation_code,
+
+          totalPrice: Number(reservation.total_price),
+        });
+
+        if (analyticsResult.success) {
+          const { error: conversionUpdateError } = await auth.supabase
+            .from("reservations")
+            .update({
+              confirmed_conversion_sent_at: new Date().toISOString(),
+            })
+            .eq("id", reservationId)
+            .is("confirmed_conversion_sent_at", null);
+
+          if (conversionUpdateError) {
+            console.error(
+              "Analytics dönüşüm gönderim zamanı kaydedilemedi:",
+              conversionUpdateError,
+            );
+          }
+        } else {
+          console.error(
+            "reservation_confirmed Google Analytics'e gönderilemedi:",
+            analyticsResult.message,
+          );
+        }
+      }
+    } catch (analyticsError) {
+      console.error("reservation_confirmed analytics işlemi başarısız:", analyticsError);
+    }
+
+    try {
+      await notifyReservationDecision(auth.supabase, reservationId, "confirmed");
     } catch (notificationError) {
       console.error("Rezervasyon onay maili gönderilemedi:", notificationError);
     }
