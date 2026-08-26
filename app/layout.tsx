@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 
 import "./globals.css";
 
@@ -114,6 +115,7 @@ export default function RootLayout({
     <html lang="tr">
       <body className={`${geistSans.className} antialiased`}>
         {children}
+        <GoogleAnalytics />
         <Analytics />
         <SpeedInsights />
       </body>

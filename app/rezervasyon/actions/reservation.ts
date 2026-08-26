@@ -2,8 +2,9 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-import type { ReservationCreateInput, ReservationCreateResult } from "@/types/public-reservation";
 import { publicReservationSchema } from "@/lib/reservation/reservation-schema";
+
+import type { ReservationCreateInput, ReservationCreateResult } from "@/types/public-reservation";
 
 type ReservationRpcResult = {
   reservation_id: number;
@@ -16,8 +17,14 @@ type ReservationRpcResult = {
   remaining_payment_amount: number;
 };
 
+type ReservationAttribution = {
+  clientId: string;
+  sessionId: string | null;
+};
+
 export async function createPublicReservation(
   values: ReservationCreateInput,
+  attribution?: ReservationAttribution | null,
 ): Promise<ReservationCreateResult> {
   const validationResult = publicReservationSchema.safeParse(values);
 
@@ -32,7 +39,7 @@ export async function createPublicReservation(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase.rpc("create_public_reservation_v5", {
+  const { data, error } = await supabase.rpc("create_public_reservation_v6", {
     p_accommodation_id: input.accommodationId,
 
     p_check_in: input.checkIn,
@@ -47,6 +54,9 @@ export async function createPublicReservation(
     p_guest_email: input.guestEmail,
 
     p_requested_bed_configuration: input.requestedBedConfiguration,
+
+    p_ga_client_id: attribution?.clientId ?? null,
+    p_ga_session_id: attribution?.sessionId ?? null,
   });
 
   if (error) {

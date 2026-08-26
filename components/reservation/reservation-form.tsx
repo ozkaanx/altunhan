@@ -15,6 +15,7 @@ import { isValidTckn } from "@/lib/identity/tckn";
 
 import type { PublicAccommodation } from "@/types/public-reservation";
 import type { SiteSettings } from "@/types/site-settings";
+import { trackReservationStarted } from "@/lib/analytics/events";
 
 type ReservationFormProps = {
   accommodations: PublicAccommodation[];
@@ -82,6 +83,7 @@ export function ReservationForm({
   });
 
   const dateGuestStepRef = useRef<HTMLDivElement>(null);
+  const hasTrackedReservationStart = useRef(false);
 
   useEffect(() => {
     if (!focusDateStepOnLoad || !accommodationId) {
@@ -98,7 +100,21 @@ export function ReservationForm({
     return () => window.clearTimeout(timeoutId);
   }, [focusDateStepOnLoad, accommodationId]);
 
+  const trackReservationStartOnce = (accommodation?: PublicAccommodation) => {
+    if (hasTrackedReservationStart.current) {
+      return;
+    }
+
+    hasTrackedReservationStart.current = true;
+
+    trackReservationStarted({
+      accommodationTitle: accommodation?.title,
+    });
+  };
+
   const handleAccommodationSelection = (accommodation: PublicAccommodation) => {
+    trackReservationStartOnce(accommodation);
+
     handleAccommodationChange(accommodation);
 
     if (!window.matchMedia("(max-width: 1023px)").matches) {
@@ -144,24 +160,27 @@ export function ReservationForm({
 
           <div ref={dateGuestStepRef} className="scroll-mt-4">
             <DateGuestStep
-            checkIn={checkIn}
-            checkOut={checkOut}
-            adultCount={adultCount}
-            childCount={childCount}
-            selectedAccommodation={selectedAccommodation}
-            requestedBedConfiguration={requestedBedConfiguration}
-            bedConfigurationOptions={bedConfigurationOptions}
-            isLoadingBedAvailability={isLoadingBedAvailability}
-            bedAvailabilityError={bedAvailabilityError}
-            busyRanges={busyRanges}
-            isLoadingAvailability={isLoadingAvailability}
-            availabilityError={availabilityError}
-            dateError={dateError}
-            onCheckInChange={handleCheckInChange}
-            onCheckOutChange={handleCheckOutChange}
-            onAdultCountChange={handleAdultCountChange}
-            onChildCountChange={handleChildCountChange}
-            onBedConfigurationChange={handleBedConfigurationChange}
+              checkIn={checkIn}
+              checkOut={checkOut}
+              adultCount={adultCount}
+              childCount={childCount}
+              selectedAccommodation={selectedAccommodation}
+              requestedBedConfiguration={requestedBedConfiguration}
+              bedConfigurationOptions={bedConfigurationOptions}
+              isLoadingBedAvailability={isLoadingBedAvailability}
+              bedAvailabilityError={bedAvailabilityError}
+              busyRanges={busyRanges}
+              isLoadingAvailability={isLoadingAvailability}
+              availabilityError={availabilityError}
+              dateError={dateError}
+              onCheckInChange={(value) => {
+                trackReservationStartOnce(selectedAccommodation);
+                handleCheckInChange(value);
+              }}
+              onCheckOutChange={handleCheckOutChange}
+              onAdultCountChange={handleAdultCountChange}
+              onChildCountChange={handleChildCountChange}
+              onBedConfigurationChange={handleBedConfigurationChange}
             />
           </div>
 

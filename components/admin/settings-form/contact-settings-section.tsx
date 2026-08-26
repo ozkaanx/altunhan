@@ -94,7 +94,8 @@ export function ContactSettingsSection({ values, onFieldChange }: ContactSetting
         />
 
         <p className="mt-2 text-[10px] leading-5 text-[#969990]">
-          Google Maps&apos;te tesis konumunu açıp Paylaş → Bağlantıyı kopyala ile aldığınız linki girin.
+          Google Maps&apos;te tesis konumunu açıp Paylaş → Bağlantıyı kopyala ile aldığınız linki
+          girin.
         </p>
       </SettingsField>
 

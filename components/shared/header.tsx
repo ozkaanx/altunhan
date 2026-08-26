@@ -55,10 +55,7 @@ export const Header = ({ settings }: HeaderProps) => {
           </div>
         )}
       </div>
-      <WhatsAppSupport
-        whatsapp={settings?.whatsapp}
-        instagram={settings?.instagram}
-      />
+      <WhatsAppSupport whatsapp={settings?.whatsapp} instagram={settings?.instagram} />
     </header>
   );
 };

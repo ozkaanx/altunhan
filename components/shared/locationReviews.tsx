@@ -40,8 +40,6 @@ function normalizeWhatsappHref(value: string | null) {
 }
 
 export default function LocationReviews({ settings }: LocationReviewsProps) {
-  const source = (settings ?? {}) as Record<string, unknown>;
-
   const address = settings?.address?.trim() || null;
 
   const phone = settings?.phone?.trim() || null;
@@ -52,12 +50,7 @@ export default function LocationReviews({ settings }: LocationReviewsProps) {
 
   const instagram = settings?.instagram?.trim() || null;
 
-
-  const instagramUsername = instagram
-
-    ? `@${instagram.replace(/\/+$/, "").split("/").pop()}`
-
-    : null;
+  const instagramUsername = instagram ? `@${instagram.replace(/\/+$/, "").split("/").pop()}` : null;
 
   const mapUrl = settings?.map_url?.trim() || "";
 
