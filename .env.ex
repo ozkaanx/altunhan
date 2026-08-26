@@ -37,3 +37,10 @@ RESEND_FROM_EMAIL=
 ADMIN_NOTIFICATION_EMAIL=
 
 RESEND_REPLY_TO_EMAIL=
+
+
+# ==========================================
+# GOOGLE ANALYTICS
+# ==========================================
+
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
