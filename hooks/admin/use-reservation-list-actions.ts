@@ -33,7 +33,14 @@ export function useReservationListActions({ onSuccess }: UseReservationListActio
   };
 
   const handleCancel = async (reservation: Reservation, reason: string) => {
-    const result = await cancelReservation(reservation.id, reason);
+    if (reservation.status !== "pending_payment" && reservation.status !== "confirmed") {
+      return {
+        success: false as const,
+        message: "Bu rezervasyon artık iptal edilebilir durumda değil.",
+      };
+    }
+
+    const result = await cancelReservation(reservation.id, reason, reservation.status);
 
     if (!result.success) {
       return result;

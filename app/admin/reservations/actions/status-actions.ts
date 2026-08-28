@@ -12,6 +12,9 @@ function isValidReservationId(id: number) {
 function revalidateReservationPaths() {
   revalidatePath("/admin/reservations");
   revalidatePath("/admin");
+  revalidatePath("/admin/rooms");
+  revalidatePath("/admin/reports");
+  revalidatePath("/rezervasyon");
   revalidatePath("/rezervasyon/takip");
 }
 
@@ -105,7 +108,11 @@ export async function rejectReservation(id: number, reason: string) {
   };
 }
 
-export async function cancelReservation(id: number, reason: string) {
+export async function cancelReservation(
+  id: number,
+  reason: string,
+  expectedStatus: "pending_payment" | "confirmed",
+) {
   if (!isValidReservationId(id)) {
     return {
       success: false as const,
@@ -141,15 +148,11 @@ export async function cancelReservation(id: number, reason: string) {
   const { supabase } = auth;
 
   const { data, error } = await supabase
-    .from("reservations")
-    .update({
-      status: "cancelled",
-      cancellation_reason: cleanReason,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id)
-    .eq("status", "confirmed")
-    .select("id");
+    .rpc("cancel_admin_reservation", {
+      p_reservation_id: id,
+      p_reason: cleanReason,
+      p_expected_status: expectedStatus,
+    });
 
   if (error) {
     console.error("Rezervasyon iptal edilemedi:", error);
@@ -160,10 +163,10 @@ export async function cancelReservation(id: number, reason: string) {
     };
   }
 
-  if (!data?.length) {
+  if (!data) {
     return {
       success: false as const,
-      message: "Rezervasyon bulunamadı veya artık iptal edilebilir durumda değil.",
+      message: "Rezervasyon iptal edilemedi.",
     };
   }
 
