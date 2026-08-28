@@ -12,7 +12,6 @@ type ReservationDateModalProps = {
   open: boolean;
   checkIn: string;
   checkOut: string;
-  today: string;
   nightlyPrice: number;
   rooms: ReservationRoomOption[];
   selectedRoomId: number | null;
@@ -32,7 +31,6 @@ export function ReservationDateModal({
   open,
   checkIn,
   checkOut,
-  today,
   nightlyPrice,
   rooms,
   selectedRoomId,
@@ -107,7 +105,6 @@ export function ReservationDateModal({
             <input
               type="date"
               required
-              min={today}
               value={checkIn}
               onChange={(event) => onCheckInChange(event.target.value)}
               disabled={isUpdating}
@@ -121,7 +118,7 @@ export function ReservationDateModal({
             <input
               type="date"
               required
-              min={checkIn || today}
+              min={checkIn || undefined}
               value={checkOut}
               onChange={(event) => onCheckOutChange(event.target.value)}
               disabled={isUpdating}

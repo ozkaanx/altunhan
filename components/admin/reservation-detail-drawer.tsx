@@ -10,7 +10,6 @@ import type { Reservation } from "@/types/reservation";
 import { ReservationDrawerHeader } from "@/components/admin/reservation-detail/reservation-drawer-header";
 import { ReservationInformation } from "@/components/admin/reservation-detail/reservation-information";
 import { ReservationStatusActions } from "@/components/admin/reservation-detail/reservation-status-actions";
-import { getTurkeyToday } from "@/lib/reservation/date-utils";
 
 export function ReservationDetailDrawer({
   reservation,
@@ -156,7 +155,6 @@ function ReservationDetailDrawerContent({
         open={dateModalOpen}
         checkIn={dateCheckIn}
         checkOut={dateCheckOut}
-        today={getTurkeyToday()}
         nightlyPrice={Number(reservation.nightly_price)}
         rooms={dateRooms}
         selectedRoomId={selectedDateRoomId}
