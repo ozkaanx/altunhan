@@ -218,8 +218,7 @@ begin
 
   perform public.refresh_reservation_payment_status(p_reservation_id);
 
-  if v_reservation.status in ('pending_payment', 'pending_approval')
-     and v_confirmed_amount + p_amount >= v_reservation.deposit_target_amount then
+  if v_reservation.status in ('pending_payment', 'pending_approval') then
     update public.reservations
     set
       status = 'confirmed',
@@ -794,7 +793,6 @@ declare
   v_confirmed_before numeric;
   v_confirmed_after numeric;
   v_remaining_before numeric;
-  v_is_confirmed boolean;
 begin
   if not public.is_admin() then
     raise exception 'Bu işlem için yönetici yetkisi gereklidir.';
@@ -822,6 +820,10 @@ begin
 
   if not found then
     raise exception 'Rezervasyon bulunamadı.';
+  end if;
+
+  if v_reservation.status in ('rejected', 'cancelled') then
+    raise exception 'Reddedilmiş veya iptal edilmiş rezervasyonun ödemesi doğrulanamaz.';
   end if;
 
   select coalesce(
@@ -867,20 +869,18 @@ begin
   from public.reservation_payments rp
   where rp.reservation_id = v_reservation.id;
 
-  v_is_confirmed := v_confirmed_after >= v_reservation.deposit_target_amount;
-
   update public.reservations
   set
-    status = case when v_is_confirmed then 'confirmed' else 'pending_payment' end,
-    rejection_reason = case when v_is_confirmed then null else rejection_reason end,
-    cancellation_reason = case when v_is_confirmed then null else cancellation_reason end,
+    status = 'confirmed',
+    rejection_reason = null,
+    cancellation_reason = null,
     updated_at = now()
   where id = v_reservation.id;
 
   return query
   select
     v_reservation.id,
-    v_is_confirmed,
+    true,
     v_confirmed_after,
     greatest(v_reservation.deposit_target_amount - v_confirmed_after, 0),
     greatest(v_reservation.total_price - v_confirmed_after, 0);
@@ -981,6 +981,13 @@ revoke execute on function public.get_public_reservation_status_v3(
 grant execute on function public.get_public_reservation_status_v3(
   text, text
 ) to anon, authenticated, service_role;
+
+revoke execute on function public.record_admin_reservation_payment(
+  bigint, numeric, text, text
+) from public, anon;
+grant execute on function public.record_admin_reservation_payment(
+  bigint, numeric, text, text
+) to authenticated, service_role;
 
 revoke execute on function public.verify_admin_reservation_payment(
   bigint, numeric

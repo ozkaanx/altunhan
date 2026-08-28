@@ -29,7 +29,7 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
 
   const [
     { report, error },
-    { breakdown: paymentBreakdown, error: paymentBreakdownError },
+    { breakdown: paymentBreakdown },
     { movements: recentFinancialMovements },
   ] = await Promise.all([
     getAdminFinancialReport(range.startDate, range.endDate),

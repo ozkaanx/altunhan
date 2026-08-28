@@ -69,7 +69,7 @@ export default function LocationReviews({ settings }: LocationReviewsProps) {
             </p>
 
             <h2 className="mt-5 max-w-[720px] font-serif text-[38px] leading-[1.04] tracking-[-0.02em] text-[#263A2D] sm:text-[46px] lg:text-[52px]">
-              Altunhan Farm'a kolayca ulaşın.
+              Altunhan Farm&apos;a kolayca ulaşın.
             </h2>
 
             <p className="mt-5 max-w-[680px] text-sm leading-7 text-[#667069] sm:text-[15px]">
