@@ -46,7 +46,7 @@ export function ReservationStatusActions({
         </button>
       )}
 
-      {reservation.status === "confirmed" && (
+      {(reservation.status === "pending_payment" || reservation.status === "confirmed") && (
         <button
           type="button"
           onClick={() => onOpenAction("cancel")}

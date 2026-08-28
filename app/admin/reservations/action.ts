@@ -108,8 +108,12 @@ export async function updateReservationDates(
   return updateReservationDatesAction(reservationId, checkIn, checkOut, roomId);
 }
 
-export async function cancelReservation(id: number, reason: string) {
-  return cancelReservationAction(id, reason);
+export async function cancelReservation(
+  id: number,
+  reason: string,
+  expectedStatus: "pending_payment" | "confirmed",
+) {
+  return cancelReservationAction(id, reason, expectedStatus);
 }
 
 export async function rejectReservation(id: number, reason: string) {
