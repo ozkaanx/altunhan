@@ -37,6 +37,9 @@ export function ReservationRoomModal({
     }
   };
 
+  const selectedRoom = rooms.find((room) => room.id === selectedRoomId);
+  const canSubmit = Boolean(selectedRoom?.isAvailable);
+
   return (
     <div className="fixed inset-0 z-[110] flex items-end justify-center overflow-hidden bg-black/40 sm:items-center sm:p-4">
       <button
@@ -67,7 +70,7 @@ export function ReservationRoomModal({
 
         <div className="mt-5 min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1 [-webkit-overflow-scrolling:touch]">
           {rooms.map((room) => {
-            const disabled = !room.isAvailable && !room.isCurrent;
+            const disabled = !room.isAvailable;
 
             const capacityInsufficient =
               typeof room.maxGuests === "number" && room.maxGuests < guestCount;
@@ -77,7 +80,9 @@ export function ReservationRoomModal({
               null;
 
             const status = room.isCurrent
-              ? "Mevcut"
+              ? room.isAvailable
+                ? "Mevcut"
+                : "Mevcut · Artık Dolu"
               : capacityInsufficient
                 ? "Kapasite Yetersiz"
                 : room.isAvailable
@@ -124,7 +129,7 @@ export function ReservationRoomModal({
 
                 <span
                   className={`text-[10px] font-semibold ${
-                    room.isCurrent
+                    room.isCurrent && room.isAvailable
                       ? "text-[#A8754F]"
                       : capacityInsufficient
                         ? "text-[#98584E]"
@@ -159,7 +164,7 @@ export function ReservationRoomModal({
           <button
             type="button"
             onClick={onSubmit}
-            disabled={isChanging || !selectedRoomId}
+            disabled={isChanging || !canSubmit}
             className="flex h-11 items-center justify-center gap-2 bg-[#263A2D] text-xs font-semibold text-white disabled:opacity-50"
           >
             {isChanging && <Loader2 size={15} className="animate-spin" />}
