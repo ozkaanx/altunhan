@@ -53,6 +53,7 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
     canIncreaseChild,
     nightCount,
     totalPrice,
+    pricing,
     receivedPaymentAmount,
     totalRemainingAmount,
     willBeConfirmed,
@@ -84,6 +85,9 @@ export function AdminReservationForm({ accommodations }: AdminReservationFormPro
         isLoadingRooms={isLoadingRooms}
         nightCount={nightCount}
         totalPrice={totalPrice}
+        regularTotal={pricing.regularTotal}
+        discountAmount={pricing.discountAmount}
+        discountedNightCount={pricing.discountedNightCount}
         onAccommodationChange={handleAccommodationChange}
         onCheckInChange={(value) => {
           setCheckIn(value);

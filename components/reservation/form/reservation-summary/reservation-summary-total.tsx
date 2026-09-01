@@ -6,6 +6,9 @@ type ReservationSummaryTotalProps = {
   estimatedNightCount: number;
   estimatedTotal: number;
   estimatedDeposit: number;
+  regularTotal: number;
+  discountAmount: number;
+  discountedNightCount: number;
   isDisabled: boolean;
   isSubmitting: boolean;
   submitLabel: string;
@@ -15,6 +18,9 @@ export function ReservationSummaryTotal({
   estimatedNightCount,
   estimatedTotal,
   estimatedDeposit,
+  regularTotal,
+  discountAmount,
+  discountedNightCount,
   isDisabled,
   isSubmitting,
   submitLabel,
@@ -36,6 +42,28 @@ export function ReservationSummaryTotal({
           <p className="pb-0.5 text-[9px] text-white/50">{estimatedNightCount} gece</p>
         )}
       </div>
+
+      {hasEstimate && discountAmount > 0 ? (
+        <div className="mt-4 border border-white/20 bg-white/10 p-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#EBC7A5]">
+                Eylül Fırsatı · %20
+              </p>
+              <p className="mt-1 text-[9px] text-white/60">
+                {discountedNightCount} Eylül gecesine uygulandı
+              </p>
+            </div>
+
+            <div className="text-right">
+              <p className="text-[10px] text-white/45 line-through">{formatPrice(regularTotal)}</p>
+              <p className="mt-1 text-xs font-semibold text-[#EBC7A5]">
+                −{formatPrice(discountAmount)}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {hasEstimate && (
         <div className="mt-4 border-t border-white/15 pt-4">

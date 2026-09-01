@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { getDefaultAdultCount, getTurkeyToday } from "@/lib/admin/reservation-form-utils";
+import { calculateSeptemberPromotionPricing } from "@/lib/reservation/september-promotion";
 
 import type {
   AdminAvailableRoom,
@@ -71,21 +72,18 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
   const canIncreaseChild =
     Boolean(selectedAccommodation) && childCount < maxChildren && totalGuestCount < maxTotalGuests;
 
-  const nightCount = useMemo(() => {
-    if (!checkIn || !checkOut || checkOut <= checkIn) {
-      return 0;
-    }
+  const pricing = useMemo(
+    () =>
+      calculateSeptemberPromotionPricing(
+        Number(selectedAccommodation?.price ?? 0),
+        checkIn,
+        checkOut,
+      ),
+    [selectedAccommodation, checkIn, checkOut],
+  );
 
-    const start = new Date(`${checkIn}T00:00:00Z`);
-
-    const end = new Date(`${checkOut}T00:00:00Z`);
-
-    const nights = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-
-    return Math.max(0, nights);
-  }, [checkIn, checkOut]);
-
-  const totalPrice = selectedAccommodation ? Number(selectedAccommodation.price) * nightCount : 0;
+  const nightCount = pricing.nightCount;
+  const totalPrice = pricing.totalPrice;
 
   const receivedPaymentAmount = hasInitialPayment ? Number(initialPaymentAmount) || 0 : 0;
 
@@ -170,6 +168,7 @@ export function useAdminReservationFormState(accommodations: AdminReservationAcc
 
     nightCount,
     totalPrice,
+    pricing,
     receivedPaymentAmount,
     totalRemainingAmount,
     willBeConfirmed,

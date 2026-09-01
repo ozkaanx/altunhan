@@ -6,6 +6,10 @@ import { AccommodationImageSlider } from "@/components/reservation/form/accommod
 import { SectionTitle } from "@/components/shared/sectionTitle";
 
 import { formatPrice } from "@/lib/formatters/price";
+import {
+  getSeptemberPromotionalNightlyPrice,
+  isSeptemberPromotionVisible,
+} from "@/lib/reservation/september-promotion";
 import { cn } from "@/lib/utils";
 
 import type { PublicAccommodation } from "@/types/public-reservation";
@@ -21,6 +25,8 @@ export function AccommodationStep({
   accommodationId,
   onChange,
 }: AccommodationStepProps) {
+  const showPromotion = isSeptemberPromotionVisible();
+
   return (
     <section className="border border-farm-line bg-farm-paper p-4 sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -99,12 +105,26 @@ export function AccommodationStep({
 
                     <div className="shrink-0 text-right">
                       <p className="text-[8px] uppercase tracking-[0.12em] text-[#999D95]">
-                        Gecelik
+                        {showPromotion ? "Eylül Geceliği" : "Gecelik"}
                       </p>
 
-                      <p className="mt-1 whitespace-nowrap text-sm font-semibold text-farm-forest">
-                        {formatPrice(accommodation.price)}
-                      </p>
+                      {showPromotion ? (
+                        <>
+                          <p className="mt-1 whitespace-nowrap text-[9px] text-[#999D95] line-through">
+                            {formatPrice(accommodation.price)}
+                          </p>
+                          <p className="mt-0.5 whitespace-nowrap text-sm font-semibold text-farm-forest">
+                            {formatPrice(getSeptemberPromotionalNightlyPrice(accommodation.price))}
+                          </p>
+                          <p className="mt-1 text-[8px] font-semibold uppercase tracking-[0.1em] text-[#A8754F]">
+                            %20 İndirim
+                          </p>
+                        </>
+                      ) : (
+                        <p className="mt-1 whitespace-nowrap text-sm font-semibold text-farm-forest">
+                          {formatPrice(accommodation.price)}
+                        </p>
+                      )}
                     </div>
                   </div>
 

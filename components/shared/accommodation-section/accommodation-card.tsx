@@ -10,6 +10,10 @@ import {
   getHomeAccommodationHref,
 } from "@/lib/accommodation/home-accommodation-utils";
 import { formatPrice } from "@/lib/formatters/price";
+import {
+  getSeptemberPromotionalNightlyPrice,
+  isSeptemberPromotionVisible,
+} from "@/lib/reservation/september-promotion";
 
 import type { HomeAccommodation } from "@/types/home-accommodation";
 
@@ -21,6 +25,7 @@ export function AccommodationCard({ accommodation }: AccommodationCardProps) {
   const image = getHomeAccommodationCoverImage(accommodation);
   const href = getHomeAccommodationHref(accommodation);
   const shortDescription = getHomeAccommodationDescription(accommodation);
+  const showPromotion = isSeptemberPromotionVisible();
 
   return (
     <article className="group flex h-full min-w-0 flex-col overflow-hidden border border-[#DDD8CC] bg-[#FAF8F2] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(38,58,45,0.10)]">
@@ -59,12 +64,26 @@ export function AccommodationCard({ accommodation }: AccommodationCardProps) {
 
           <div className="shrink-0 border border-[#DDD8CC] bg-[#F5F1E8] px-3 py-2.5 text-right">
             <p className="text-[8px] font-medium uppercase tracking-[0.15em] text-[#8C9089]">
-              Gecelik
+              {showPromotion ? "Eylül Geceliği" : "Gecelik"}
             </p>
 
-            <p className="mt-1 whitespace-nowrap text-[17px] font-semibold leading-none tracking-tight text-[#263A2D]">
-              {formatPrice(accommodation.price)}
-            </p>
+            {showPromotion ? (
+              <>
+                <p className="mt-1 whitespace-nowrap text-[9px] text-[#8C9089] line-through">
+                  {formatPrice(accommodation.price)}
+                </p>
+                <p className="mt-1 whitespace-nowrap text-[17px] font-semibold leading-none tracking-tight text-[#263A2D]">
+                  {formatPrice(getSeptemberPromotionalNightlyPrice(accommodation.price))}
+                </p>
+                <p className="mt-1 text-[7px] font-semibold uppercase tracking-[0.1em] text-[#A8754F]">
+                  %20 İndirim
+                </p>
+              </>
+            ) : (
+              <p className="mt-1 whitespace-nowrap text-[17px] font-semibold leading-none tracking-tight text-[#263A2D]">
+                {formatPrice(accommodation.price)}
+              </p>
+            )}
           </div>
         </div>
 

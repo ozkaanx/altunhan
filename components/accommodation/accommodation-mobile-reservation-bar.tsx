@@ -3,6 +3,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { formatPrice } from "@/lib/formatters/price";
+import {
+  getSeptemberPromotionalNightlyPrice,
+  isSeptemberPromotionVisible,
+} from "@/lib/reservation/september-promotion";
 
 type AccommodationMobileReservationBarProps = {
   price: number;
@@ -13,16 +17,27 @@ export function AccommodationMobileReservationBar({
   price,
   reservationHref,
 }: AccommodationMobileReservationBarProps) {
+  const showPromotion = isSeptemberPromotionVisible();
+
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#D4CEC3] bg-[#FAF8F2]/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-12px_30px_rgba(38,58,45,0.1)] backdrop-blur-md lg:hidden">
       <div className="mx-auto flex max-w-lg items-center gap-4">
         <div className="min-w-0 shrink-0">
           <p className="text-[8px] font-semibold uppercase tracking-[0.14em] text-[#A8754F]">
-            Gecelik
+            {showPromotion ? "Eylül · %20" : "Gecelik"}
           </p>
-          <p className="mt-1 font-serif text-xl leading-none text-[#263A2D]">
-            {formatPrice(price)}
-          </p>
+          {showPromotion ? (
+            <div className="mt-1 flex items-baseline gap-2">
+              <p className="text-[9px] text-[#92968E] line-through">{formatPrice(price)}</p>
+              <p className="font-serif text-xl leading-none text-[#263A2D]">
+                {formatPrice(getSeptemberPromotionalNightlyPrice(price))}
+              </p>
+            </div>
+          ) : (
+            <p className="mt-1 font-serif text-xl leading-none text-[#263A2D]">
+              {formatPrice(price)}
+            </p>
+          )}
         </div>
 
         <Link

@@ -3,7 +3,7 @@ import { CalendarDays, CheckCircle2, Loader2, Search } from "lucide-react";
 import { dateInputClass } from "@/components/admin/reservation-form/form-elements";
 
 import { formatPrice } from "@/lib/formatters/price";
-import { calculateNightCount } from "@/lib/reservation/date-utils";
+import { calculateSeptemberPromotionPricing } from "@/lib/reservation/september-promotion";
 import { STAY_TIME_POLICY_SUMMARY } from "@/lib/reservation/stay-policy";
 
 import type { ReservationRoomOption } from "@/types/admin-reservation-detail";
@@ -49,8 +49,9 @@ export function ReservationDateModal({
     return null;
   }
 
-  const nightCount = calculateNightCount(checkIn, checkOut);
-  const totalPrice = nightlyPrice * nightCount;
+  const pricing = calculateSeptemberPromotionPricing(nightlyPrice, checkIn, checkOut);
+  const nightCount = pricing.nightCount;
+  const totalPrice = pricing.totalPrice;
   const availableRooms = rooms.filter((room) => room.isAvailable);
 
   const handleClose = () => {
@@ -138,6 +139,30 @@ export function ReservationDateModal({
             <p className="mt-1 text-sm font-semibold text-[#263A2D]">{formatPrice(totalPrice)}</p>
           </div>
         </div>
+
+        {pricing.hasDiscount ? (
+          <div className="mt-3 border border-[#E3CFB8] bg-[#FBF5EC] p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#A8754F]">
+                  Eylül Fırsatı · %20
+                </p>
+                <p className="mt-1 text-[10px] text-[#7D817B]">
+                  {pricing.discountedNightCount} geceye uygulandı
+                </p>
+              </div>
+
+              <div className="text-right">
+                <p className="text-[10px] text-[#969990] line-through">
+                  {formatPrice(pricing.regularTotal)}
+                </p>
+                <p className="mt-1 text-xs font-semibold text-[#A8754F]">
+                  −{formatPrice(pricing.discountAmount)}
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <button
           type="button"

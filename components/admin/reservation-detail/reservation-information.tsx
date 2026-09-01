@@ -16,6 +16,7 @@ import { InfoRow, MiniInfo } from "@/components/admin/reservation-detail/detail-
 import { formatTurkishPhoneForDisplay } from "@/lib/phone";
 import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
 import { formatTcknForDisplay } from "@/lib/identity/tckn";
+import { formatPrice } from "@/lib/formatters/price";
 
 import type { Reservation } from "@/types/reservation";
 
@@ -79,6 +80,8 @@ export function ReservationInformation({
       : `${reservation.adult_count} yetişkin`;
 
   const canEditDates = reservation.status !== "rejected" && reservation.status !== "cancelled";
+  const regularTotal = Number(reservation.nightly_price) * reservation.night_count;
+  const discountAmount = Math.max(regularTotal - Number(reservation.total_price), 0);
 
   return (
     <>
@@ -158,6 +161,26 @@ export function ReservationInformation({
 
           <MiniInfo label="Misafir" value={guestSummary} />
         </div>
+
+        {discountAmount > 0 ? (
+          <div className="mt-4 border border-[#E3CFB8] bg-[#FBF5EC] p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#A8754F]">
+                  Eylül 2026 İndirimi · %20
+                </p>
+                <p className="mt-1 text-[10px] text-[#7D817B]">
+                  Normal toplam {formatPrice(regularTotal)}
+                </p>
+              </div>
+
+              <p className="text-sm font-semibold text-[#A8754F]">
+                −{formatPrice(discountAmount)}
+              </p>
+            </div>
+          </div>
+        ) : null}
+
         <button
           type="button"
           onClick={onOpenRoomModal}

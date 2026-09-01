@@ -56,6 +56,7 @@ export function ReservationForm({
     estimatedNightCount,
     estimatedTotal,
     estimatedDeposit,
+    estimatedPricing,
 
     error,
     isSubmitting,
@@ -205,6 +206,9 @@ export function ReservationForm({
           estimatedNightCount={estimatedNightCount}
           estimatedTotal={estimatedTotal}
           estimatedDeposit={estimatedDeposit}
+          regularTotal={estimatedPricing.regularTotal}
+          discountAmount={estimatedPricing.discountAmount}
+          discountedNightCount={estimatedPricing.discountedNightCount}
           dateError={dateError}
           error={error}
           isSubmitting={isSubmitting}
