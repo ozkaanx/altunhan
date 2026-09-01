@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createPublicReservation, getBedConfigurationAvailability } from "@/app/rezervasyon/action";
 import { getGoogleAnalyticsAttribution } from "@/lib/analytics/attribution";
 
-import { calculateNightCount, reservationOverlapsRange } from "@/lib/reservation/date-utils";
+import { reservationOverlapsRange } from "@/lib/reservation/date-utils";
 
 import { useReservationAvailability } from "@/hooks/reservation/use-reservation-availability";
 import { trackReservationCreated } from "@/lib/analytics/events";
@@ -18,10 +18,8 @@ import type {
 
 import type { CreatedReservation } from "@/types/reservation-ui";
 
-import {
-  calculateDepositAmount,
-  calculateReservationTotal,
-} from "@/lib/reservation/reservation-utils";
+import { calculateDepositAmount } from "@/lib/reservation/reservation-utils";
+import { calculateSeptemberPromotionPricing } from "@/lib/reservation/september-promotion";
 
 import { publicReservationSchema } from "@/lib/reservation/reservation-schema";
 
@@ -162,29 +160,27 @@ export function useReservationForm({
     };
   }, [accommodationId, checkIn, checkOut, guestCount]);
 
-  const estimatedNightCount = useMemo(
-    () => calculateNightCount(checkIn, checkOut),
-    [checkIn, checkOut],
-  );
-
-  const estimatedTotal = useMemo(
+  const estimatedPricing = useMemo(
     () =>
-      calculateReservationTotal(
+      calculateSeptemberPromotionPricing(
         selectedAccommodation?.price ?? 0,
-
-        estimatedNightCount,
+        checkIn,
+        checkOut,
       ),
-    [selectedAccommodation, estimatedNightCount],
+    [selectedAccommodation, checkIn, checkOut],
   );
+
+  const estimatedNightCount = estimatedPricing.nightCount;
+  const estimatedTotal = estimatedPricing.totalPrice;
 
   const estimatedDeposit = useMemo(
     () =>
       calculateDepositAmount(
-        selectedAccommodation?.price ?? 0,
+        estimatedPricing.firstNightPrice,
         estimatedNightCount,
         estimatedTotal,
       ),
-    [selectedAccommodation, estimatedNightCount, estimatedTotal],
+    [estimatedPricing.firstNightPrice, estimatedNightCount, estimatedTotal],
   );
 
   const dateError = useMemo(() => {
@@ -469,6 +465,7 @@ export function useReservationForm({
     estimatedNightCount,
     estimatedTotal,
     estimatedDeposit,
+    estimatedPricing,
 
     // Status
     error,

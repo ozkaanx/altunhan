@@ -11,6 +11,7 @@ import {
 import { CHECK_IN_POLICY_TEXT, CHECK_OUT_POLICY_TEXT } from "@/lib/reservation/stay-policy";
 
 import type { AdminAvailableRoom, AdminReservationAccommodation } from "@/types/admin-reservation";
+import { formatPrice } from "@/lib/formatters/price";
 
 function getBedConfigurationLabel(value: AdminAvailableRoom["bedConfiguration"]) {
   switch (value) {
@@ -41,6 +42,9 @@ type AccommodationSelectionSectionProps = {
   isLoadingRooms: boolean;
   nightCount: number;
   totalPrice: number;
+  regularTotal: number;
+  discountAmount: number;
+  discountedNightCount: number;
   onAccommodationChange: (id: number) => void;
   onCheckInChange: (value: string) => void;
   onCheckOutChange: (value: string) => void;
@@ -64,6 +68,9 @@ export function AccommodationSelectionSection({
   isLoadingRooms,
   nightCount,
   totalPrice,
+  regularTotal,
+  discountAmount,
+  discountedNightCount,
   onAccommodationChange,
   onCheckInChange,
   onCheckOutChange,
@@ -203,15 +210,24 @@ export function AccommodationSelectionSection({
         )}
 
         {checkIn && checkOut && nightCount > 0 && (
-          <div className="grid gap-3 bg-[#FAF8F4] p-4 sm:grid-cols-3">
+          <div className="grid gap-3 bg-[#FAF8F4] p-4 sm:grid-cols-4">
             <SummaryItem label="Gece" value={`${nightCount}`} />
 
             <SummaryItem
               label="Gecelik"
-              value={`${Number(selectedAccommodation?.price ?? 0).toLocaleString("tr-TR")} TL`}
+              value={formatPrice(Number(selectedAccommodation?.price ?? 0))}
             />
 
-            <SummaryItem label="Toplam" value={`${totalPrice.toLocaleString("tr-TR")} TL`} />
+            {discountAmount > 0 ? (
+              <SummaryItem
+                label={`Eylül İndirimi · ${discountedNightCount} gece`}
+                value={`−${formatPrice(discountAmount)}`}
+              />
+            ) : (
+              <SummaryItem label="Normal Toplam" value={formatPrice(regularTotal)} />
+            )}
+
+            <SummaryItem label="Ödenecek Toplam" value={formatPrice(totalPrice)} />
           </div>
         )}
       </div>

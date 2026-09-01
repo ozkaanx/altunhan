@@ -3,6 +3,10 @@ import Link from "next/link";
 import { ArrowRight, BedDouble, Check } from "lucide-react";
 
 import { formatPrice } from "@/lib/formatters/price";
+import {
+  getSeptemberPromotionalNightlyPrice,
+  isSeptemberPromotionVisible,
+} from "@/lib/reservation/september-promotion";
 
 type AccommodationReservationCardProps = {
   price: number;
@@ -13,6 +17,8 @@ export function AccommodationReservationCard({
   price,
   reservationHref,
 }: AccommodationReservationCardProps) {
+  const showPromotion = isSeptemberPromotionVisible();
+
   return (
     <aside className="lg:sticky lg:top-28">
       <div className="border border-[#D4CEC3] bg-[#FAF8F2] p-6 shadow-[0_12px_35px_rgba(38,58,45,0.04)] sm:p-7">
@@ -22,9 +28,21 @@ export function AccommodationReservationCard({
               Gecelik Fiyat
             </p>
 
-            <p className="mt-3 font-serif text-[40px] leading-none tracking-[-0.02em] text-[#263A2D] sm:text-[44px]">
-              {formatPrice(price)}
-            </p>
+            {showPromotion ? (
+              <>
+                <p className="mt-3 text-xs text-[#92968E] line-through">{formatPrice(price)}</p>
+                <p className="mt-1 font-serif text-[40px] leading-none tracking-[-0.02em] text-[#263A2D] sm:text-[44px]">
+                  {formatPrice(getSeptemberPromotionalNightlyPrice(price))}
+                </p>
+                <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-[#A8754F]">
+                  Eylül gecelerinde %20 indirim
+                </p>
+              </>
+            ) : (
+              <p className="mt-3 font-serif text-[40px] leading-none tracking-[-0.02em] text-[#263A2D] sm:text-[44px]">
+                {formatPrice(price)}
+              </p>
+            )}
 
             <p className="mt-2 text-[10px] text-[#92968E]">Oda başına / gecelik</p>
           </div>

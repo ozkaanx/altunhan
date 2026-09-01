@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 
 import type { PublicAccommodation } from "@/types/public-reservation";
 import type { SiteSettings } from "@/types/site-settings";
+import { isSeptemberPromotionVisible } from "@/lib/reservation/september-promotion";
 
 export const metadata: Metadata = {
   title: "Rezervasyon",
@@ -94,6 +95,7 @@ export default async function ReservationPage({ searchParams }: ReservationPageP
     : null;
 
   const initialAccommodationId = requestedAccommodation?.id ?? null;
+  const showSeptemberPromotion = isSeptemberPromotionVisible();
 
   return (
     <main className="min-h-screen bg-[#F5F1E8]">
@@ -128,6 +130,14 @@ export default async function ReservationPage({ searchParams }: ReservationPageP
           </Link>
         </div>
       </header>
+
+      {showSeptemberPromotion ? (
+        <div className="border-b border-[#D5B996] bg-[#263A2D] px-4 py-3 text-center text-white sm:px-6">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.15em]">
+            Eylül Fırsatı · 1–30 Eylül konaklama gecelerinde tüm odalarda %20 indirim
+          </p>
+        </div>
+      ) : null}
 
       <section className="border-b border-[#DDD8CC] px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
         <div className="mx-auto grid max-w-[1280px] gap-9 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end lg:gap-20">

@@ -21,6 +21,9 @@ type ReservationSummaryProps = {
   estimatedNightCount: number;
   estimatedTotal: number;
   estimatedDeposit: number;
+  regularTotal: number;
+  discountAmount: number;
+  discountedNightCount: number;
   dateError: string | null;
   error: string | null;
   isSubmitting: boolean;
@@ -38,6 +41,9 @@ export function ReservationSummary({
   estimatedNightCount,
   estimatedTotal,
   estimatedDeposit,
+  regularTotal,
+  discountAmount,
+  discountedNightCount,
   dateError,
   error,
   isSubmitting,
@@ -91,6 +97,9 @@ export function ReservationSummary({
           estimatedNightCount={estimatedNightCount}
           estimatedTotal={estimatedTotal}
           estimatedDeposit={estimatedDeposit}
+          regularTotal={regularTotal}
+          discountAmount={discountAmount}
+          discountedNightCount={discountedNightCount}
           isDisabled={isDisabled}
           isSubmitting={isSubmitting}
           submitLabel={submitLabel}
